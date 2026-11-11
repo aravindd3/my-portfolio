@@ -1,22 +1,43 @@
 "use client";
 
 import type { ComponentType, SVGProps } from "react";
-import { Cpu, ExternalLink, FileDown, FolderGit2, Mail } from "lucide-react";
+import {
+  Award,
+  Briefcase,
+  Cpu,
+  ExternalLink,
+  FileDown,
+  FolderGit2,
+  GraduationCap,
+  Mail,
+  Phone,
+  Users,
+} from "lucide-react";
 import { Icon } from "@astryxdesign/core/Icon";
 
 export type AppIconName =
+  | "award"
+  | "briefcase"
   | "cpu"
   | "external-link"
   | "file-down"
   | "folder-git"
-  | "mail";
+  | "graduation-cap"
+  | "mail"
+  | "phone"
+  | "users";
 
 const ICON_MAP: Record<AppIconName, ComponentType<SVGProps<SVGSVGElement>>> = {
+  award: Award,
+  briefcase: Briefcase,
   cpu: Cpu,
   "external-link": ExternalLink,
   "file-down": FileDown,
   "folder-git": FolderGit2,
+  "graduation-cap": GraduationCap,
   mail: Mail,
+  phone: Phone,
+  users: Users,
 };
 
 interface AppIconProps {

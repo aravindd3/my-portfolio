@@ -1,4 +1,7 @@
 import { VStack } from "@astryxdesign/core/VStack";
+import { ContactFooter } from "@/components/ContactFooter";
+import { EducationAndCerts } from "@/components/EducationAndCerts";
+import { ExperienceTimeline } from "@/components/ExperienceTimeline";
 import { HardwareSpecsMatrix } from "@/components/HardwareSpecsMatrix";
 import { HeroSection } from "@/components/HeroSection";
 import { Navbar } from "@/components/Navbar";
@@ -15,7 +18,10 @@ export default function Home() {
           <HardwareSpecsMatrix />
           <ProjectsShowcase />
         </PortfolioWorkspace>
+        <ExperienceTimeline />
+        <EducationAndCerts />
       </VStack>
+      <ContactFooter />
     </>
   );
 }
