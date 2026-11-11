@@ -1,26 +1,74 @@
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
+
 @import "tailwindcss";
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
+@import "@astryxdesign/theme-neutral/theme.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-canvas: #0B0F14;
+  --bg-surface: #111720;
+  --bg-elevated: #17202B;
+  --bg-glass: rgba(17, 23, 32, 0.84);
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --accent-copper: #E5A93C;
+  --accent-copper-subtle: rgba(229, 169, 60, 0.12);
+  --accent-signal: #10B981;
+  --accent-signal-subtle: rgba(16, 185, 129, 0.12);
+  --accent-bus: #38BDF8;
+  --accent-bus-subtle: rgba(56, 189, 248, 0.12);
+  --border-hairline: #1E293B;
+  --border-active: rgba(229, 169, 60, 0.48);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-copper: var(--accent-copper);
+  --color-signal: var(--accent-signal);
+  --color-bus: var(--accent-bus);
+  --color-hairline: var(--border-hairline);
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-sans: var(--font-plus-jakarta), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(#1E293B 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Accessible Focus Ring for Keyboard Navigation */
+*:focus-visible {
+  outline: 2px solid var(--accent-copper);
+  outline-offset: 3px;
+}
+
+/* Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

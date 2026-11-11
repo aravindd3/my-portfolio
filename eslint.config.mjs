@@ -12,7 +12,19 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated Astryx theme artifacts:
+    "src/astryx-themes.ts",
+    "src/themes/datasheet/datasheet.js",
+    "src/themes/datasheet/datasheet.d.ts",
+    "src/themes/datasheet/datasheet.css.d.ts",
+    "src/themes/datasheet/datasheet.variants.d.ts",
   ]),
+  {
+    files: ["src/themes/**/*.doc.mjs"],
+    rules: {
+      "import/no-anonymous-default-export": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
