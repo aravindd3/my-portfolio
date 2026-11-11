@@ -43,3 +43,13 @@ next-env.d.ts
 # Documentation folder (anchored /docs/ so public/docs/Aravind_VS_Resume.pdf stays tracked)
 /Docs/
 /docs/
+
+# Local-only workspace planning/agent files & raw resume source
+/AGENTS.md
+/todo.md
+/res_maiinn.pdf
+
+# Editor, OS & log files
+.vscode/
+Thumbs.db
+*.log
