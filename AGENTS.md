@@ -16,6 +16,7 @@ Before scaffolding or styling any frontend components, ensure the official skill
 2. **Vercel Web Design Guidelines (`web-design-guidelines`):** Source: [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills/blob/main/skills/web-design-guidelines/SKILL.md). Audit semantic landmarks, keyboard navigation, focus states, mobile responsiveness (`375px` to `1440px`), and WCAG AA typography contrast.
 3. **Vercel React & Next.js Best Practices (`react-best-practices`):** Source: [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills/blob/main/skills/react-best-practices/AGENTS.md). Keep components server-rendered by default (`Server Components`) and isolate client interactivity (`"use client"`) strictly to leaf components (e.g., protocol filter state, copy-to-clipboard button, mobile drawer).
 4. **OpenAI Portable Agent Format (`skill-creator` / `AGENTS.md`):** Source: [openai/skills](https://github.com/openai/skills/blob/main/skills/.system/skill-creator/SKILL.md) and [AGENTS.md](https://agents.md/). Always keep `AGENTS.md` and `GEMINI.md` identical at the repository root.
+5. **Meta Astryx Design System (`astryx` / `meta/astryx`):** Source: [meta/astryx](https://github.com/meta/astryx) (`@astryxdesign/core`, `@astryxdesign/theme-neutral`, `@astryxdesign/cli`). Activated via `.agents/skills/astryx/SKILL.md` and the managed `<!-- ASTRYX:START -->` section below; query `npm run astryx -- component <Name>` and `npm run astryx -- docs <topic>` before building UI components, while mapping Astryx theme tokens to the *Precision Datasheet & Modern Hardware Lab* dark palette in `Docs/design_system.md`.
 
 ## 3. Non-Negotiable Content & Positioning Rules
 1. **Hardware & Firmware First (Not AI/ML):** Position Aravind strictly as an **Embedded Systems, Hardware Design, and Firmware Engineer**. Never frame him as an AI/ML engineer, data scientist, or full-stack web developer.
@@ -26,5 +27,37 @@ Before scaffolding or styling any frontend components, ensure the official skill
 
 ## 4. Technical & Deployment Guardrails
 - **Non-Empty Directory Workaround:** Because the workspace root already contains `.md` specification files and `res_maiinn.pdf`, **never** run `npx create-next-app@latest .` directly in the root directory (it will abort due to conflicting files). Scaffold into `/tmp/aravind-next-init` and copy the generated files into the workspace root as detailed in `plan.md`.
-- **Tailwind CSS v4 Compatibility:** Use `@import "tailwindcss";` and `@theme inline` in `src/app/globals.css` as specified in `design_system.md`. Do not mix conflicting Tailwind v3 `tailwind.config.js` syntax if Tailwind v4 is installed.
+- **Tailwind CSS v4 & Astryx Layer Compatibility:** Pre-declare `@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;` at the very top of `src/app/globals.css` before `@import "tailwindcss";` and `@astryxdesign/core` / `@astryxdesign/theme-neutral` CSS imports, then define the `Docs/design_system.md` `:root` / `@theme inline` tokens below. Do not mix conflicting Tailwind v3 `tailwind.config.js` syntax if Tailwind v4 is installed.
 - **Git & Manual Vercel Handoff:** Initialize the local Git repository (`git init`, `.gitignore`, clean commits on `main`). **Do NOT run `vercel deploy` or pause for Vercel CLI authentication.** Ensure `npm run lint` and `npm run build` pass with zero errors so Aravind can push to GitHub and deploy via Vercel's web dashboard on the first try.
+
+<!-- ASTRYX:START -->
+Astryx v0.7.13 · 174 components
+CLI: run every command as `npx astryx <cmd>` (shown below as `astryx ...`).
+
+SETUP (once, in app entry e.g. main.tsx) — without these, components render unstyled:
+  import "@astryxdesign/core/reset.css";
+  import "@astryxdesign/core/astryx.css";
+
+WORKFLOW — start every page from a template, never from scratch:
+1. `astryx build "<idea>"` — names the template to scaffold from and the parts it lacks.
+2. `astryx template <name> <path>` — scaffold it; keep its frame, gap and padding; replace the content.
+3. `astryx template <Block>` for parts it lacks; `astryx component <Name>` to read props before using one.
+Changing an existing page? Keep it: skip step 2 and add blocks/components inside its sections.
+Before you deliver a build, run `astryx doctor --built <dir>`; don't deliver it if it fails.
+
+RULES:
+- No <div> — components handle all layout and spacing.
+- Read `astryx docs layout` before changing a template's frame.
+- Dense data = rows (Table, List/Item), not Card-wrapped lists. Badge = counts only.
+- Style with component props first, then Tailwind utilities backed by tokens. No raw hex/px.
+- Palettes and custom colors go through the theme, never :root overrides. Run `astryx theme add <slug>` to import; `theme eject <slug>` only forks source. See `astryx docs theme`.
+- SELF-CHECK: re-read the file; replace any style={{…}}, raw <div>/<span>, imported .css/@apply, or hardcoded/arbitrary value (bg-[#fff], p-[13px]) with the component or a token-backed utility.
+
+`astryx help` lists every command. Key ones beyond the workflow:
+  search "<query>"   find any component / hook / doc / template
+  discover <words>   integrations you could add
+  docs <topic>       getting-started, principles, tokens, theme … (`astryx docs` lists all)
+  docs cli           commands and API reference
+  docs authoring     build an integration package, and every field it holds
+  upgrade --from <old version> --apply   run after a dependency bump
+<!-- ASTRYX:END -->
