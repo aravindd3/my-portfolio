@@ -1,17 +1,15 @@
-import { Badge } from "@astryxdesign/core/Badge";
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
-import { Divider } from "@astryxdesign/core/Divider";
 import { Grid } from "@astryxdesign/core/Grid";
 import { Heading } from "@astryxdesign/core/Heading";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Section } from "@astryxdesign/core/Section";
 import { StatusDot } from "@astryxdesign/core/StatusDot";
 import { Text } from "@astryxdesign/core/Text";
-import { Token } from "@astryxdesign/core/Token";
 import { VStack } from "@astryxdesign/core/VStack";
 import { EDUCATION_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
+import { SectionHeader } from "./SectionHeader";
 
 export function EducationAndCerts() {
   return (
@@ -19,149 +17,85 @@ export function EducationAndCerts() {
       as="section"
       id="education"
       aria-labelledby="education-heading"
-      className="relative w-full border-b border-hairline"
+      className="relative w-full"
     >
+      <HStack
+        aria-hidden="true"
+        className="mx-auto h-px w-full max-w-5xl bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
+      />
+
       <Section
         variant="transparent"
         padding={0}
         maxWidth={1152}
-        className="relative ms-auto me-auto w-full px-5 py-14 md:px-12 md:py-20"
+        className="relative ms-auto me-auto w-full px-5 py-16 md:px-12 md:py-24"
       >
-        <Text
-          type="code"
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-1 left-2 select-none font-mono text-[11px] leading-none text-muted/60 md:left-6"
-        >
-          +
-        </Text>
-        <Text
-          type="code"
-          aria-hidden="true"
-          className="pointer-events-none absolute right-2 bottom-1 select-none font-mono text-[11px] leading-none text-muted/60 md:right-6"
-        >
-          +
-        </Text>
-
-        <VStack gap={8} className="min-w-0">
-          <VStack gap={3} className="min-w-0">
-            <Text
-              type="code"
-              size="xsm"
-              className="font-mono text-xs font-semibold tracking-wider text-copper"
-            >
-              04 // ACADEMIC FOUNDATION &amp; CERTIFICATIONS
-            </Text>
-            <Heading
-              id="education-heading"
-              level={2}
-              className="font-display text-[clamp(1.5rem,3vw,2.125rem)] font-semibold leading-tight tracking-[-0.02em] text-primary"
-            >
-              Education, Coursework &amp; Certifications
-            </Heading>
-            <Text
-              type="body"
-              as="p"
-              color="secondary"
-              className="max-w-[68ch] text-[0.96875rem] leading-[1.65] text-secondary md:text-base"
-            >
-              Core undergraduate electronics curriculum and bare-metal firmware
-              training grounding hardware design and embedded development.
-            </Text>
-          </VStack>
+        <VStack gap={10} className="min-w-0">
+          <SectionHeader
+            headingId="education-heading"
+            eyebrow="04 · Education & Certifications"
+            icon="graduation-cap"
+            title="Academic Foundation"
+            subtitle="Core undergraduate electronics curriculum and bare-metal firmware training grounding hardware design and embedded development."
+          />
 
           <Grid
             gap={5}
-            align="start"
+            align="stretch"
             className="w-full grid-cols-1 lg:grid-cols-12"
           >
             <Card
               padding={0}
-              className="group relative min-w-0 overflow-hidden rounded-xl border border-hairline bg-surface transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--border-active)] hover:shadow-[0_10px_30px_-15px_rgba(229,169,60,0.16)] lg:col-span-7"
+              className="group relative flex h-full min-w-0 flex-col rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-white/20 md:p-7 lg:col-span-7"
             >
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1.5 right-2 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute bottom-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute right-2 bottom-1.5 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
+              <VStack gap={5} className="h-full min-w-0">
+                <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
+                  <HStack gap={3} vAlign="center">
+                    <HStack
+                      hAlign="center"
+                      vAlign="center"
+                      className="h-9 w-9 shrink-0 rounded-xl border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                    >
+                      <AppIcon name="graduation-cap" size="sm" color="accent" />
+                    </HStack>
+                    <Text
+                      type="code"
+                      size="xsm"
+                      className="font-mono text-xs font-medium text-secondary"
+                    >
+                      Undergraduate Degree
+                    </Text>
+                  </HStack>
 
-              <HStack
-                hAlign="between"
-                vAlign="center"
-                gap={2}
-                wrap="wrap"
-                className="border-b border-hairline bg-elevated px-5 py-3.5 md:px-6"
-              >
-                <HStack gap={2} vAlign="center">
-                  <AppIcon
-                    name="graduation-cap"
-                    size="sm"
-                    color="accent"
-                  />
-                  <Text
-                    type="code"
-                    size="xsm"
-                    className="font-mono text-xs font-semibold tracking-wider text-copper"
-                  >
-                    EDU_RECORD // UNDERGRADUATE DEGREE
-                  </Text>
+                  <HStack gap={1.5} vAlign="center">
+                    <StatusDot
+                      variant="success"
+                      isPulsing
+                      label="Ongoing degree program"
+                    />
+                    <Text
+                      type="code"
+                      size="xsm"
+                      hasTabularNumbers
+                      className="font-mono text-xs font-medium text-signal"
+                    >
+                      {EDUCATION_DATA.duration}
+                    </Text>
+                  </HStack>
                 </HStack>
 
-                <HStack
-                  gap={1.5}
-                  vAlign="center"
-                  className="rounded-full border border-hairline bg-surface px-3 py-1"
-                >
-                  <StatusDot
-                    variant="success"
-                    isPulsing
-                    label="Ongoing degree program"
-                  />
-                  <Text
-                    type="code"
-                    size="xsm"
-                    hasTabularNumbers
-                    className="font-mono text-xs font-medium text-signal"
-                  >
-                    {EDUCATION_DATA.duration}
-                  </Text>
-                </HStack>
-              </HStack>
-
-              <VStack gap={5} className="min-w-0 p-5 md:p-6">
-                <VStack gap={1.5} className="min-w-0">
+                <VStack gap={1} className="min-w-0">
                   <Heading
                     level={3}
-                    className="font-display text-xl font-semibold leading-snug text-primary"
+                    className="font-display text-lg font-semibold leading-snug text-primary md:text-xl"
                   >
                     {EDUCATION_DATA.degree}
                   </Heading>
                   <Text
                     type="code"
-                    size="xsm"
-                    className="font-mono text-sm text-secondary"
+                    size="sm"
+                    color="secondary"
+                    className="font-mono text-xs text-secondary md:text-sm"
                   >
                     {EDUCATION_DATA.institution} · {EDUCATION_DATA.location}
                   </Text>
@@ -174,14 +108,14 @@ export function EducationAndCerts() {
                 >
                   <VStack
                     gap={1}
-                    className="min-w-0 rounded-lg border border-hairline bg-elevated p-4"
+                    className="min-w-0 rounded-xl border border-white/[0.07] bg-recessed p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
                   >
                     <Text
                       type="code"
                       size="xsm"
-                      className="font-mono text-xs text-secondary"
+                      className="font-mono text-[11px] uppercase tracking-wider text-secondary"
                     >
-                      CUMULATIVE GPA
+                      Cumulative GPA
                     </Text>
                     <Text
                       type="large"
@@ -203,14 +137,14 @@ export function EducationAndCerts() {
 
                   <VStack
                     gap={1}
-                    className="min-w-0 rounded-lg border border-hairline bg-elevated p-4"
+                    className="min-w-0 rounded-xl border border-white/[0.07] bg-recessed p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
                   >
                     <Text
                       type="code"
                       size="xsm"
-                      className="font-mono text-xs text-secondary"
+                      className="font-mono text-[11px] uppercase tracking-wider text-secondary"
                     >
-                      EXPECTED GRADUATION
+                      Expected Graduation
                     </Text>
                     <Text
                       type="large"
@@ -232,47 +166,34 @@ export function EducationAndCerts() {
                   </VStack>
                 </Grid>
 
-                <Divider variant="subtle" />
-
-                <VStack gap={3} className="min-w-0">
-                  <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
-                    <Text
-                      type="code"
-                      size="xsm"
-                      className="font-mono text-xs font-semibold tracking-wider text-secondary"
-                    >
-                      RELEVANT_COURSEWORK
-                    </Text>
-                    <HStack gap={1.5} vAlign="center">
-                      <Badge
-                        variant="neutral"
-                        label={EDUCATION_DATA.coursework.length}
-                      />
-                      <Text
-                        type="code"
-                        size="xsm"
-                        className="font-mono text-xs text-secondary"
-                      >
-                        Core Subjects
-                      </Text>
-                    </HStack>
-                  </HStack>
+                <VStack
+                  gap={3}
+                  className="mt-auto min-w-0 border-t border-white/[0.06] pt-4"
+                >
+                  <Text
+                    type="code"
+                    size="xsm"
+                    className="font-mono text-[11px] uppercase tracking-[0.12em] text-secondary"
+                  >
+                    Relevant Coursework
+                  </Text>
 
                   <HStack
                     as="ul"
                     wrap="wrap"
-                    gap={2}
+                    gap={1.5}
                     aria-label="Relevant engineering coursework"
                     className="m-0 min-w-0 list-none p-0"
                   >
                     {EDUCATION_DATA.coursework.map((course) => (
                       <HStack as="li" key={course}>
-                        <Token
-                          label={course}
-                          size="md"
-                          color="default"
-                          className="font-mono"
-                        />
+                        <Text
+                          type="code"
+                          size="xsm"
+                          className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 font-mono text-[11px] text-secondary"
+                        >
+                          {course}
+                        </Text>
                       </HStack>
                     ))}
                   </HStack>
@@ -282,137 +203,113 @@ export function EducationAndCerts() {
 
             <Card
               padding={0}
-              className="group relative min-w-0 overflow-hidden rounded-xl border border-hairline bg-surface transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--border-active)] hover:shadow-[0_10px_30px_-15px_rgba(229,169,60,0.16)] lg:col-span-5"
+              className="group relative flex h-full min-w-0 flex-col rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-white/20 md:p-7 lg:col-span-5"
             >
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1.5 right-2 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute bottom-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
-              <Text
-                type="code"
-                aria-hidden="true"
-                className="pointer-events-none absolute right-2 bottom-1.5 select-none font-mono text-[10px] leading-none text-muted/50 transition-colors group-hover:text-copper/80"
-              >
-                +
-              </Text>
+              <VStack gap={5} className="h-full min-w-0">
+                <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
+                  <HStack gap={3} vAlign="center">
+                    <HStack
+                      hAlign="center"
+                      vAlign="center"
+                      className="h-9 w-9 shrink-0 rounded-xl border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                    >
+                      <AppIcon name="award" size="sm" color="accent" />
+                    </HStack>
+                    <Text
+                      type="code"
+                      size="xsm"
+                      className="font-mono text-xs font-medium text-secondary"
+                    >
+                      Certifications
+                    </Text>
+                  </HStack>
 
-              <HStack
-                hAlign="between"
-                vAlign="center"
-                gap={2}
-                wrap="wrap"
-                className="border-b border-hairline bg-elevated px-5 py-3.5 md:px-6"
-              >
-                <HStack gap={2} vAlign="center">
-                  <AppIcon name="award" size="sm" color="accent" />
                   <Text
                     type="code"
                     size="xsm"
-                    className="font-mono text-xs font-semibold tracking-wider text-copper"
-                  >
-                    CERT_REGISTRY
-                  </Text>
-                </HStack>
-
-                <HStack gap={1.5} vAlign="center">
-                  <Badge
-                    variant="neutral"
-                    label={EDUCATION_DATA.certifications.length}
-                  />
-                  <Text
-                    type="code"
-                    size="xsm"
+                    hasTabularNumbers
                     className="font-mono text-xs text-secondary"
                   >
-                    {EDUCATION_DATA.certifications.length === 1
-                      ? "Certification"
-                      : "Certifications"}
+                    {String(EDUCATION_DATA.certifications.length).padStart(
+                      2,
+                      "0",
+                    )}{" "}
+                    Verified
                   </Text>
                 </HStack>
-              </HStack>
 
-              <VStack
-                as="ul"
-                gap={4}
-                aria-label="Engineering certifications"
-                className="m-0 min-w-0 list-none p-5 md:p-6"
-              >
-                {EDUCATION_DATA.certifications.map((cert, index) => (
-                  <VStack
-                    as="li"
-                    key={cert.title}
-                    gap={3}
-                    className="min-w-0 rounded-lg border border-hairline bg-elevated p-4"
-                  >
-                    <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
-                      <Token
-                        label={cert.issuer}
-                        size="sm"
-                        color="yellow"
-                        className="font-mono"
-                      />
-                      <Text
-                        type="code"
-                        size="xsm"
-                        hasTabularNumbers
-                        className="font-mono text-xs text-secondary"
+                <VStack
+                  as="ul"
+                  gap={4}
+                  aria-label="Engineering certifications"
+                  className="m-0 min-w-0 flex-1 list-none p-0"
+                >
+                  {EDUCATION_DATA.certifications.map((cert, index) => (
+                    <VStack
+                      as="li"
+                      key={cert.title}
+                      gap={3}
+                      className="h-full min-w-0 rounded-xl border border-white/[0.07] bg-recessed p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
+                    >
+                      <HStack
+                        hAlign="between"
+                        vAlign="center"
+                        gap={2}
+                        wrap="wrap"
                       >
-                        CERT-{String(index + 1).padStart(2, "0")}
-                      </Text>
-                    </HStack>
-
-                    <Heading
-                      level={3}
-                      className="font-display text-lg font-semibold leading-snug text-primary"
-                    >
-                      {cert.title}
-                    </Heading>
-
-                    <Text
-                      type="body"
-                      as="p"
-                      color="secondary"
-                      className="text-sm leading-relaxed text-secondary"
-                    >
-                      {cert.focus}
-                    </Text>
-
-                    {cert.certificateUrl ? (
-                      <HStack className="pt-1">
-                        <Button
-                          label="Verify Credential"
-                          href={cert.certificateUrl}
-                          as="a"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          variant="secondary"
-                          size="sm"
-                          endContent={
-                            <AppIcon name="external-link" size="xsm" />
-                          }
-                          className="font-mono text-xs"
-                        />
+                        <Text
+                          type="code"
+                          size="xsm"
+                          className="rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-copper"
+                        >
+                          {cert.issuer}
+                        </Text>
+                        <Text
+                          type="code"
+                          size="xsm"
+                          hasTabularNumbers
+                          className="font-mono text-xs text-secondary"
+                        >
+                          CERT-{String(index + 1).padStart(2, "0")}
+                        </Text>
                       </HStack>
-                    ) : null}
-                  </VStack>
-                ))}
+
+                      <Heading
+                        level={3}
+                        className="font-display text-lg font-semibold leading-snug text-primary"
+                      >
+                        {cert.title}
+                      </Heading>
+
+                      <Text
+                        type="body"
+                        as="p"
+                        color="secondary"
+                        className="text-sm leading-relaxed text-secondary"
+                      >
+                        {cert.focus}
+                      </Text>
+
+                      {cert.certificateUrl ? (
+                        <HStack className="mt-auto pt-2">
+                          <Button
+                            label="Verify Credential"
+                            href={cert.certificateUrl}
+                            as="a"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="secondary"
+                            size="sm"
+                            endContent={
+                              <AppIcon name="external-link" size="xsm" />
+                            }
+                            className="!rounded-full !border-white/12 !bg-white/[0.04] !font-mono !text-xs !text-primary hover:!border-white/25"
+                          />
+                        </HStack>
+                      ) : null}
+                    </VStack>
+                  ))}
+                </VStack>
               </VStack>
             </Card>
           </Grid>

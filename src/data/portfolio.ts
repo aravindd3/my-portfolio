@@ -8,6 +8,16 @@ export type ProtocolId =
   | "bluetooth"
   | "nfc";
 
+export interface HeroEditorialData {
+  eyebrowBadge: string;
+  headlinePrimary: string;
+  headlineSecondary: string;
+  subtitleLines: readonly [string, string];
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  asciiArtAlt: string;
+}
+
 export interface ProfileData {
   fullName: string;
   monogram: string;
@@ -193,6 +203,20 @@ export const PROFILE_DATA: ProfileData = {
         "Developing custom ECG signal acquisition and monitoring hardware aimed at atrial fibrillation detection.",
     },
   ],
+};
+
+export const HERO_EDITORIAL_DATA: HeroEditorialData = {
+  eyebrowBadge: `${PROFILE_DATA.fullName} · ${PROFILE_DATA.statusBanner}`,
+  headlinePrimary: "Where human engineering",
+  headlineSecondary: "reaches embedded hardware",
+  subtitleLines: [
+    "custom KiCad 10.0 PCBs, bare-metal Embedded C firmware & wireless RF —",
+    "built across STM32F407 · ESP32-WROOM-32 · Arduino Uno R3 · Raspberry Pi 3 B+",
+  ],
+  primaryCtaLabel: "View Hardware Projects",
+  primaryCtaHref: "#projects",
+  asciiArtAlt:
+    "ASCII art illustration of a metallic robotic hand on the left and a human hand on the right reaching toward a glowing embedded hardware core.",
 };
 
 export const PROTOCOLS: ProtocolItem[] = [

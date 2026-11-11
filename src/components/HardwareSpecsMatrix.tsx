@@ -1,4 +1,3 @@
-import { Badge } from "@astryxdesign/core/Badge";
 import { Card } from "@astryxdesign/core/Card";
 import { Grid } from "@astryxdesign/core/Grid";
 import { Heading } from "@astryxdesign/core/Heading";
@@ -6,256 +5,219 @@ import { HStack } from "@astryxdesign/core/HStack";
 import { List, ListItem } from "@astryxdesign/core/List";
 import { Section } from "@astryxdesign/core/Section";
 import { Text } from "@astryxdesign/core/Text";
-import { Token } from "@astryxdesign/core/Token";
 import { VStack } from "@astryxdesign/core/VStack";
-import {
-  PROTOCOLS,
-  SKILL_CATEGORIES,
-  type SkillItem,
-} from "@/data/portfolio";
+import { PROTOCOLS, SKILL_CATEGORIES } from "@/data/portfolio";
+import { AppIcon, type AppIconName } from "./AppIcon";
 import { ProtocolFilterRibbon } from "./ProtocolFilterRibbon";
+import { SectionHeader } from "./SectionHeader";
 
-type TierTokenColor = "yellow" | "cyan" | "default" | "gray";
-
-const TIER_COLOR_MAP: Record<SkillItem["tier"], TierTokenColor> = {
-  "Tier 1 · Primary Focus": "yellow",
-  "Core Hardware": "cyan",
-  "Tier 2 · Applied": "default",
-  "Tier 3 · Foundational": "gray",
-  "Tier 3 · Project Exposure": "gray",
+const CATEGORY_ICON_MAP: Record<string, AppIconName> = {
+  "languages-databases": "terminal",
+  "embedded-platforms": "cpu",
+  "hardware-competencies": "layers",
+  "pcb-design-eda": "circuit-board",
+  "lab-equipment": "wrench",
+  "software-dev-tools": "folder-git",
 };
 
+const CATEGORY_ORDER = [
+  "languages-databases",
+  "hardware-competencies",
+  "embedded-platforms",
+  "lab-equipment",
+  "pcb-design-eda",
+  "software-dev-tools",
+] as const;
+
 export function HardwareSpecsMatrix() {
+  const orderedCategories = [...SKILL_CATEGORIES].sort((a, b) => {
+    const idxA = CATEGORY_ORDER.indexOf(
+      a.id as (typeof CATEGORY_ORDER)[number],
+    );
+    const idxB = CATEGORY_ORDER.indexOf(
+      b.id as (typeof CATEGORY_ORDER)[number],
+    );
+    return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+  });
+
   return (
     <VStack
       as="section"
       id="capabilities"
       aria-labelledby="capabilities-heading"
-      className="relative w-full border-b border-hairline"
+      className="relative w-full"
     >
       <Section
         variant="transparent"
         padding={0}
         maxWidth={1152}
-        className="relative ms-auto me-auto w-full px-5 py-14 md:px-12 md:py-20"
+        className="relative ms-auto me-auto w-full px-5 py-16 md:px-12 md:py-24"
       >
-        <Text
-          type="code"
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-1 left-2 select-none font-mono text-[11px] leading-none text-muted/60 md:left-6"
-        >
-          +
-        </Text>
-        <Text
-          type="code"
-          aria-hidden="true"
-          className="pointer-events-none absolute right-2 bottom-1 select-none font-mono text-[11px] leading-none text-muted/60 md:right-6"
-        >
-          +
-        </Text>
-
-        <VStack gap={8} className="min-w-0">
-          <VStack gap={3} className="min-w-0">
-            <Text
-              type="code"
-              size="xsm"
-              className="font-mono text-xs font-semibold tracking-wider text-copper"
-            >
-              01 // COMMUNICATION BUSES &amp; TECHNICAL CAPABILITIES
-            </Text>
-            <Heading
-              id="capabilities-heading"
-              level={2}
-              className="font-display text-[clamp(1.5rem,3vw,2.125rem)] font-semibold leading-tight tracking-[-0.02em] text-primary"
-            >
-              Communication Protocols &amp; Hardware Matrix
-            </Heading>
-            <Text
-              type="body"
-              as="p"
-              color="secondary"
-              className="max-w-[68ch] text-[0.96875rem] leading-[1.65] text-secondary md:text-base"
-            >
-              Hands-on hardware interfacing across wired serial buses and
-              sub-GHz/short-range RF links, paired with bare-metal Embedded C
-              firmware, KiCad 10.0 PCB layout, and bench signal verification.
-            </Text>
-          </VStack>
+        <VStack gap={10} className="min-w-0">
+          <SectionHeader
+            headingId="capabilities-heading"
+            eyebrow="01 · Interfaces & Capabilities"
+            icon="radio"
+            title="Protocols & Hardware Matrix"
+            subtitle="Wired serial buses and sub-GHz RF links paired with bare-metal Embedded C firmware, KiCad 10.0 PCB layout, and bench verification."
+          />
 
           <ProtocolFilterRibbon protocols={PROTOCOLS} />
 
-          <VStack gap={4} className="min-w-0 pt-2">
-            <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
+          <VStack gap={6} className="min-w-0 pt-2">
+            <VStack gap={1.5} hAlign="center" className="text-center">
               <Text
                 type="code"
                 size="xsm"
-                className="font-mono text-xs font-semibold tracking-wider text-secondary"
+                className="font-mono text-[11px] uppercase tracking-[0.14em] text-secondary"
               >
-                SPEC_MATRIX // 06 ENGINEERING DOMAINS
+                Technical Capability Matrix
               </Text>
               <Text
-                type="code"
-                size="xsm"
-                className="font-mono text-xs text-muted"
+                type="supporting"
+                size="sm"
+                color="secondary"
+                className="text-sm text-secondary"
               >
-                Evaluated by hardware platforms, protocols &amp; lab validation
+                Evaluated by concrete firmware languages, boards, EDA tooling,
+                and lab instruments.
               </Text>
-            </HStack>
+            </VStack>
 
             <Grid
-              columns={{ minWidth: 260, max: 2 }}
+              columns={{ minWidth: 280, max: 2 }}
               gap={5}
               align="stretch"
               className="w-full"
             >
-              {SKILL_CATEGORIES.map((category, index) => {
-                const categoryCode = `CAT-${String(index + 1).padStart(2, "0")}`;
+              {orderedCategories.map((category) => {
+                const iconName = CATEGORY_ICON_MAP[category.id] ?? "cpu";
 
                 return (
                   <Card
                     key={category.id}
                     padding={0}
-                    className="relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-hairline bg-surface"
+                    className="relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] md:p-6"
                   >
-                    <Text
-                      type="code"
-                      aria-hidden="true"
-                      className="pointer-events-none absolute top-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/60"
-                    >
-                      +
-                    </Text>
-                    <Text
-                      type="code"
-                      aria-hidden="true"
-                      className="pointer-events-none absolute top-1.5 right-2 select-none font-mono text-[10px] leading-none text-muted/60"
-                    >
-                      +
-                    </Text>
-
-                    <VStack
-                      gap={1.5}
-                      className="border-b border-hairline bg-elevated px-5 py-4"
-                    >
-                      <HStack hAlign="between" vAlign="center" gap={2}>
-                        <Text
-                          type="code"
-                          size="xsm"
-                          hasTabularNumbers
-                          className="font-mono text-xs font-semibold tracking-wider text-copper"
+                    <VStack gap={4} className="h-full min-w-0">
+                      <HStack gap={3} vAlign="center" className="min-w-0">
+                        <HStack
+                          hAlign="center"
+                          vAlign="center"
+                          className="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                         >
-                          {categoryCode}
-                        </Text>
-                        <HStack gap={1.5} vAlign="center">
-                          <Badge
-                            variant="neutral"
-                            label={category.items.length}
-                          />
-                          <Text
-                            type="code"
-                            size="xsm"
-                            className="font-mono text-[11px] text-secondary"
-                          >
-                            {category.items.length === 1 ? "Entry" : "Entries"}
-                          </Text>
+                          <AppIcon name={iconName} size="sm" color="primary" />
                         </HStack>
+
+                        <VStack gap={0.5} className="min-w-0">
+                          <Heading
+                            level={3}
+                            className="font-display text-[1.0625rem] font-semibold leading-snug text-primary"
+                          >
+                            {category.title}
+                          </Heading>
+                          <Text
+                            type="supporting"
+                            size="xsm"
+                            color="secondary"
+                            className="text-xs text-secondary"
+                          >
+                            {category.subtitle}
+                          </Text>
+                        </VStack>
                       </HStack>
 
-                      <Heading
-                        level={3}
-                        className="font-display text-lg font-semibold leading-snug text-primary"
-                      >
-                        {category.title}
-                      </Heading>
-                      <Text
-                        type="code"
-                        size="xsm"
-                        color="secondary"
-                        className="font-mono text-xs text-secondary"
-                      >
-                        {category.subtitle}
-                      </Text>
+                      <VStack className="min-w-0 flex-1 overflow-hidden rounded-xl border border-white/[0.07] bg-recessed shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                        <List
+                          hasDividers
+                          density="compact"
+                          edge="bleed"
+                          header={
+                            <Text type="code" className="sr-only">
+                              {category.title}
+                            </Text>
+                          }
+                        >
+                          {category.items.map((item) => {
+                            const isPrimary = Boolean(item.isPrimaryHighlight);
+                            const isMuted = Boolean(item.isDeemphasized);
+
+                            return (
+                              <ListItem
+                                key={item.name}
+                                align="start"
+                                label={
+                                  <HStack
+                                    hAlign="between"
+                                    vAlign="start"
+                                    gap={3}
+                                    wrap="nowrap"
+                                    className="w-full min-w-0"
+                                  >
+                                    <Text
+                                      type="label"
+                                      weight={
+                                        isPrimary
+                                          ? "semibold"
+                                          : isMuted
+                                            ? "normal"
+                                            : "medium"
+                                      }
+                                      className={[
+                                        "min-w-0 flex-1 text-[0.875rem] leading-snug",
+                                        isPrimary
+                                          ? "text-copper"
+                                          : isMuted
+                                            ? "text-secondary opacity-80"
+                                            : "text-primary",
+                                      ].join(" ")}
+                                    >
+                                      {item.name}
+                                    </Text>
+
+                                    {isPrimary ? (
+                                      <Text
+                                        type="code"
+                                        size="xsm"
+                                        className="shrink-0 rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-copper"
+                                      >
+                                        {item.tier}
+                                      </Text>
+                                    ) : (
+                                      <Text
+                                        type="code"
+                                        size="xsm"
+                                        className={[
+                                          "shrink-0 font-mono text-[11px]",
+                                          isMuted
+                                            ? "text-secondary opacity-70"
+                                            : "text-secondary",
+                                        ].join(" ")}
+                                      >
+                                        {item.tier}
+                                      </Text>
+                                    )}
+                                  </HStack>
+                                }
+                                description={
+                                  <Text
+                                    type="supporting"
+                                    size="xsm"
+                                    color="secondary"
+                                    className={[
+                                      "text-xs leading-relaxed text-secondary",
+                                      isMuted ? "opacity-75" : "",
+                                    ].join(" ")}
+                                  >
+                                    {item.levelOrContext}
+                                  </Text>
+                                }
+                              />
+                            );
+                          })}
+                        </List>
+                      </VStack>
                     </VStack>
-
-                    <List
-                      hasDividers
-                      density="balanced"
-                      edge="bleed"
-                      header={
-                        <Text type="code" className="sr-only">
-                          {category.title}
-                        </Text>
-                      }
-                    >
-                      {category.items.map((item) => {
-                        const tokenColor = TIER_COLOR_MAP[item.tier];
-                        const isPrimary = Boolean(item.isPrimaryHighlight);
-                        const isMuted = Boolean(item.isDeemphasized);
-
-                        return (
-                          <ListItem
-                            key={item.name}
-                            align="start"
-                            label={
-                              <HStack
-                                hAlign="between"
-                                vAlign="center"
-                                gap={2}
-                                wrap="wrap"
-                                className={[
-                                  "w-full min-w-0",
-                                  isPrimary
-                                    ? "border-l-2 border-copper pl-2.5"
-                                    : "",
-                                ].join(" ")}
-                              >
-                                <Text
-                                  type="label"
-                                  weight={
-                                    isPrimary
-                                      ? "bold"
-                                      : isMuted
-                                        ? "normal"
-                                        : "semibold"
-                                  }
-                                  className={[
-                                    "text-sm leading-snug",
-                                    isPrimary
-                                      ? "text-copper"
-                                      : isMuted
-                                        ? "text-secondary"
-                                        : "text-primary",
-                                  ].join(" ")}
-                                >
-                                  {item.name}
-                                </Text>
-                                <Token
-                                  label={item.tier}
-                                  size="sm"
-                                  color={tokenColor}
-                                  className={[
-                                    "shrink-0 font-mono",
-                                    isMuted ? "opacity-80" : "",
-                                  ].join(" ")}
-                                />
-                              </HStack>
-                            }
-                            description={
-                              <Text
-                                type="supporting"
-                                size="xsm"
-                                color="secondary"
-                                className={[
-                                  "text-xs leading-relaxed text-secondary",
-                                  isPrimary ? "pl-3" : "",
-                                ].join(" ")}
-                              >
-                                {item.levelOrContext}
-                              </Text>
-                            }
-                          />
-                        );
-                      })}
-                    </List>
                   </Card>
                 );
               })}

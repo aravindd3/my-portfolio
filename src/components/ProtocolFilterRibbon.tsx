@@ -1,18 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Check, RotateCcw, SlidersHorizontal } from "lucide-react";
-import { Badge } from "@astryxdesign/core/Badge";
+import { ArrowDown, Check, RotateCcw } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
 import { Grid } from "@astryxdesign/core/Grid";
 import { useClickableContainer } from "@astryxdesign/core/hooks";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Icon } from "@astryxdesign/core/Icon";
+import { Link } from "@astryxdesign/core/Link";
 import { StatusDot } from "@astryxdesign/core/StatusDot";
 import { Text } from "@astryxdesign/core/Text";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
-import { Token } from "@astryxdesign/core/Token";
 import { VStack } from "@astryxdesign/core/VStack";
 import type { ProtocolId, ProtocolItem } from "@/data/portfolio";
 import { useOptionalProtocolFilter } from "./ProtocolFilterContext";
@@ -42,9 +41,6 @@ function ProtocolCard({
   });
 
   const buildCount = protocol.relatedProjectIds.length;
-  const fiducialClass = isSelected
-    ? "text-copper"
-    : "text-muted/60 group-hover:text-copper/75";
 
   return (
     <Card
@@ -54,68 +50,45 @@ function ProtocolCard({
       onMouseUp={containerProps.onMouseUp}
       onPointerDown={containerProps.onPointerDown}
       className={[
-        "group relative flex h-full cursor-pointer flex-col rounded-xl border transition-all duration-200 ease-out",
-        "hover:-translate-y-0.5 hover:border-[var(--border-active)] hover:shadow-[0_10px_30px_-15px_rgba(229,169,60,0.16)]",
+        "group relative flex h-full cursor-pointer flex-col rounded-2xl border transition-all duration-200 ease-out",
+        "hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]",
         isSelected
-          ? "border-[var(--border-active)] bg-elevated shadow-[0_10px_30px_-15px_rgba(229,169,60,0.2)]"
-          : "border-hairline bg-surface",
-        isDimmed ? "opacity-80 hover:opacity-100" : "opacity-100",
+          ? "border-[var(--border-active)] bg-gradient-to-b from-[rgba(229,169,60,0.08)] via-[#0D1017] to-[#080A0F] shadow-[0_12px_32px_-16px_rgba(229,169,60,0.25),inset_0_1px_0_rgba(229,169,60,0.2)]"
+          : "border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]",
+        isDimmed ? "opacity-65 hover:opacity-100" : "opacity-100",
       ].join(" ")}
     >
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute top-1.5 left-2 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute top-1.5 right-2 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute bottom-1.5 left-2 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute right-2 bottom-1.5 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-
       <VStack gap={3} className="h-full p-5">
         <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
           <Text
             type="code"
             weight="bold"
             className={[
-              "font-mono text-base font-bold tracking-tight transition-colors",
+              "font-mono text-base font-semibold tracking-tight transition-colors",
               isSelected ? "text-copper" : "text-primary",
             ].join(" ")}
           >
             {protocol.name}
           </Text>
-          <Token
-            label={protocol.busType}
-            size="sm"
-            color="cyan"
-            className="shrink-0 font-mono"
-          />
+          <Text
+            type="code"
+            size="xsm"
+            className={[
+              "rounded-full border px-2.5 py-0.5 font-mono text-[11px] transition-colors",
+              isSelected
+                ? "border-[var(--border-active)] bg-[var(--accent-copper-subtle)] text-copper"
+                : "border-white/[0.08] bg-white/[0.03] text-secondary",
+            ].join(" ")}
+          >
+            {protocol.busType}
+          </Text>
         </HStack>
 
         <Text
           type="supporting"
           size="xsm"
           color="secondary"
-          className="text-xs leading-relaxed text-secondary"
+          className="text-[0.8125rem] leading-relaxed text-secondary"
         >
           {protocol.hardwareContext}
         </Text>
@@ -125,42 +98,36 @@ function ProtocolCard({
           vAlign="center"
           gap={2}
           wrap="wrap"
-          className="mt-auto border-t border-hairline pt-3"
+          className="mt-auto border-t border-white/[0.06] pt-3"
         >
-          <HStack gap={1.5} vAlign="center">
-            <Badge
-              variant={isSelected ? "yellow" : "neutral"}
-              label={buildCount}
-            />
-            <Text
-              type="code"
-              size="xsm"
-              className={[
-                "font-mono text-[11px]",
-                isSelected ? "text-copper" : "text-secondary",
-              ].join(" ")}
-            >
-              {isSelected
-                ? protocol.relatedProjectIds.join(" · ")
-                : buildCount === 1
-                  ? "Build"
-                  : "Builds"}
-            </Text>
-          </HStack>
+          <Text
+            type="code"
+            size="xsm"
+            hasTabularNumbers
+            className={[
+              "font-mono text-[11px]",
+              isSelected ? "text-copper" : "text-secondary",
+            ].join(" ")}
+          >
+            {isSelected
+              ? protocol.relatedProjectIds.join(" · ")
+              : `${buildCount} ${buildCount === 1 ? "build" : "builds"}`}
+          </Text>
 
           <ToggleButton
-            label={`Filter by ${protocol.name}`}
+            label={`Filter projects by ${protocol.name}`}
             isPressed={isSelected}
             onPressedChange={() => onToggle(protocol.id)}
             size="sm"
-            icon={
-              <Icon
-                icon={isSelected ? Check : SlidersHorizontal}
-                size="xsm"
-              />
-            }
+            icon={isSelected ? <Icon icon={Check} size="xsm" /> : undefined}
+            className={[
+              "!rounded-full !font-mono !text-[11px] transition-colors",
+              isSelected
+                ? "!border-[var(--border-active)] !bg-[var(--accent-copper-subtle)] !text-copper"
+                : "!border-white/10 !bg-white/[0.03] !text-secondary hover:!border-white/20 hover:!text-primary",
+            ].join(" ")}
           >
-            Filter
+            {isSelected ? "Active" : "Filter"}
           </ToggleButton>
         </HStack>
       </VStack>
@@ -199,17 +166,17 @@ export function ProtocolFilterRibbon({ protocols }: ProtocolFilterRibbonProps) {
 
   return (
     <VStack
-      gap={4}
+      gap={5}
       role="region"
       aria-label="Interactive communication protocol filter"
       className="min-w-0"
     >
       <HStack
-        hAlign="between"
+        hAlign="center"
         vAlign="center"
         gap={3}
         wrap="wrap"
-        className="rounded-xl border border-hairline bg-surface px-4 py-3.5 md:px-5"
+        className="mx-auto w-full max-w-3xl rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-2.5 sm:w-auto sm:rounded-full"
       >
         <HStack gap={2} vAlign="center" wrap="wrap" className="min-w-0">
           <StatusDot
@@ -222,15 +189,6 @@ export function ProtocolFilterRibbon({ protocols }: ProtocolFilterRibbonProps) {
             }
           />
           <Text
-            type="code"
-            size="xsm"
-            className="font-mono text-xs font-semibold tracking-wider text-bus"
-          >
-            {selectedProtocol
-              ? `BUS_FILTER // ${selectedProtocol.name} (${selectedProtocol.busType})`
-              : `BUS_MATRIX // ${String(protocols.length).padStart(2, "0")} INTERFACES`}
-          </Text>
-          <Text
             type="supporting"
             size="xsm"
             color="secondary"
@@ -238,36 +196,41 @@ export function ProtocolFilterRibbon({ protocols }: ProtocolFilterRibbonProps) {
             className="font-mono text-xs text-secondary"
           >
             {selectedProtocol
-              ? `Matching builds: ${selectedProtocol.relatedProjectIds.join(", ")}`
-              : "Click any bus card to highlight matching hardware builds"}
+              ? `${selectedProtocol.name} (${selectedProtocol.busType}) · Matching ${selectedProtocol.relatedProjectIds.join(", ")}`
+              : `${protocols.length} wired & RF buses · Select any card to highlight builds`}
           </Text>
         </HStack>
 
-        <HStack gap={2} vAlign="center" wrap="wrap">
-          <Button
-            label="[All Protocols]"
-            variant={selectedProtocol ? "secondary" : "primary"}
-            size="sm"
-            icon={
-              selectedProtocol ? <Icon icon={RotateCcw} size="xsm" /> : undefined
-            }
-            onClick={() => setActiveProtocolId(null)}
-            aria-pressed={selectedProtocol === null}
-            className="font-mono text-xs"
-          />
-          <Button
-            label="View Matching Projects ↓"
-            href="#projects"
-            variant={selectedProtocol ? "primary" : "ghost"}
-            size="sm"
-            className="font-mono text-xs"
-          />
-        </HStack>
+        {selectedProtocol ? (
+          <HStack gap={2} vAlign="center" wrap="wrap">
+            <Button
+              label="Clear"
+              variant="secondary"
+              size="sm"
+              icon={<Icon icon={RotateCcw} size="xsm" />}
+              onClick={() => setActiveProtocolId(null)}
+              className="!rounded-full !border-white/12 !bg-white/[0.04] !font-mono !text-[11px] !text-primary hover:!border-white/25"
+            />
+            <Link
+              href="#projects"
+              color="accent"
+              isStandalone
+              className="rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-3 py-1 font-mono text-[11px] font-medium text-copper no-underline transition-colors hover:bg-copper hover:text-canvas"
+            >
+              <HStack as="span" gap={1} vAlign="center">
+                <Text type="inherit" color="inherit">
+                  View Projects
+                </Text>
+                <Icon icon={ArrowDown} size="xsm" />
+              </HStack>
+            </Link>
+          </HStack>
+        ) : null}
       </HStack>
 
       <Grid
         columns={{ minWidth: 235, max: 4 }}
-        gap={3}
+        gap={4}
         role="group"
         aria-label="Communication protocols"
         className="w-full"

@@ -29,17 +29,17 @@ export const datasheetTheme = defineTheme({
     "--color-text-accent": ["#E5A93C", "#E5A93C"],
     "--color-icon-accent": ["#E5A93C", "#E5A93C"],
 
-    // Solder-mask obsidian & IC charcoal surfaces
+    // Solder-mask obsidian & carbon glass surfaces
     "--color-background-body": ["transparent", "transparent"],
-    "--color-background-surface": ["#111720", "#111720"],
-    "--color-background-card": ["#111720", "#111720"],
-    "--color-background-popover": ["#17202B", "#17202B"],
-    "--color-background-muted": ["#17202B", "#17202B"],
+    "--color-background-surface": ["#0B0E14", "#0B0E14"],
+    "--color-background-card": ["#0B0E14", "#0B0E14"],
+    "--color-background-popover": ["#11161F", "#11161F"],
+    "--color-background-muted": ["#0E131B", "#0E131B"],
     "--color-background-inverted": ["#F1F5F9", "#F1F5F9"],
-    "--color-neutral": ["rgba(148, 163, 184, 0.14)", "rgba(148, 163, 184, 0.14)"],
-    "--color-overlay": ["rgba(11, 15, 20, 0.80)", "rgba(11, 15, 20, 0.80)"],
-    "--color-overlay-hover": ["rgba(241, 245, 249, 0.06)", "rgba(241, 245, 249, 0.06)"],
-    "--color-overlay-pressed": ["rgba(241, 245, 249, 0.12)", "rgba(241, 245, 249, 0.12)"],
+    "--color-neutral": ["rgba(148, 163, 184, 0.10)", "rgba(148, 163, 184, 0.10)"],
+    "--color-overlay": ["rgba(6, 9, 13, 0.82)", "rgba(6, 9, 13, 0.82)"],
+    "--color-overlay-hover": ["rgba(241, 245, 249, 0.05)", "rgba(241, 245, 249, 0.05)"],
+    "--color-overlay-pressed": ["rgba(241, 245, 249, 0.10)", "rgba(241, 245, 249, 0.10)"],
 
     // Silkscreen white & brushed aluminum slate typography
     "--color-text-primary": ["#F1F5F9", "#F1F5F9"],
@@ -49,8 +49,8 @@ export const datasheetTheme = defineTheme({
     "--color-icon-secondary": ["#94A3B8", "#94A3B8"],
     "--color-icon-disabled": ["#64748B", "#64748B"],
 
-    // Schematic hairline & energized trace borders
-    "--color-border": ["#1E293B", "#1E293B"],
+    // Hairline & energized trace borders
+    "--color-border": ["#1B222E", "#1B222E"],
     "--color-border-emphasized": ["rgba(229, 169, 60, 0.48)", "rgba(229, 169, 60, 0.48)"],
 
     // Oscilloscope emerald (success/live) & logic analyzer cyan (bus/info)
@@ -100,8 +100,8 @@ export const datasheetTheme = defineTheme({
     "--shadow-inset-selected": "inset 0px 0px 0px 2px rgba(229, 169, 60, 0.48)",
     "--shadow-inset-success": "inset 0px 0px 0px 2px rgba(16, 185, 129, 0.35)",
     "--shadow-inset-warning": "inset 0px 0px 0px 2px rgba(229, 169, 60, 0.35)",
-    "--radius-inner": "4px",
-    "--radius-element": "8px",
-    "--radius-container": "12px",
+    "--radius-inner": "6px",
+    "--radius-element": "10px",
+    "--radius-container": "16px",
   },
 });

@@ -9,9 +9,7 @@ import {
   FileText,
   FolderGit2,
   Play,
-  RotateCcw,
 } from "lucide-react";
-import { Badge } from "@astryxdesign/core/Badge";
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
 import { Grid } from "@astryxdesign/core/Grid";
@@ -21,7 +19,6 @@ import { Icon } from "@astryxdesign/core/Icon";
 import { StatusDot } from "@astryxdesign/core/StatusDot";
 import { Text } from "@astryxdesign/core/Text";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
-import { Token } from "@astryxdesign/core/Token";
 import { VStack } from "@astryxdesign/core/VStack";
 import type { ProjectItem, ProtocolId, ProtocolItem } from "@/data/portfolio";
 import { useOptionalProtocolFilter } from "./ProtocolFilterContext";
@@ -46,10 +43,6 @@ function ProjectCard({
   const isMatch =
     activeProtocol !== null && project.protocolIds.includes(activeProtocol.id);
   const isDimmed = isFilterActive && !isMatch;
-
-  const fiducialClass = isMatch
-    ? "text-copper"
-    : "text-muted/50 group-hover:text-copper/80";
 
   const actionLinks = [
     project.githubUrl
@@ -86,88 +79,42 @@ function ProjectCard({
     <Card
       padding={0}
       className={[
-        "group relative flex h-full min-w-0 flex-col rounded-xl border transition-all duration-200 ease-out",
-        "hover:-translate-y-0.5 hover:border-[var(--border-active)] hover:shadow-[0_10px_30px_-15px_rgba(229,169,60,0.16)]",
+        "group relative flex h-full min-w-0 flex-col rounded-2xl border transition-all duration-200 ease-out",
+        "hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]",
         isMatch
-          ? "border-[var(--border-active)] bg-surface shadow-[0_10px_30px_-15px_rgba(229,169,60,0.22)] ring-1 ring-[var(--border-active)]"
-          : "border-hairline bg-surface",
+          ? "border-[var(--border-active)] bg-gradient-to-b from-[rgba(229,169,60,0.08)] via-[#0D1017] to-[#080A0F] shadow-[0_12px_36px_-16px_rgba(229,169,60,0.22),inset_0_1px_0_rgba(229,169,60,0.18)]"
+          : "border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]",
         isDimmed ? "opacity-45 hover:opacity-95" : "opacity-100",
       ].join(" ")}
     >
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute top-1.5 left-2 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute top-1.5 right-2 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute bottom-1.5 left-2 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-      <Text
-        type="code"
-        aria-hidden="true"
-        className={`pointer-events-none absolute right-2 bottom-1.5 select-none font-mono text-[10px] leading-none transition-colors ${fiducialClass}`}
-      >
-        +
-      </Text>
-
       <VStack gap={4} className="h-full min-w-0 p-6 md:p-7">
         <VStack gap={3} className="min-w-0">
           <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
-            <HStack gap={2} vAlign="center" wrap="wrap" className="min-w-0">
+            <HStack gap={2} vAlign="center" wrap="wrap">
               <Text
                 type="code"
                 size="xsm"
                 hasTabularNumbers
                 className={[
-                  "rounded border px-2 py-0.5 font-mono text-xs font-semibold tracking-wider",
-                  isMatch
-                    ? "border-[var(--border-active)] bg-[var(--accent-copper-subtle)] text-copper"
-                    : "border-hairline bg-elevated text-copper",
+                  "font-mono text-xs font-medium tracking-wider",
+                  isMatch ? "text-copper" : "text-secondary",
                 ].join(" ")}
               >
                 {project.id}
               </Text>
 
               {isMatch && activeProtocol ? (
-                <HStack
-                  gap={1.5}
-                  vAlign="center"
-                  className="rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-2.5 py-0.5"
+                <Text
+                  type="code"
+                  size="xsm"
+                  className="rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-copper"
                 >
-                  <StatusDot
-                    variant="accent"
-                    isPulsing
-                    label={`Matches ${activeProtocol.name} protocol filter`}
-                  />
-                  <Text
-                    type="code"
-                    size="xsm"
-                    className="font-mono text-[11px] font-semibold tracking-wide text-copper"
-                  >
-                    MATCH: {activeProtocol.name}
-                  </Text>
-                </HStack>
+                  {activeProtocol.name} Match
+                </Text>
               ) : null}
             </HStack>
 
-            <HStack
-              gap={1.5}
-              vAlign="center"
-              className="shrink-0 rounded-full border border-hairline bg-elevated px-2.5 py-1"
-            >
+            <HStack gap={1.5} vAlign="center" className="shrink-0">
               {project.isOngoing ? (
                 <StatusDot
                   variant="success"
@@ -194,14 +141,15 @@ function ProjectCard({
           <VStack gap={1} className="min-w-0">
             <Heading
               level={3}
-              className="font-display text-xl font-semibold leading-[1.35] text-primary"
+              className="font-display text-lg font-semibold leading-snug text-primary md:text-xl"
             >
               {project.title}
             </Heading>
             <Text
               type="code"
               size="xsm"
-              className="font-mono text-xs leading-relaxed text-copper"
+              color="secondary"
+              className="font-mono text-xs leading-relaxed text-secondary"
             >
               {project.primaryFocus}
             </Text>
@@ -210,21 +158,21 @@ function ProjectCard({
 
         <VStack
           gap={2}
-          className="min-w-0 rounded-lg border border-hairline bg-[var(--bg-elevated)] p-3.5"
+          className="min-w-0 rounded-xl border border-white/[0.07] bg-recessed px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
         >
           <Text
             type="code"
             size="xsm"
-            className="font-mono text-[11px] font-semibold tracking-wider text-muted"
+            className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-secondary/80"
           >
-            SYSTEM_SIGNAL_CHAIN // ARCHITECTURE FLOW
+            Signal Chain
           </Text>
 
           <HStack
             as="ol"
             wrap="wrap"
             vAlign="center"
-            gap={2}
+            gap={1.5}
             aria-label={`${project.title} system signal chain`}
             className="m-0 min-w-0 list-none p-0"
           >
@@ -233,7 +181,7 @@ function ProjectCard({
                 as="li"
                 key={node}
                 vAlign="center"
-                gap={2}
+                gap={1.5}
                 className="max-w-full min-w-0"
               >
                 <Text
@@ -241,7 +189,7 @@ function ProjectCard({
                   size="xsm"
                   textWrap="wrap"
                   wordBreak="break-word"
-                  className="rounded border border-hairline bg-surface px-2 py-1 font-mono text-xs leading-snug text-primary"
+                  className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-mono text-[11px] leading-snug text-primary/90"
                 >
                   {node}
                 </Text>
@@ -250,7 +198,7 @@ function ProjectCard({
                     type="code"
                     size="xsm"
                     aria-hidden="true"
-                    className="shrink-0 font-mono text-xs font-bold text-copper"
+                    className="shrink-0 font-mono text-xs text-copper/80"
                   >
                     →
                   </Text>
@@ -262,7 +210,7 @@ function ProjectCard({
 
         <VStack
           as="ul"
-          gap={3}
+          gap={2}
           aria-label={`${project.title} engineering details`}
           className="m-0 min-w-0 list-none p-0"
         >
@@ -278,15 +226,15 @@ function ProjectCard({
                 type="code"
                 size="xsm"
                 aria-hidden="true"
-                className="mt-1 shrink-0 font-mono text-xs text-copper"
+                className="mt-0.5 shrink-0 font-mono text-xs text-secondary/70"
               >
-                ▸
+                —
               </Text>
               <Text
                 type="body"
                 as="p"
                 color="secondary"
-                className="min-w-0 text-[0.9375rem] leading-[1.6] text-secondary"
+                className="min-w-0 text-[0.90625rem] leading-[1.6] text-secondary"
               >
                 {bullet}
               </Text>
@@ -296,57 +244,47 @@ function ProjectCard({
 
         <VStack
           gap={3}
-          className="mt-auto min-w-0 border-t border-hairline pt-4"
+          className="mt-auto min-w-0 border-t border-white/[0.06] pt-4"
         >
-          <HStack gap={2} vAlign="center" wrap="wrap" className="min-w-0">
-            <Text
-              type="code"
-              size="xsm"
-              className="shrink-0 font-mono text-[11px] font-semibold tracking-wider text-muted"
-            >
-              BUSES:
-            </Text>
-            <HStack
-              as="ul"
-              wrap="wrap"
-              gap={1.5}
-              aria-label={`${project.title} communication buses`}
-              className="m-0 min-w-0 list-none p-0"
-            >
-              {project.protocolIds.map((protocolId) => {
-                const protocol = protocolMap.get(protocolId);
-                const label = protocol ? protocol.name : protocolId.toUpperCase();
-                const isProtocolHighlighted = activeProtocol?.id === protocolId;
-
-                return (
-                  <HStack as="li" key={protocolId}>
-                    <Token
-                      label={label}
-                      size="sm"
-                      color={isProtocolHighlighted ? "yellow" : "cyan"}
-                      className="font-mono"
-                    />
-                  </HStack>
-                );
-              })}
-            </HStack>
-          </HStack>
-
           <HStack
             as="ul"
             wrap="wrap"
             gap={1.5}
-            aria-label={`${project.title} hardware and firmware tags`}
+            aria-label={`${project.title} buses and hardware stack`}
             className="m-0 min-w-0 list-none p-0"
           >
+            {project.protocolIds.map((protocolId) => {
+              const protocol = protocolMap.get(protocolId);
+              const label = protocol ? protocol.name : protocolId.toUpperCase();
+              const isProtocolHighlighted = activeProtocol?.id === protocolId;
+
+              return (
+                <HStack as="li" key={`bus-${protocolId}`}>
+                  <Text
+                    type="code"
+                    size="xsm"
+                    className={[
+                      "rounded-full border px-2.5 py-0.5 font-mono text-[11px] transition-colors",
+                      isProtocolHighlighted
+                        ? "border-[var(--border-active)] bg-[var(--accent-copper-subtle)] font-medium text-copper"
+                        : "border-white/15 bg-white/[0.05] text-primary",
+                    ].join(" ")}
+                  >
+                    {label}
+                  </Text>
+                </HStack>
+              );
+            })}
+
             {project.techTags.map((tag) => (
               <HStack as="li" key={tag}>
-                <Token
-                  label={tag}
-                  size="sm"
-                  color="default"
-                  className="font-mono"
-                />
+                <Text
+                  type="code"
+                  size="xsm"
+                  className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-0.5 font-mono text-[11px] text-secondary"
+                >
+                  {tag}
+                </Text>
               </HStack>
             ))}
           </HStack>
@@ -355,7 +293,7 @@ function ProjectCard({
             <HStack
               wrap="wrap"
               gap={2}
-              className="border-t border-hairline pt-3"
+              className="border-t border-white/[0.06] pt-3"
             >
               {actionLinks.map((action) => (
                 <Button
@@ -369,7 +307,7 @@ function ProjectCard({
                   size="sm"
                   icon={<Icon icon={action.icon} size="xsm" />}
                   endContent={<Icon icon={ExternalLink} size="xsm" />}
-                  className="font-mono text-xs"
+                  className="!rounded-full !border-white/12 !bg-white/[0.04] !font-mono !text-xs !text-primary hover:!border-white/25"
                 />
               ))}
             </HStack>
@@ -436,90 +374,37 @@ export function ProjectsFilterGrid({
     activeProtocol && isolateMatches ? matchingProjects : projects;
 
   return (
-    <VStack gap={5} className="min-w-0">
+    <VStack gap={6} className="min-w-0">
       <VStack
         gap={3}
+        hAlign="center"
         role="region"
-        aria-label="Project protocol filter status and quick controls"
-        className="min-w-0 rounded-xl border border-hairline bg-surface px-4 py-3.5 md:px-5"
+        aria-label="Project protocol filter controls"
+        className="min-w-0"
       >
-        <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
-          <HStack gap={2} vAlign="center" wrap="wrap" className="min-w-0">
-            <HStack gap={2} vAlign="center" className="min-w-0">
-              <StatusDot
-                variant={activeProtocol ? "accent" : "success"}
-                isPulsing={Boolean(activeProtocol)}
-                label={
-                  activeProtocol
-                    ? `Highlighting builds using ${activeProtocol.name}`
-                    : "All engineering projects active"
-                }
-              />
-              <Text
-                type="code"
-                size="xsm"
-                className="font-mono text-xs font-semibold tracking-wider text-bus"
-              >
-                {activeProtocol
-                  ? `BUS_MATCH // ${activeProtocol.name} (${activeProtocol.busType})`
-                  : `PROJECT_INDEX // ${String(projects.length).padStart(2, "0")} HARDWARE BUILDS`}
-              </Text>
-            </HStack>
-            <HStack gap={1.5} vAlign="center" className="min-w-0">
-              <Badge
-                variant={activeProtocol ? "yellow" : "neutral"}
-                label={matchingProjects.length}
-              />
-              <Text
-                type="supporting"
-                size="xsm"
-                color="secondary"
-                aria-live="polite"
-                className="font-mono text-xs text-secondary"
-              >
-                {activeProtocol
-                  ? `of ${projects.length} builds match (${matchingProjects.map((p) => p.id).join(", ")})`
-                  : "Select any bus to highlight matching hardware systems"}
-              </Text>
-            </HStack>
-          </HStack>
-
-          <HStack gap={2} vAlign="center" wrap="wrap">
-            {activeProtocol ? (
-              <ToggleButton
-                label="Show matches only"
-                isPressed={isolateMatches}
-                onPressedChange={setIsolateMatches}
-                size="sm"
-                icon={<Icon icon={isolateMatches ? Check : Eye} size="xsm" />}
-              >
-                Matches Only
-              </ToggleButton>
-            ) : null}
-            <Button
-              label="[All Protocols]"
-              variant={activeProtocol ? "secondary" : "primary"}
-              size="sm"
-              icon={
-                activeProtocol ? (
-                  <Icon icon={RotateCcw} size="xsm" />
-                ) : undefined
-              }
-              onClick={() => setActiveProtocolId(null)}
-              aria-pressed={activeProtocol === null}
-              className="font-mono text-xs"
-            />
-          </HStack>
-        </HStack>
-
         <HStack
           wrap="wrap"
           gap={1.5}
+          hAlign="center"
           vAlign="center"
           role="group"
           aria-label="Filter projects by communication bus"
-          className="min-w-0 border-t border-hairline pt-3"
+          className="max-w-full rounded-2xl border border-white/[0.08] bg-white/[0.025] p-1.5 sm:rounded-full"
         >
+          <Button
+            label="All Builds"
+            variant={activeProtocol === null ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setActiveProtocolId(null)}
+            aria-pressed={activeProtocol === null}
+            className={[
+              "!rounded-full !font-mono !text-xs transition-colors",
+              activeProtocol === null
+                ? "!bg-primary !text-canvas hover:!bg-copper"
+                : "!text-secondary hover:!bg-white/[0.06] hover:!text-primary",
+            ].join(" ")}
+          />
+
           {protocols.map((protocol) => {
             const isSelected = activeProtocol?.id === protocol.id;
 
@@ -531,11 +416,60 @@ export function ProjectsFilterGrid({
                 onPressedChange={() => toggleProtocol(protocol.id)}
                 size="sm"
                 icon={isSelected ? <Icon icon={Check} size="xsm" /> : undefined}
+                className={[
+                  "!rounded-full !font-mono !text-xs transition-colors",
+                  isSelected
+                    ? "!border-[var(--border-active)] !bg-[var(--accent-copper-subtle)] !text-copper"
+                    : "!border-transparent !bg-transparent !text-secondary hover:!bg-white/[0.06] hover:!text-primary",
+                ].join(" ")}
               >
                 {protocol.name}
               </ToggleButton>
             );
           })}
+        </HStack>
+
+        <HStack gap={3} vAlign="center" hAlign="center" wrap="wrap">
+          <HStack gap={1.5} vAlign="center">
+            <StatusDot
+              variant={activeProtocol ? "accent" : "success"}
+              isPulsing={Boolean(activeProtocol)}
+              label={
+                activeProtocol
+                  ? `Highlighting builds using ${activeProtocol.name}`
+                  : "All engineering projects visible"
+              }
+            />
+            <Text
+              type="supporting"
+              size="xsm"
+              color="secondary"
+              aria-live="polite"
+              className="font-mono text-xs text-secondary"
+            >
+              {activeProtocol
+                ? `${matchingProjects.length} of ${projects.length} builds use ${activeProtocol.name} (${matchingProjects.map((p) => p.id).join(", ")})`
+                : `Showing all ${projects.length} hardware & firmware builds`}
+            </Text>
+          </HStack>
+
+          {activeProtocol ? (
+            <ToggleButton
+              label="Show matches only"
+              isPressed={isolateMatches}
+              onPressedChange={setIsolateMatches}
+              size="sm"
+              icon={<Icon icon={isolateMatches ? Check : Eye} size="xsm" />}
+              className={[
+                "!rounded-full !font-mono !text-[11px] transition-colors",
+                isolateMatches
+                  ? "!border-[var(--border-active)] !bg-[var(--accent-copper-subtle)] !text-copper"
+                  : "!border-white/10 !bg-white/[0.03] !text-secondary hover:!border-white/20 hover:!text-primary",
+              ].join(" ")}
+            >
+              Matches only
+            </ToggleButton>
+          ) : null}
         </HStack>
       </VStack>
 

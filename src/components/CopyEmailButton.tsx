@@ -92,7 +92,7 @@ export function CopyEmailButton({ email }: CopyEmailButtonProps) {
           />
         }
         onClick={handleCopy}
-        className="font-mono text-xs"
+        className="!rounded-full !border-white/12 !bg-white/[0.04] !px-4 !font-mono !text-xs transition-colors hover:!border-white/25"
       >
         {isCopied ? (
           <Text

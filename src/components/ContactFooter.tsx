@@ -1,6 +1,5 @@
 import { Button } from "@astryxdesign/core/Button";
 import { Card } from "@astryxdesign/core/Card";
-import { Divider } from "@astryxdesign/core/Divider";
 import { Grid } from "@astryxdesign/core/Grid";
 import { Heading } from "@astryxdesign/core/Heading";
 import { HStack } from "@astryxdesign/core/HStack";
@@ -13,6 +12,7 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { CopyEmailButton } from "./CopyEmailButton";
+import { SectionHeader } from "./SectionHeader";
 
 export function ContactFooter() {
   return (
@@ -22,100 +22,71 @@ export function ContactFooter() {
       aria-labelledby="contact-heading"
       className="relative w-full"
     >
+      <HStack
+        aria-hidden="true"
+        className="mx-auto h-px w-full max-w-5xl bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
+      />
+
       <Section
         variant="transparent"
         padding={0}
         maxWidth={1152}
-        className="relative ms-auto me-auto w-full px-5 py-14 md:px-12 md:py-20"
+        className="relative ms-auto me-auto w-full px-5 pt-16 pb-12 md:px-12 md:pt-24 md:pb-14"
       >
-        <VStack gap={8} className="min-w-0">
+        <VStack gap={10} className="min-w-0">
+          <SectionHeader
+            headingId="contact-heading"
+            eyebrow="05 · Direct Channels"
+            icon="mail"
+            title="Get in Touch"
+            subtitle="Open to embedded hardware design, KiCad PCB layout, and Embedded C firmware engineering roles."
+          />
+
           <Card
             padding={0}
-            className="group relative w-full min-w-0 overflow-hidden rounded-xl border border-hairline bg-surface"
+            className="relative w-full min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
           >
-            <Text
-              type="code"
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/60"
-            >
-              +
-            </Text>
-            <Text
-              type="code"
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1.5 right-2 select-none font-mono text-[10px] leading-none text-muted/60"
-            >
-              +
-            </Text>
-            <Text
-              type="code"
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-1.5 left-2 select-none font-mono text-[10px] leading-none text-muted/60"
-            >
-              +
-            </Text>
-            <Text
-              type="code"
-              aria-hidden="true"
-              className="pointer-events-none absolute right-2 bottom-1.5 select-none font-mono text-[10px] leading-none text-muted/60"
-            >
-              +
-            </Text>
-
-            <HStack
-              hAlign="between"
-              vAlign="center"
-              gap={3}
-              wrap="wrap"
-              className="border-b border-hairline bg-elevated px-5 py-3.5 md:px-6"
-            >
-              <Text
-                type="code"
-                size="xsm"
-                className="font-mono text-xs font-semibold tracking-wider text-copper"
-              >
-                05 // INTERFACE &amp; CONTACT CHANNELS
-              </Text>
-              <HStack gap={2} vAlign="center">
-                <StatusDot
-                  variant="success"
-                  isPulsing
-                  label="Available for embedded hardware and firmware engineering roles"
-                />
-                <Text
-                  type="code"
-                  size="xsm"
-                  className="font-mono text-xs font-semibold tracking-wider text-signal"
-                >
-                  BUS_LINK: READY
-                </Text>
-              </HStack>
-            </HStack>
-
             <Grid
               gap={8}
-              align="start"
-              className="w-full grid-cols-1 p-5 md:p-8 lg:grid-cols-12"
+              align="center"
+              className="w-full grid-cols-1 p-6 md:p-8 lg:grid-cols-12"
             >
               <VStack gap={5} className="min-w-0 lg:col-span-6">
+                <HStack
+                  gap={2}
+                  vAlign="center"
+                  className="self-start rounded-full border border-white/10 bg-white/[0.03] px-3 py-1"
+                >
+                  <StatusDot
+                    variant="success"
+                    isPulsing
+                    label="Available for embedded hardware and firmware engineering roles"
+                  />
+                  <Text
+                    type="code"
+                    size="xsm"
+                    className="font-mono text-[11px] font-medium text-signal"
+                  >
+                    Open to Hardware &amp; Firmware Roles
+                  </Text>
+                </HStack>
+
                 <VStack gap={2} className="min-w-0">
                   <Heading
-                    id="contact-heading"
-                    level={2}
-                    className="font-display text-[clamp(1.5rem,3vw,2.125rem)] font-semibold leading-tight tracking-[-0.02em] text-primary"
+                    level={3}
+                    className="font-display text-xl font-semibold leading-snug text-primary md:text-2xl"
                   >
-                    Direct Engineering Contact
+                    {PROFILE_DATA.fullName}
                   </Heading>
                   <Text
                     type="body"
                     as="p"
                     color="secondary"
-                    className="max-w-[54ch] text-[0.96875rem] leading-[1.65] text-secondary md:text-base"
+                    className="max-w-[52ch] text-[0.9375rem] leading-[1.65] text-secondary"
                   >
                     {PROFILE_DATA.academicStatus} at {PROFILE_DATA.university} (
-                    {PROFILE_DATA.location}). Reach out regarding embedded
-                    hardware design, KiCad PCB layout, or Embedded C firmware
-                    opportunities.
+                    {PROFILE_DATA.location}). Reach out directly via email,
+                    phone, LinkedIn, or GitHub.
                   </Text>
                 </VStack>
 
@@ -127,7 +98,7 @@ export function ContactFooter() {
                     variant="primary"
                     size="md"
                     icon={<AppIcon name="mail" size="sm" />}
-                    className="font-mono text-xs"
+                    className="!rounded-full !bg-primary !px-5 !font-sans !text-sm !font-semibold !text-canvas shadow-[0_0_24px_rgba(241,245,249,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:!bg-copper"
                   />
 
                   <CopyEmailButton email={PROFILE_DATA.email} />
@@ -138,17 +109,17 @@ export function ContactFooter() {
                     as="a"
                     target="_blank"
                     rel="noopener noreferrer"
-                    variant="ghost"
+                    variant="secondary"
                     size="md"
                     icon={<AppIcon name="file-down" size="sm" />}
                     endContent={<AppIcon name="external-link" size="xsm" />}
-                    className="font-mono text-xs"
+                    className="!rounded-full !border-white/12 !bg-white/[0.04] !px-4 !font-mono !text-xs !text-primary transition-colors hover:!border-white/25"
                   />
                 </HStack>
               </VStack>
 
               <VStack className="min-w-0 lg:col-span-6">
-                <VStack className="min-w-0 overflow-hidden rounded-lg border border-hairline bg-elevated">
+                <VStack className="min-w-0 overflow-hidden rounded-xl border border-white/[0.07] bg-recessed shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
                   <List
                     hasDividers
                     density="balanced"
@@ -158,22 +129,22 @@ export function ContactFooter() {
                         hAlign="between"
                         vAlign="center"
                         gap={2}
-                        className="border-b border-hairline bg-surface px-4 py-2.5"
+                        className="border-b border-white/[0.06] px-4 py-2.5"
                       >
                         <Text
                           type="code"
                           size="xsm"
-                          className="font-mono text-xs font-semibold tracking-wider text-secondary"
+                          className="font-mono text-[11px] uppercase tracking-[0.12em] text-secondary"
                         >
-                          PINOUT_DIRECTORY // VERIFIED LINKS
+                          Verified Channels
                         </Text>
                         <Text
                           type="code"
                           size="xsm"
                           hasTabularNumbers
-                          className="font-mono text-xs text-secondary"
+                          className="font-mono text-[11px] text-secondary"
                         >
-                          04 Channels
+                          04 Links
                         </Text>
                       </HStack>
                     }
@@ -201,7 +172,7 @@ export function ContactFooter() {
                           color="secondary"
                           className="font-mono text-xs text-secondary"
                         >
-                          CH-01 // Direct Email (mailto)
+                          Direct Email
                         </Text>
                       }
                     />
@@ -210,7 +181,7 @@ export function ContactFooter() {
                       href={PROFILE_DATA.phoneHref}
                       align="center"
                       startContent={
-                        <AppIcon name="phone" size="sm" color="info" />
+                        <AppIcon name="phone" size="sm" color="primary" />
                       }
                       label={
                         <Text
@@ -229,7 +200,7 @@ export function ContactFooter() {
                           color="secondary"
                           className="font-mono text-xs text-secondary"
                         >
-                          CH-02 // Direct Telephone
+                          Telephone
                         </Text>
                       }
                     />
@@ -240,7 +211,7 @@ export function ContactFooter() {
                       rel="noopener noreferrer"
                       align="center"
                       startContent={
-                        <AppIcon name="users" size="sm" color="info" />
+                        <AppIcon name="users" size="sm" color="primary" />
                       }
                       label={
                         <Text
@@ -259,7 +230,7 @@ export function ContactFooter() {
                           color="secondary"
                           className="font-mono text-xs text-secondary"
                         >
-                          CH-03 // LinkedIn Profile
+                          LinkedIn
                         </Text>
                       }
                       endContent={
@@ -296,7 +267,7 @@ export function ContactFooter() {
                           color="secondary"
                           className="font-mono text-xs text-secondary"
                         >
-                          CH-04 // GitHub Repositories
+                          GitHub
                         </Text>
                       }
                       endContent={
@@ -313,20 +284,18 @@ export function ContactFooter() {
             </Grid>
           </Card>
 
-          <Divider variant="subtle" />
-
           <HStack
             hAlign="between"
             vAlign="center"
             wrap="wrap"
             gap={3}
-            className="min-w-0"
+            className="min-w-0 border-t border-white/[0.07] pt-6"
           >
-            <HStack gap={2} vAlign="center" wrap="wrap" className="min-w-0">
+            <HStack gap={3} vAlign="center" wrap="wrap" className="min-w-0">
               <Text
                 type="code"
                 size="xsm"
-                className="rounded border border-hairline bg-surface px-2 py-0.5 font-mono text-xs font-semibold text-copper"
+                className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5 font-mono text-xs font-semibold text-copper"
               >
                 [{PROFILE_DATA.monogram}]
               </Text>
@@ -355,9 +324,14 @@ export function ContactFooter() {
                 isStandalone
                 type="code"
                 size="xsm"
-                className="font-mono text-xs text-secondary transition-colors hover:text-copper"
+                className="font-mono text-xs text-secondary no-underline transition-colors hover:text-copper"
               >
-                Back to Top ↑
+                <HStack as="span" gap={1} vAlign="center">
+                  <Text type="inherit" color="inherit">
+                    Back to Top
+                  </Text>
+                  <AppIcon name="arrow-up" size="xsm" />
+                </HStack>
               </Link>
             </HStack>
           </HStack>

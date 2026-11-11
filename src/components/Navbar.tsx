@@ -1,7 +1,5 @@
-import { Button } from "@astryxdesign/core/Button";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Link } from "@astryxdesign/core/Link";
-import { StatusDot } from "@astryxdesign/core/StatusDot";
 import { Text } from "@astryxdesign/core/Text";
 import { PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
@@ -16,18 +14,16 @@ const NAV_ITEMS: readonly NavItem[] = [
 ];
 
 export function Navbar() {
-  const shortStatus = PROFILE_DATA.statusBanner.split(" · ")[0];
-
   return (
     <HStack
       as="header"
-      className="sticky top-0 z-40 w-full border-b border-hairline bg-[var(--bg-glass)] backdrop-blur-md"
+      className="pointer-events-none fixed inset-x-0 top-0 z-40 w-full px-4 pt-4 pb-1 md:px-6 md:pt-5"
     >
       <Link
         href="#main-content"
         color="accent"
         isStandalone
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:border focus:border-[var(--border-active)] focus:bg-elevated focus:px-3 focus:py-2 focus:font-mono focus:text-xs focus:text-copper"
+        className="pointer-events-auto sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:border focus:border-[var(--border-active)] focus:bg-elevated focus:px-3.5 focus:py-2 focus:font-mono focus:text-xs focus:text-copper"
       >
         Skip to main content
       </Link>
@@ -37,90 +33,79 @@ export function Navbar() {
         aria-label="Primary navigation"
         hAlign="between"
         vAlign="center"
-        gap={4}
-        className="mx-auto w-full max-w-6xl px-5 py-3.5 md:px-12"
+        gap={3}
+        className="frosted-glass-nav pointer-events-auto mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-5"
       >
-        <HStack gap={3} vAlign="center" className="min-w-0">
+        <HStack gap={3} vAlign="center" className="shrink-0">
+          <Link
+            href="#top"
+            label={`${PROFILE_DATA.fullName} — Back to top`}
+            isStandalone
+            display="block"
+            className="shrink-0 rounded-full no-underline focus-visible:outline-offset-2"
+          >
+            <HStack
+              as="span"
+              hAlign="center"
+              vAlign="center"
+              className="size-10 rounded-full bg-primary text-canvas shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-all duration-200 hover:scale-[1.03] hover:bg-copper"
+            >
+              <AppIcon name="cpu" size="md" color="inherit" />
+            </HStack>
+          </Link>
+
           <Link
             href="#top"
             color="primary"
             isStandalone
-            display="block"
-            className="shrink-0 no-underline"
+            className="frosted-glass-nav-link pr-1 font-display text-sm font-semibold tracking-tight text-primary no-underline lg:hidden"
           >
-            <HStack as="span" gap={2} vAlign="center">
-              <Text
-                type="code"
-                weight="semibold"
-                className="rounded border border-[var(--border-active)] bg-elevated px-2 py-0.5 font-mono text-xs tracking-wider text-copper"
-              >
-                [{PROFILE_DATA.monogram}]
-              </Text>
-              <Text
-                type="large"
-                weight="semibold"
+            {PROFILE_DATA.fullName}
+          </Link>
+        </HStack>
+
+        <HStack
+          as="ul"
+          gap={1}
+          vAlign="center"
+          className="m-0 hidden list-none p-0 lg:flex"
+        >
+          {NAV_ITEMS.map((item) => (
+            <HStack as="li" key={item.href}>
+              <Link
+                href={item.href}
                 color="primary"
-                className="font-display text-base font-semibold tracking-tight text-primary"
+                isStandalone
+                className="frosted-glass-nav-link rounded-full px-3.5 py-2 font-sans text-sm font-medium whitespace-nowrap text-primary/90 no-underline transition-colors duration-200 hover:bg-white/10 hover:text-primary focus-visible:outline-offset-2"
               >
-                {PROFILE_DATA.fullName}
+                {item.label}
+              </Link>
+            </HStack>
+          ))}
+        </HStack>
+
+        <HStack gap={2} vAlign="center" className="shrink-0">
+          <Link
+            href={`mailto:${PROFILE_DATA.email}`}
+            isStandalone
+            display="block"
+            className="hidden shrink-0 rounded-full no-underline focus-visible:outline-offset-2 md:block"
+          >
+            <HStack
+              as="span"
+              hAlign="center"
+              vAlign="center"
+              className="h-10 rounded-full bg-primary px-5 text-canvas shadow-[0_2px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:bg-copper"
+            >
+              <Text
+                type="inherit"
+                color="inherit"
+                className="font-sans text-sm font-medium tracking-[-0.01em] whitespace-nowrap"
+              >
+                {PROFILE_DATA.email}
               </Text>
             </HStack>
           </Link>
-
-          <HStack
-            gap={2}
-            vAlign="center"
-            className="hidden shrink-0 rounded-full border border-hairline bg-elevated px-3 py-1 xl:flex"
-          >
-            <StatusDot
-              variant="success"
-              isPulsing
-              label={PROFILE_DATA.statusBanner}
-            />
-            <Text
-              type="code"
-              size="xsm"
-              className="font-mono text-xs text-signal"
-            >
-              {shortStatus}
-            </Text>
-          </HStack>
-        </HStack>
-
-        <HStack gap={5} vAlign="center" className="shrink-0">
-          <HStack
-            as="ul"
-            gap={5}
-            vAlign="center"
-            className="m-0 hidden list-none p-0 lg:flex"
-          >
-            {NAV_ITEMS.map((item) => (
-              <HStack as="li" key={item.href}>
-                <Link
-                  href={item.href}
-                  color="secondary"
-                  isStandalone
-                  className="whitespace-nowrap font-sans text-sm font-medium text-secondary transition-colors hover:text-copper"
-                >
-                  {item.label}
-                </Link>
-              </HStack>
-            ))}
-          </HStack>
-
-          <HStack className="hidden md:flex">
-            <Button
-              label="Resume PDF"
-              href={PROFILE_DATA.resumePdfUrl}
-              as="a"
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="primary"
-              size="sm"
-              icon={<AppIcon name="file-down" size="sm" />}
-              className="font-mono text-xs"
-            />
-          </HStack>
 
           <HStack className="lg:hidden">
             <MobileNavDrawer

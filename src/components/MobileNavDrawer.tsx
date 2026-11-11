@@ -50,6 +50,7 @@ export function MobileNavDrawer({
         aria-expanded={isOpen}
         aria-controls="mobile-nav-drawer"
         onClick={() => setIsOpen((prev) => !prev)}
+        className="!size-10 !rounded-full !border !border-white/20 !bg-white/10 !text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] transition-colors hover:!bg-white/20 focus-visible:outline-offset-2"
       />
 
       <Drawer
@@ -59,7 +60,7 @@ export function MobileNavDrawer({
         label="Mobile section navigation"
         side="end"
         width={320}
-        className="border-l border-hairline"
+        className="frosted-glass-drawer"
       >
         <Layout
           header={
