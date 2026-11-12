@@ -31,8 +31,8 @@ const ENTRY_STAR_DELAY_SEC = 0.08;
 const ENTRY_STAR_DURATION_SEC = 1.25;
 const HAND_ENTRY_OFFSET_COL = 76;
 const HAND_ENTRY_OFFSET_ROW = 9;
-const HAND_SCROLL_OFFSET_COL = 84;
-const HAND_SCROLL_OFFSET_ROW = 10;
+const HAND_SCROLL_OFFSET_COL = 34;
+const HAND_SCROLL_OFFSET_ROW = 4;
 
 function clamp01(value: number): number {
   return value < 0 ? 0 : value > 1 ? 1 : value;
@@ -296,9 +296,9 @@ function drawFingertipBridges(
 ) {
   const { cellSize, sparkCenterCol, sparkCenterRow } = HERO_ASCII_GRID;
 
-  // Bridges ignite as hands near center and dissolve into sparks when scrolled down
+  // Bridges ignite as hands near center and dissolve gradually as you scroll
   const entryReveal = smoothstep(clamp01((entryProgress - 0.55) / 0.4));
-  const scrollDisconnect = clamp01(scrollProgress / 0.48);
+  const scrollDisconnect = clamp01(scrollProgress / 0.85);
   const visibility = entryReveal * (1 - smoothstep(scrollDisconnect));
   if (visibility <= 0.02) return;
 
@@ -655,7 +655,7 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
     const computeTargetScroll = () => {
       const section = container.closest("section") ?? container;
       const rect = section.getBoundingClientRect();
-      const scrollRange = Math.max(200, Math.min(350, rect.height * 0.44));
+      const scrollRange = Math.max(720, rect.height * 1.15);
       const scrolledPastTop = Math.max(0, -rect.top);
       return clamp01(scrolledPastTop / scrollRange);
     };
@@ -833,8 +833,8 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
       const dtSec = Math.min(0.1, Math.max(0.001, (nowMs - prevMs) / 1000));
       prevMs = nowMs;
 
-      // Smooth frame-rate-independent damping for scroll-linked scrubbing
-      const lerpAlpha = 1 - Math.exp(-dtSec * 14);
+      // Weighted, ultra-smooth inertia for slow immersive scroll scrubbing
+      const lerpAlpha = 1 - Math.exp(-dtSec * 3.6);
       smoothScroll += (targetScroll - smoothScroll) * lerpAlpha;
       if (Math.abs(targetScroll - smoothScroll) < 0.0005) {
         smoothScroll = targetScroll;

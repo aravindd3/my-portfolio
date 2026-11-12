@@ -1,4 +1,5 @@
 import { VStack } from "@astryxdesign/core/VStack";
+import { BackgroundAsciiField } from "@/components/BackgroundAsciiField";
 import { ContactFooter } from "@/components/ContactFooter";
 import { EducationAndCerts } from "@/components/EducationAndCerts";
 import { ExperienceTimeline } from "@/components/ExperienceTimeline";
@@ -11,8 +12,9 @@ import { ProjectsShowcase } from "@/components/ProjectsShowcase";
 export default function Home() {
   return (
     <>
+      <BackgroundAsciiField />
       <Navbar />
-      <VStack as="main" id="main-content" className="w-full flex-1">
+      <VStack as="main" id="main-content" className="relative z-10 w-full flex-1">
         <HeroSection />
         <PortfolioWorkspace>
           <HardwareSpecsMatrix />

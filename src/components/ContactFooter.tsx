@@ -20,7 +20,7 @@ export function ContactFooter() {
       as="footer"
       id="contact"
       aria-labelledby="contact-heading"
-      className="relative w-full"
+      className="relative z-10 w-full"
     >
       <HStack
         aria-hidden="true"

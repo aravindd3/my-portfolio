@@ -1,9 +1,10 @@
 import { HStack } from "@astryxdesign/core/HStack";
 import { Link } from "@astryxdesign/core/Link";
-import { Text } from "@astryxdesign/core/Text";
 import { PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { MobileNavDrawer, type NavItem } from "./MobileNavDrawer";
+import { NavbarAsciiName } from "./NavbarAsciiName";
+import { NavbarLinks } from "./NavbarLinks";
 
 const NAV_ITEMS: readonly NavItem[] = [
   { label: "Capabilities", href: "#capabilities" },
@@ -48,7 +49,7 @@ export function Navbar() {
               as="span"
               gap={2}
               vAlign="center"
-              className="rounded-full border border-white/12 bg-white/[0.045] p-0.5 pr-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-all duration-200 group-hover:border-[var(--border-active)] group-hover:bg-white/[0.08]"
+              className="rounded-full border border-white/12 bg-white/[0.045] p-0.5 pr-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-all duration-200 group-hover:border-[var(--border-active)] group-hover:bg-white/[0.08]"
             >
               <HStack
                 as="span"
@@ -59,20 +60,7 @@ export function Navbar() {
                 <AppIcon name="cpu" size="sm" color="inherit" />
               </HStack>
 
-              <HStack as="span" gap={1.5} vAlign="center">
-                <Text
-                  type="inherit"
-                  color="primary"
-                  className="frosted-glass-nav-link font-brand text-[15px] font-bold tracking-[-0.025em] whitespace-nowrap text-primary"
-                >
-                  {PROFILE_DATA.fullName}
-                </Text>
-                <HStack
-                  as="span"
-                  aria-hidden="true"
-                  className="size-1.5 rounded-full bg-copper shadow-[0_0_8px_var(--accent-copper)]"
-                />
-              </HStack>
+              <NavbarAsciiName name={PROFILE_DATA.fullName} />
             </HStack>
           </Link>
         </HStack>
@@ -83,25 +71,7 @@ export function Navbar() {
           className="hidden h-5 w-px bg-white/15 lg:flex"
         />
 
-        <HStack
-          as="ul"
-          gap={1}
-          vAlign="center"
-          className="m-0 hidden list-none p-0 lg:flex"
-        >
-          {NAV_ITEMS.map((item) => (
-            <HStack as="li" key={item.href}>
-              <Link
-                href={item.href}
-                color="primary"
-                isStandalone
-                className="frosted-glass-nav-link rounded-full px-3.5 py-2 font-sans text-sm font-medium whitespace-nowrap text-primary/90 no-underline transition-colors duration-200 hover:bg-white/10 hover:text-primary focus-visible:outline-offset-2"
-              >
-                {item.label}
-              </Link>
-            </HStack>
-          ))}
-        </HStack>
+        <NavbarLinks items={NAV_ITEMS} />
 
         <HStack className="shrink-0 lg:hidden">
           <MobileNavDrawer

@@ -16,7 +16,7 @@ export function HeroSection() {
       id="top"
       aria-labelledby="hero-name"
       vAlign="between"
-      className="relative w-full overflow-hidden bg-[radial-gradient(ellipse_80%_65%_at_50%_52%,rgba(20,28,42,0.48)_0%,rgba(6,9,13,0.95)_64%,#06090D_100%)] lg:h-svh lg:min-h-[680px]"
+      className="relative w-full overflow-hidden bg-[radial-gradient(ellipse_75%_60%_at_50%_52%,rgba(20,28,42,0.34)_0%,rgba(6,9,13,0.16)_62%,transparent_100%)] lg:h-svh lg:min-h-[680px]"
     >
       {/* Top Centered Editorial Copy Stack */}
       <Section
@@ -165,12 +165,12 @@ export function HeroSection() {
         <HeroAsciiHands altText={HERO_EDITORIAL_DATA.asciiArtAlt} />
       </VStack>
 
-      {/* Atmospheric Transition Gradient Zone to Next Section */}
+      {/* Subtle Transition Hairline Zone to Next Section */}
       <VStack
         aria-hidden="true"
         vAlign="end"
         hAlign="center"
-        className="pointer-events-none relative z-10 -mt-12 h-20 w-full bg-gradient-to-b from-transparent via-[rgba(6,9,13,0.75)] to-[#06090D] pb-4 lg:-mt-20 lg:h-28 lg:pb-5"
+        className="pointer-events-none relative z-10 -mt-12 h-20 w-full bg-gradient-to-b from-transparent to-[rgba(6,9,13,0.35)] pb-4 lg:-mt-20 lg:h-28 lg:pb-5"
       >
         <HStack gap={3} vAlign="center" className="opacity-60">
           <HStack
