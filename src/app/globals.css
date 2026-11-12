@@ -120,6 +120,25 @@ body {
   transform-origin: top;
 }
 
+@keyframes dynamicArrowSlide {
+  0% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+}
+
+.animate-dynamic-arrow {
+  animation: dynamicArrowSlide 1.8s ease-in-out infinite;
+}
+
 @layer components {
   /* Frosted Glass Floating Navigation Capsule (Figr Glassmorphism Pillars) */
   .frosted-glass-nav {

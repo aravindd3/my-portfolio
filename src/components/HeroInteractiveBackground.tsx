@@ -9,9 +9,7 @@ interface CircuitNode {
   vy: number;
   radius: number;
   color: string;
-  glowColor: string;
   baseAlpha: number;
-  pulsePhase: number;
 }
 
 interface SignalPacket {
@@ -19,19 +17,17 @@ interface SignalPacket {
   toNode: number;
   progress: number;
   speed: number;
-  color: string;
 }
 
-const NODE_COLORS = [
-  { fill: "#38BDF8", glow: "rgba(56, 189, 248, 0.45)" }, // Starlight Cyan
-  { fill: "#E5A93C", glow: "rgba(229, 169, 60, 0.45)" }, // Hardware Copper
-  { fill: "#F8FAFC", glow: "rgba(248, 250, 252, 0.35)" }, // Pure Silver White
-  { fill: "#10B981", glow: "rgba(16, 185, 129, 0.40)" }, // Signal Green
+const NODE_PALETTE = [
+  "rgba(229, 169, 60, 0.45)", // Hardware Copper
+  "rgba(148, 163, 184, 0.35)", // Slate
+  "rgba(56, 189, 248, 0.32)", // Muted Cyan
 ];
 
-const GRID_SPACING = 38;
-const MAX_CONNECTION_DIST = 115;
-const MOUSE_INFLUENCE_DIST = 175;
+const GRID_SPACING = 52;
+const MAX_CONNECTION_DIST = 92;
+const MOUSE_RADIUS = 150;
 
 export function HeroInteractiveBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -53,7 +49,7 @@ export function HeroInteractiveBackground() {
     let prevMs = performance.now();
     let isVisible = true;
 
-    // Mouse coordinates with smooth interpolation
+    // Smooth mouse coordinates
     let targetMouseX = -9999;
     let targetMouseY = -9999;
     let currentMouseX = -9999;
@@ -64,13 +60,14 @@ export function HeroInteractiveBackground() {
     let packetTimer = 0;
 
     const buildNodes = (w: number, h: number) => {
-      const count = Math.max(32, Math.min(68, Math.floor((w * h) / 18000)));
+      // Subdued density: 24 to 38 nodes max across the entire canvas
+      const count = Math.max(20, Math.min(36, Math.floor((w * h) / 32000)));
       const next: CircuitNode[] = [];
 
       for (let i = 0; i < count; i++) {
-        const colorSet =
-          NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)];
-        const speed = 0.25 + Math.random() * 0.45;
+        const color =
+          NODE_PALETTE[Math.floor(Math.random() * NODE_PALETTE.length)];
+        const speed = 0.12 + Math.random() * 0.22;
         const angle = Math.random() * Math.PI * 2;
 
         next.push({
@@ -78,11 +75,9 @@ export function HeroInteractiveBackground() {
           y: Math.random() * h,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          radius: 1.2 + Math.random() * 1.4,
-          color: colorSet.fill,
-          glowColor: colorSet.glow,
-          baseAlpha: 0.35 + Math.random() * 0.4,
-          pulsePhase: Math.random() * Math.PI * 2,
+          radius: 0.85 + Math.random() * 0.55,
+          color,
+          baseAlpha: 0.18 + Math.random() * 0.2,
         });
       }
 
@@ -118,7 +113,6 @@ export function HeroInteractiveBackground() {
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave, { passive: true });
 
-    // IntersectionObserver to pause when not in view
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -129,17 +123,15 @@ export function HeroInteractiveBackground() {
     );
     observer.observe(canvas);
 
-    // Spawn telemetry pulse packets along active connections
     const maybeSpawnPacket = (connections: [number, number][]) => {
-      if (connections.length === 0 || packets.length > 12) return;
+      if (connections.length === 0 || packets.length > 3) return;
       const [from, to] =
         connections[Math.floor(Math.random() * connections.length)];
       packets.push({
         fromNode: from,
         toNode: to,
         progress: 0,
-        speed: 0.9 + Math.random() * 1.1,
-        color: Math.random() < 0.6 ? "#E5A93C" : "#38BDF8",
+        speed: 0.5 + Math.random() * 0.6,
       });
     };
 
@@ -152,14 +144,14 @@ export function HeroInteractiveBackground() {
       const dt = Math.min((nowMs - prevMs) / 1000, 0.1);
       prevMs = nowMs;
 
-      // Smooth mouse lerp
+      // Smooth mouse easing
       if (targetMouseX > -5000) {
         if (currentMouseX < -5000) {
           currentMouseX = targetMouseX;
           currentMouseY = targetMouseY;
         } else {
-          currentMouseX += (targetMouseX - currentMouseX) * 0.12;
-          currentMouseY += (targetMouseY - currentMouseY) * 0.12;
+          currentMouseX += (targetMouseX - currentMouseX) * 0.08;
+          currentMouseY += (targetMouseY - currentMouseY) * 0.08;
         }
       } else {
         currentMouseX = -9999;
@@ -170,10 +162,10 @@ export function HeroInteractiveBackground() {
       ctx.clearRect(0, 0, width, height);
 
       // -----------------------------------------------------------------------
-      // 1. Interactive Cursor Ambient Spotlight Glow
+      // 1. Whisper-Quiet Ambient Spotlight (Non-flashy, dark warmth)
       // -----------------------------------------------------------------------
       if (currentMouseX > 0 && currentMouseY > 0) {
-        const spotRadius = Math.min(width, height) * 0.48;
+        const spotRadius = Math.min(width, height) * 0.38;
         const spot = ctx.createRadialGradient(
           currentMouseX,
           currentMouseY,
@@ -182,42 +174,41 @@ export function HeroInteractiveBackground() {
           currentMouseY,
           spotRadius,
         );
-        spot.addColorStop(0, "rgba(229, 169, 60, 0.085)"); // Subtle copper core
-        spot.addColorStop(0.35, "rgba(56, 189, 248, 0.045)"); // Starlight cyan mid
-        spot.addColorStop(0.7, "rgba(15, 23, 42, 0.02)");
-        spot.addColorStop(1, "rgba(0, 0, 0, 0)");
+        spot.addColorStop(0, "rgba(229, 169, 60, 0.038)"); // Extremely faint copper warmth
+        spot.addColorStop(0.5, "rgba(20, 28, 42, 0.02)");
+        spot.addColorStop(1, "rgba(2, 3, 6, 0)");
 
         ctx.fillStyle = spot;
         ctx.fillRect(0, 0, width, height);
       }
 
       // -----------------------------------------------------------------------
-      // 2. Hardware CAD Blueprint Dot Grid (revealed near cursor & subtle elsewhere)
+      // 2. Etched CAD Blueprint Dot Grid (Faint, high-precision dark matrix)
       // -----------------------------------------------------------------------
       const startX = (width % GRID_SPACING) / 2;
       const startY = (height % GRID_SPACING) / 2;
 
       for (let gx = startX; gx < width; gx += GRID_SPACING) {
         for (let gy = startY; gy < height; gy += GRID_SPACING) {
-          let alpha = 0.08;
+          let alpha = 0.022;
 
           if (currentMouseX > 0) {
             const dx = gx - currentMouseX;
             const dy = gy - currentMouseY;
             const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < MOUSE_INFLUENCE_DIST * 1.5) {
-              const boost = 1 - d / (MOUSE_INFLUENCE_DIST * 1.5);
-              alpha += boost * 0.22;
+            if (d < MOUSE_RADIUS * 1.2) {
+              const boost = 1 - d / (MOUSE_RADIUS * 1.2);
+              alpha += boost * 0.045;
             }
           }
 
-          ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-          ctx.fillRect(gx - 0.75, gy - 0.75, 1.5, 1.5);
+          ctx.fillStyle = `rgba(148, 163, 184, ${alpha})`;
+          ctx.fillRect(gx - 0.5, gy - 0.5, 1, 1);
         }
       }
 
       // -----------------------------------------------------------------------
-      // 3. Update Nodes & Calculate Circuit Bus Connections
+      // 3. Update Nodes & Render Subtle PCB Trace Lines
       // -----------------------------------------------------------------------
       const activeConnections: [number, number][] = [];
 
@@ -243,20 +234,20 @@ export function HeroInteractiveBackground() {
             n.vy *= -1;
           }
 
-          // Subtle gentle magnetic repulsion if mouse gets too close
+          // Gentle magnetic drift away from cursor
           if (currentMouseX > 0) {
             const mdx = n.x - currentMouseX;
             const mdy = n.y - currentMouseY;
             const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-            if (mdist < 80 && mdist > 2) {
-              const force = (1 - mdist / 80) * 0.45;
+            if (mdist < 70 && mdist > 2) {
+              const force = (1 - mdist / 70) * 0.25;
               n.x += (mdx / mdist) * force;
               n.y += (mdy / mdist) * force;
             }
           }
         }
 
-        // Draw node-to-node circuit traces
+        // Draw subtle node-to-node circuit traces
         for (let j = i + 1; j < nodes.length; j++) {
           const m = nodes[j];
           const dx = n.x - m.x;
@@ -265,9 +256,8 @@ export function HeroInteractiveBackground() {
 
           if (dist < MAX_CONNECTION_DIST) {
             activeConnections.push([i, j]);
-            let connAlpha = (1 - dist / MAX_CONNECTION_DIST) * 0.22;
+            let connAlpha = (1 - dist / MAX_CONNECTION_DIST) * 0.12;
 
-            // Brighten if near cursor
             if (currentMouseX > 0) {
               const midX = (n.x + m.x) / 2;
               const midY = (n.y + m.y) / 2;
@@ -275,45 +265,27 @@ export function HeroInteractiveBackground() {
                 midX - currentMouseX,
                 midY - currentMouseY,
               );
-              if (cursorDist < MOUSE_INFLUENCE_DIST) {
-                connAlpha +=
-                  (1 - cursorDist / MOUSE_INFLUENCE_DIST) * 0.42;
+              if (cursorDist < MOUSE_RADIUS) {
+                connAlpha += (1 - cursorDist / MOUSE_RADIUS) * 0.08;
               }
             }
 
             ctx.beginPath();
             ctx.moveTo(n.x, n.y);
             ctx.lineTo(m.x, m.y);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(connAlpha, 0.7)})`;
-            ctx.lineWidth = 0.75;
-            ctx.stroke();
-          }
-        }
-
-        // Connect nodes directly to cursor if within range
-        if (currentMouseX > 0) {
-          const mdx = n.x - currentMouseX;
-          const mdy = n.y - currentMouseY;
-          const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-
-          if (mdist < MOUSE_INFLUENCE_DIST) {
-            const cursorAlpha = (1 - mdist / MOUSE_INFLUENCE_DIST) * 0.48;
-            ctx.beginPath();
-            ctx.moveTo(n.x, n.y);
-            ctx.lineTo(currentMouseX, currentMouseY);
-            ctx.strokeStyle = `rgba(229, 169, 60, ${cursorAlpha})`;
-            ctx.lineWidth = 0.9;
+            ctx.strokeStyle = `rgba(148, 163, 184, ${Math.min(connAlpha, 0.16)})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
 
       // -----------------------------------------------------------------------
-      // 4. Signal Pulse Packets traveling on traces (Telemetry Simulation)
+      // 4. Sparse Micro Signal Packets
       // -----------------------------------------------------------------------
       if (!prefersReducedMotion) {
         packetTimer += dt;
-        if (packetTimer > 0.45) {
+        if (packetTimer > 2.2) {
           packetTimer = 0;
           maybeSpawnPacket(activeConnections);
         }
@@ -333,38 +305,31 @@ export function HeroInteractiveBackground() {
           const py = from.y + (to.y - from.y) * p.progress;
 
           ctx.beginPath();
-          ctx.arc(px, py, 1.8, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 6;
+          ctx.arc(px, py, 1.1, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(229, 169, 60, 0.55)";
           ctx.fill();
-          ctx.shadowBlur = 0;
         }
       }
 
       // -----------------------------------------------------------------------
-      // 5. Render Circuit Nodes (Dots with subtle glow)
+      // 5. Render Circuit Nodes (Delicate micro-vias)
       // -----------------------------------------------------------------------
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
         let alpha = n.baseAlpha;
 
-        // Brighten node when near mouse
         if (currentMouseX > 0) {
           const d = Math.hypot(n.x - currentMouseX, n.y - currentMouseY);
-          if (d < MOUSE_INFLUENCE_DIST) {
-            alpha += (1 - d / MOUSE_INFLUENCE_DIST) * 0.55;
+          if (d < MOUSE_RADIUS) {
+            alpha += (1 - d / MOUSE_RADIUS) * 0.25;
           }
         }
 
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fillStyle = n.color;
-        ctx.globalAlpha = Math.min(alpha, 1);
-        ctx.shadowColor = n.glowColor;
-        ctx.shadowBlur = 8;
+        ctx.globalAlpha = Math.min(alpha, 0.55);
         ctx.fill();
-        ctx.shadowBlur = 0;
         ctx.globalAlpha = 1;
       }
 
@@ -389,6 +354,12 @@ export function HeroInteractiveBackground() {
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none"
+      style={{
+        maskImage:
+          "radial-gradient(ellipse 85% 80% at 50% 50%, black 50%, transparent 100%)",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 85% 80% at 50% 50%, black 50%, transparent 100%)",
+      }}
     >
       <canvas ref={canvasRef} className="h-full w-full block" />
     </div>

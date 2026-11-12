@@ -182,20 +182,49 @@ export function HeroIntroSlide() {
           </Link>
         </HStack>
 
-        {/* Minimalist Scroll Cue below Link Pills */}
+        {/* Minimalist Scroll Cue below Link Pills with Dynamic Arrow Animation */}
         <Link
           href="#hero-technical"
           isStandalone
           aria-label="Scroll down to technical overview"
-          className="group flex items-center gap-1.5 font-mono text-[10px] sm:text-[11px] tracking-[0.26em] uppercase text-muted transition-colors duration-200 hover:text-copper focus-visible:outline-offset-4"
+          className="group flex flex-col items-center gap-1.5 no-underline pt-1 transition-all duration-300 focus-visible:outline-offset-4"
         >
-          <span>{HERO_EDITORIAL_DATA.introScrollCta}</span>
-          <AppIcon
-            name="chevron-down"
-            size="xsm"
-            color="inherit"
-            className="transition-transform duration-300 group-hover:translate-y-1 animate-pulse"
-          />
+          <HStack
+            gap={3}
+            vAlign="center"
+            className="text-secondary/70 transition-colors duration-300 group-hover:text-copper"
+          >
+            <HStack
+              as="span"
+              className="h-px w-6 sm:w-8 bg-gradient-to-r from-transparent to-white/20 transition-all duration-300 group-hover:to-copper/50"
+            />
+            <Text
+              type="code"
+              size="xsm"
+              className="font-mono text-[10px] sm:text-[11px] font-semibold tracking-[0.28em] uppercase text-inherit"
+            >
+              {HERO_EDITORIAL_DATA.introScrollCta}
+            </Text>
+            <HStack
+              as="span"
+              className="h-px w-6 sm:w-8 bg-gradient-to-l from-transparent to-white/20 transition-all duration-300 group-hover:to-copper/50"
+            />
+          </HStack>
+
+          {/* Dynamic Gliding Arrow */}
+          <HStack
+            as="span"
+            hAlign="center"
+            vAlign="center"
+            className="text-secondary/60 transition-colors duration-300 group-hover:text-copper"
+          >
+            <AppIcon
+              name="chevron-down"
+              size="sm"
+              color="inherit"
+              className="animate-dynamic-arrow"
+            />
+          </HStack>
         </Link>
       </VStack>
     </VStack>
