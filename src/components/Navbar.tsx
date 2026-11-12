@@ -35,9 +35,13 @@ export function Navbar() {
         hAlign="between"
         vAlign="center"
         gap={3}
-        className="frosted-glass-nav pointer-events-auto mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-4 lg:pr-2.5"
+        className="frosted-glass-nav pointer-events-auto relative mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-4 lg:pr-2.5"
       >
-        <HStack gap={2} vAlign="center" className="shrink-0 pl-1">
+        <HStack
+          gap={2}
+          vAlign="center"
+          className="w-full justify-center pl-1 sm:w-auto sm:justify-start"
+        >
           <Link
             href="#top"
             label={`${PROFILE_DATA.fullName} — Back to top`}
@@ -73,7 +77,7 @@ export function Navbar() {
 
         <NavbarLinks items={NAV_ITEMS} />
 
-        <HStack className="shrink-0 lg:hidden">
+        <HStack className="absolute right-1.5 shrink-0 lg:static lg:hidden">
           <MobileNavDrawer
             items={NAV_ITEMS}
             fullName={PROFILE_DATA.fullName}

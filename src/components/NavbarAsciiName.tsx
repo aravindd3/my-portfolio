@@ -19,7 +19,6 @@ interface TargetDot {
   readonly v: number;
   readonly intensity: number;
   readonly seed: number;
-  readonly isBlueBase: boolean;
 }
 
 interface FlowingParticle {
@@ -29,7 +28,6 @@ interface FlowingParticle {
   amp: number;
   freq: number;
   phase: number;
-  isBlue: boolean;
   glyph: "." | "·" | ":";
   targetIdx: number;
 }
@@ -46,10 +44,6 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
     let dots: TargetDot[] = [];
@@ -107,15 +101,8 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
           const alpha = img[(py * offscreen.width + px) * 4 + 3] / 255;
           if (alpha > 0.25) {
             const seed = ((Math.round(x * 13) + Math.round(y * 31)) % 97) / 97;
-            const isBlueBase = seed > 0.5;
-            const startX = prefersReducedMotion
-              ? x
-              : isBlueBase
-                ? x - 26 - seed * 24
-                : x + 26 + seed * 24;
-            const startY = prefersReducedMotion
-              ? y
-              : LOGICAL_H * 0.5 + (seed - 0.5) * 24;
+            const startX = seed > 0.5 ? x - 22 - seed * 18 : x + 22 + seed * 18;
+            const startY = LOGICAL_H * 0.5 + (seed - 0.5) * 18;
 
             sampled.push({
               tx: x,
@@ -128,7 +115,6 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
               v: y / LOGICAL_H,
               intensity: Math.min(1, alpha * 1.15),
               seed,
-              isBlueBase,
             });
           }
         }
@@ -139,15 +125,14 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
       const streamCount = 26;
       const nextStreams: FlowingParticle[] = [];
       for (let i = 0; i < streamCount; i++) {
-        const isBlue = i % 2 === 0;
+        const dir = i % 2 === 0 ? 1 : -1;
         nextStreams.push({
           u: i / streamCount,
           speed: 0.16 + (i % 5) * 0.035,
-          dir: isBlue ? 1 : -1,
-          amp: 4 + (i % 4) * 2.1,
+          dir,
+          amp: 3.5 + (i % 4) * 1.8,
           freq: 2.1 + (i % 3) * 0.45,
           phase: (i * 0.9) % (Math.PI * 2),
-          isBlue,
           glyph: i % 3 === 0 ? "·" : i % 3 === 1 ? "." : ":",
           targetIdx:
             sampled.length > 0 ? Math.floor((i * 17) % sampled.length) : 0,
@@ -160,10 +145,11 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
 
-      const t = prefersReducedMotion ? 0 : elapsedSec;
+      const t = elapsedSec;
       const cyclePos = ((t * 0.19) % 1.45) - 0.22;
 
-      if (!prefersReducedMotion && dots.length > 0) {
+      // 1. Draw continuous free-flowing pure-white micro-ASCII dots streaming into letterforms
+      if (dots.length > 0) {
         ctx.font = '600 8px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -192,73 +178,49 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
           const px = waveX * (1 - pull) + target.tx * pull;
           const py = waveY * (1 - pull) + target.ty * pull;
 
-          ctx.globalAlpha = 0.25 + progressToCenter * 0.55;
-          ctx.fillStyle = p.isBlue ? "#38BDF8" : "#E5A93C";
+          // Pure white flowing dots with variable transparency
+          ctx.globalAlpha = 0.20 + progressToCenter * 0.50;
+          ctx.fillStyle = "#FFFFFF";
           ctx.fillText(p.glyph, px, py);
         }
       }
 
+      // 2. Spring physics + smooth coalescence of the letter dots in pure white
       for (const dot of dots) {
-        if (!prefersReducedMotion) {
-          const distFromSweep = Math.abs(dot.u - cyclePos);
-          const sweepLift =
-            distFromSweep < 0.14
-              ? Math.cos((distFromSweep / 0.14) * Math.PI * 0.5)
-              : 0;
+        const distFromSweep = Math.abs(dot.u - cyclePos);
+        const sweepLift =
+          distFromSweep < 0.14
+            ? Math.cos((distFromSweep / 0.14) * Math.PI * 0.5)
+            : 0;
 
-          const driftX =
-            sweepLift *
-            (dot.isBlueBase ? -3.2 : 3.2) *
-            Math.sin(t * 4 + dot.seed * 6);
-          const driftY =
-            sweepLift * (dot.seed - 0.5) * 7.5 +
-            Math.sin(t * 1.8 + dot.u * 5.0 + dot.seed * 3.0) * 0.22;
+        const driftX =
+          sweepLift *
+          (dot.seed > 0.5 ? -2.8 : 2.8) *
+          Math.sin(t * 4 + dot.seed * 6);
+        const driftY =
+          sweepLift * (dot.seed - 0.5) * 6.5 +
+          Math.sin(t * 1.8 + dot.u * 5.0 + dot.seed * 3.0) * 0.22;
 
-          const goalX = dot.tx + driftX;
-          const goalY = dot.ty + driftY;
+        const goalX = dot.tx + driftX;
+        const goalY = dot.ty + driftY;
 
-          const stiffness = 62;
-          const damping = 12;
-          const ax = (goalX - dot.x) * stiffness - dot.vx * damping;
-          const ay = (goalY - dot.y) * stiffness - dot.vy * damping;
+        const stiffness = 65;
+        const damping = 12.5;
+        const ax = (goalX - dot.x) * stiffness - dot.vx * damping;
+        const ay = (goalY - dot.y) * stiffness - dot.vy * damping;
 
-          dot.vx += ax * dtSec;
-          dot.vy += ay * dtSec;
-          dot.x += dot.vx * dtSec;
-          dot.y += dot.vy * dtSec;
-        }
+        dot.vx += ax * dtSec;
+        dot.vy += ay * dtSec;
+        dot.x += dot.vx * dtSec;
+        dot.y += dot.vy * dtSec;
 
-        const phase = dot.u * Math.PI * 2.2 - t * 1.75;
-        const waveBlueY = 0.5 + 0.3 * Math.sin(phase);
-        const waveYellowY = 0.5 + 0.3 * Math.sin(phase + Math.PI);
-
-        const dBlue = Math.abs(dot.v - waveBlueY);
-        const dYellow = Math.abs(dot.v - waveYellowY);
-
-        const blueW = Math.exp(-dBlue * dBlue * 10);
-        const yellowW = Math.exp(-dYellow * dYellow * 10);
-
-        let color = "#F1F5F9";
-        let radius = 0.72;
-        let alpha = dot.intensity * 0.92;
-
-        if (blueW > 0.48 && yellowW > 0.48) {
-          color = "#FEF3C7";
-          radius = 0.86;
-          alpha = Math.min(1, dot.intensity);
-        } else if (blueW > yellowW + 0.06) {
-          color = blueW > 0.62 ? "#BAE6FD" : "#38BDF8";
-          radius = blueW > 0.62 ? 0.82 : 0.75;
-        } else if (yellowW > blueW + 0.06) {
-          color = yellowW > 0.62 ? "#FDE68A" : "#E5A93C";
-          radius = yellowW > 0.62 ? 0.82 : 0.75;
-        } else {
-          color = dot.isBlueBase ? "#7DD3FC" : "#FDE68A";
-          alpha = dot.intensity * 0.84;
-        }
+        // Clean monochrome white dot shading
+        const shimmer = 0.88 + 0.12 * Math.sin(t * 3.2 + dot.seed * Math.PI * 2);
+        const radius = dot.intensity > 0.8 ? 0.82 : 0.74;
+        const alpha = Math.min(1, dot.intensity * 0.95 * shimmer);
 
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = color;
+        ctx.fillStyle = "#FFFFFF";
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -279,15 +241,13 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
       });
     }
 
-    if (!prefersReducedMotion) {
-      const tick = (nowMs: number) => {
-        const dtSec = Math.min(0.05, Math.max(0.001, (nowMs - prevMs) / 1000));
-        prevMs = nowMs;
-        drawFrame(dtSec, (nowMs - startMs) / 1000);
-        rafId = window.requestAnimationFrame(tick);
-      };
+    const tick = (nowMs: number) => {
+      const dtSec = Math.min(0.05, Math.max(0.001, (nowMs - prevMs) / 1000));
+      prevMs = nowMs;
+      drawFrame(dtSec, (nowMs - startMs) / 1000);
       rafId = window.requestAnimationFrame(tick);
-    }
+    };
+    rafId = window.requestAnimationFrame(tick);
 
     return () => {
       cancelled = true;
@@ -296,7 +256,7 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
   }, [name]);
 
   return (
-    <HStack as="span" vAlign="center" className="relative pr-0.5">
+    <HStack as="span" vAlign="center" className="relative">
       <Text className="sr-only">{name}</Text>
       <canvas
         ref={canvasRef}

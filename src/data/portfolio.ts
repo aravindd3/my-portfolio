@@ -33,6 +33,8 @@ export interface ProfileData {
   linkedinLabel: string;
   githubUrl: string;
   githubLabel: string;
+  instagramUrl?: string;
+  instagramLabel?: string;
   resumePdfUrl: string;
   bio: string;
   quickMetrics: {
@@ -140,6 +142,8 @@ export const PROFILE_DATA: ProfileData = {
   linkedinLabel: "linkedin.com/in/aravind-vs-43619a339",
   githubUrl: "https://github.com/aravindd3",
   githubLabel: "github.com/aravindd3",
+  instagramUrl: "https://instagram.com",
+  instagramLabel: "instagram",
   resumePdfUrl: "/docs/Aravind_VS_Resume.pdf",
   bio: "Electronics and Communication Engineering undergraduate at VIT-AP University focused on embedded systems, hardware design, PCB layout, and firmware development. Experienced in building practical electronic systems that integrate microcontrollers, custom KiCad PCBs, sensors, and wireless communication interfaces (LoRa, Bluetooth, UART, SPI, I²C, I²S, CAN). Dedicated to embedded hardware engineering, circuit prototyping, and low-level firmware validation.",
   quickMetrics: [

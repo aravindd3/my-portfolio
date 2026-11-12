@@ -1,4 +1,3 @@
-import { Button } from "@astryxdesign/core/Button";
 import { Heading } from "@astryxdesign/core/Heading";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Link } from "@astryxdesign/core/Link";
@@ -50,113 +49,84 @@ export function HeroSection() {
             {HERO_EDITORIAL_DATA.bioBrief}
           </Text>
 
-          {/* Action CTAs */}
-          <VStack gap={2} hAlign="center" className="pt-1">
-            <Button
-              label={HERO_EDITORIAL_DATA.primaryCtaLabel}
-              href={HERO_EDITORIAL_DATA.primaryCtaHref}
-              variant="primary"
-              size="md"
-              endContent={<AppIcon name="arrow-right" size="sm" />}
-              className="!rounded-full !bg-primary !px-6 !py-2.5 !font-sans !text-sm !font-semibold !text-canvas shadow-[0_0_28px_rgba(241,245,249,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:!bg-copper hover:shadow-[0_0_36px_rgba(229,169,60,0.32)]"
-            />
-
-            <HStack
-              wrap="wrap"
-              gap={3}
-              hAlign="center"
-              vAlign="center"
-              className="pt-0.5"
+          {/* Action Channels Matching Exact Minimalist Pill Architecture */}
+          <HStack
+            wrap="wrap"
+            gap={2}
+            hAlign="center"
+            vAlign="center"
+            className="pt-2"
+          >
+            <Link
+              href={PROFILE_DATA.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="primary"
+              isStandalone
+              display="block"
+              className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
             >
+              <HStack as="span" gap={2} vAlign="center">
+                <AppIcon name="folder-git" size="sm" />
+                <Text type="inherit" color="inherit" className="tracking-wide">
+                  Github
+                </Text>
+              </HStack>
+            </Link>
+
+            <Link
+              href={PROFILE_DATA.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="primary"
+              isStandalone
+              display="block"
+              className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+            >
+              <HStack as="span" gap={2} vAlign="center">
+                <AppIcon name="external-link" size="sm" />
+                <Text type="inherit" color="inherit" className="tracking-wide">
+                  Linkedin
+                </Text>
+              </HStack>
+            </Link>
+
+            {PROFILE_DATA.instagramUrl && (
               <Link
-                href={PROFILE_DATA.resumePdfUrl}
+                href={PROFILE_DATA.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                color="secondary"
+                color="primary"
                 isStandalone
                 display="block"
-                className="font-mono text-xs text-secondary no-underline transition-colors hover:text-copper"
+                className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
               >
-                <HStack as="span" gap={1.5} vAlign="center">
-                  <AppIcon name="file-down" size="xsm" />
-                  <Text type="inherit" color="inherit">
-                    Resume PDF
+                <HStack as="span" gap={2} vAlign="center">
+                  <AppIcon name="instagram" size="sm" />
+                  <Text type="inherit" color="inherit" className="tracking-wide">
+                    Instagram
                   </Text>
                 </HStack>
               </Link>
-              <Text
-                type="code"
-                size="xsm"
-                aria-hidden="true"
-                className="font-mono text-xs text-muted/50"
-              >
-                /
-              </Text>
-              <Link
-                href={PROFILE_DATA.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                color="secondary"
-                isStandalone
-                display="block"
-                className="font-mono text-xs text-secondary no-underline transition-colors hover:text-copper"
-              >
-                <HStack as="span" gap={1.5} vAlign="center">
-                  <AppIcon name="folder-git" size="xsm" />
-                  <Text type="inherit" color="inherit">
-                    GitHub
-                  </Text>
-                  <AppIcon name="external-link" size="xsm" />
-                </HStack>
-              </Link>
-              <Text
-                type="code"
-                size="xsm"
-                aria-hidden="true"
-                className="font-mono text-xs text-muted/50"
-              >
-                /
-              </Text>
-              <Link
-                href={PROFILE_DATA.linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                color="secondary"
-                isStandalone
-                display="block"
-                className="font-mono text-xs text-secondary no-underline transition-colors hover:text-copper"
-              >
-                <HStack as="span" gap={1.5} vAlign="center">
-                  <AppIcon name="external-link" size="xsm" />
-                  <Text type="inherit" color="inherit">
-                    LinkedIn
-                  </Text>
-                </HStack>
-              </Link>
-              <Text
-                type="code"
-                size="xsm"
-                aria-hidden="true"
-                className="font-mono text-xs text-muted/50"
-              >
-                /
-              </Text>
-              <Link
-                href="#contact"
-                color="secondary"
-                isStandalone
-                display="block"
-                className="font-mono text-xs text-secondary no-underline transition-colors hover:text-copper"
-              >
-                <HStack as="span" gap={1.5} vAlign="center">
-                  <AppIcon name="mail" size="xsm" />
-                  <Text type="inherit" color="inherit">
-                    Contact
-                  </Text>
-                </HStack>
-              </Link>
-            </HStack>
-          </VStack>
+            )}
+
+            <Link
+              href={PROFILE_DATA.resumePdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="primary"
+              isStandalone
+              display="block"
+              className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+            >
+              <HStack as="span" gap={2} vAlign="center">
+                <AppIcon name="file-down" size="sm" />
+                <Text type="inherit" color="inherit" className="tracking-wide">
+                  Resume
+                </Text>
+              </HStack>
+            </Link>
+          </HStack>
         </VStack>
       </Section>
 
