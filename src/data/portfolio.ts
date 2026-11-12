@@ -10,9 +10,10 @@ export type ProtocolId =
 
 export interface HeroEditorialData {
   eyebrowBadge: string;
-  headlinePrimary: string;
-  headlineSecondary: string;
-  subtitleLines: readonly [string, string];
+  name: string;
+  punchline: string;
+  punchlineHighlight: string;
+  bioBrief: string;
   primaryCtaLabel: string;
   primaryCtaHref: string;
   asciiArtAlt: string;
@@ -206,14 +207,13 @@ export const PROFILE_DATA: ProfileData = {
 };
 
 export const HERO_EDITORIAL_DATA: HeroEditorialData = {
-  eyebrowBadge: `${PROFILE_DATA.fullName} · ${PROFILE_DATA.statusBanner}`,
-  headlinePrimary: "Where human engineering",
-  headlineSecondary: "reaches embedded hardware",
-  subtitleLines: [
-    "custom KiCad 10.0 PCBs, bare-metal Embedded C firmware & wireless RF —",
-    "built across STM32F407 · ESP32-WROOM-32 · Arduino Uno R3 · Raspberry Pi 3 B+",
-  ],
-  primaryCtaLabel: "View Hardware Projects",
+  eyebrowBadge: "ELECTRONICS & COMMUNICATION ENGINEERING · EMBEDDED SYSTEMS",
+  name: "Aravind V S",
+  punchline: "Engineering at the intersection of",
+  punchlineHighlight: "bare-metal firmware & physical circuitry.",
+  bioBrief:
+    "Electronics & Communication Engineering undergraduate at VIT-AP specializing in embedded systems and PCB design. Focused on bridging hardware-level architectures with deterministic firmware to build robust, interconnected devices.",
+  primaryCtaLabel: "Explore Projects",
   primaryCtaHref: "#projects",
   asciiArtAlt:
     "ASCII art illustration of a metallic robotic hand on the left and a human hand on the right reaching toward a glowing embedded hardware core.",

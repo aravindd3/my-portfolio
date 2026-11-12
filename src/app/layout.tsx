@@ -1,14 +1,22 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { JetBrains_Mono, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { JetBrains_Mono, Outfit, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { Providers } from "./providers";
+import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   display: "swap",
   variable: "--font-space-grotesk",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-outfit",
 });
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -76,10 +84,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-canvas text-primary font-sans">
-        <Providers>{children}</Providers>
+        <SmoothScrollProvider>
+          <Providers>{children}</Providers>
+        </SmoothScrollProvider>
       </body>
     </html>
   );
