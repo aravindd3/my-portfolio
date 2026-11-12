@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Heading } from "@astryxdesign/core/Heading";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Link } from "@astryxdesign/core/Link";
@@ -7,7 +8,6 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
-import { HeroBlackHoleAscii } from "./HeroBlackHoleAscii";
 
 /**
  * Stage 1: Personal Introduction Hero Slide
@@ -21,11 +21,8 @@ export function HeroIntroSlide() {
       aria-labelledby="intro-heading"
       vAlign="between"
       hAlign="center"
-      className="relative w-full min-h-svh h-svh overflow-hidden px-6 pt-24 pb-8 sm:pb-12 text-center bg-[#020306]"
+      className="relative w-full min-h-svh h-svh overflow-hidden px-6 pt-24 pb-8 sm:pb-12 text-center bg-[#020306] bg-[radial-gradient(ellipse_80%_60%_at_50%_35%,rgba(15,23,42,0.45)_0%,rgba(2,3,6,0.95)_70%,#020306_100%)]"
     >
-      {/* Living Interactive ASCII Black Hole & Event Horizon with Lone Observer */}
-      <HeroBlackHoleAscii />
-
       {/* Top Status & System Ready Indicator */}
       <HStack gap={2} vAlign="center" className="relative z-10 opacity-80 pt-2">
         <HStack
@@ -45,7 +42,7 @@ export function HeroIntroSlide() {
       <VStack
         gap={4}
         hAlign="center"
-        className="relative z-10 mx-auto max-w-4xl my-auto px-4 py-2 bg-[radial-gradient(ellipse_at_center,rgba(2,3,6,0.72)_0%,rgba(2,3,6,0.35)_45%,transparent_72%)]"
+        className="relative z-10 mx-auto max-w-4xl my-auto"
       >
         <Text
           type="code"
@@ -59,7 +56,7 @@ export function HeroIntroSlide() {
           id="intro-heading"
           level={1}
           justify="center"
-          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_32px_rgba(0,0,0,1)] [text-shadow:_0_3px_20px_rgb(0_0_0_/_95%)]"
+          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
         >
           {HERO_EDITORIAL_DATA.introName}
         </Heading>
@@ -67,11 +64,29 @@ export function HeroIntroSlide() {
         <Text
           type="body"
           justify="center"
-          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-white/95 drop-shadow-[0_2px_20px_rgba(0,0,0,1)] [text-shadow:_0_2px_16px_rgb(0_0_0_/_95%),_0_0_24px_rgb(0_0_0_/_90%)]"
+          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-secondary drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
         >
           {HERO_EDITORIAL_DATA.introBio}
         </Text>
       </VStack>
+
+      {/* Bottom Corner Ultra-Realistic Picture */}
+      <aside
+        aria-label="Gravitational vortex artwork"
+        className="absolute bottom-6 right-6 sm:bottom-8 sm:right-10 z-20 hidden sm:block pointer-events-auto"
+      >
+        <div className="group relative w-36 sm:w-44 md:w-52 aspect-[9/16] rounded-2xl overflow-hidden border border-white/15 bg-black/90 shadow-[0_16px_48px_rgba(0,0,0,0.95),0_0_1px_1px_rgba(255,255,255,0.1)] transition-all duration-300 hover:scale-[1.03] hover:border-white/35">
+          <Image
+            src="/images/blackhole-vortex.jpg"
+            alt="Ultra-realistic gravitational vortex and lone observer at the event horizon"
+            fill
+            sizes="(max-width: 768px) 176px, 208px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-20" />
+        </div>
+      </aside>
 
       {/* Bottom Guide to Scroll to Technical Hero Slide */}
       <Link
