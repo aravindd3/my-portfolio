@@ -6,6 +6,7 @@ import {
   ArrowUp,
   Award,
   Briefcase,
+  ChevronDown,
   CircuitBoard,
   Cpu,
   ExternalLink,
@@ -46,6 +47,7 @@ export type AppIconName =
   | "arrow-up"
   | "award"
   | "briefcase"
+  | "chevron-down"
   | "circuit-board"
   | "cpu"
   | "external-link"
@@ -66,6 +68,7 @@ const ICON_MAP: Record<AppIconName, ComponentType<SVGProps<SVGSVGElement>>> = {
   "arrow-up": ArrowUp,
   award: Award,
   briefcase: Briefcase,
+  "chevron-down": ChevronDown,
   "circuit-board": CircuitBoard,
   cpu: Cpu,
   "external-link": ExternalLink,

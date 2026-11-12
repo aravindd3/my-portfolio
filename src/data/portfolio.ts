@@ -9,6 +9,11 @@ export type ProtocolId =
   | "nfc";
 
 export interface HeroEditorialData {
+  introStatus: string;
+  introGreeting: string;
+  introName: string;
+  introBio: string;
+  introScrollCta: string;
   punchline: string;
   punchlineHighlight: string;
   bioBrief: string;
@@ -209,6 +214,12 @@ export const PROFILE_DATA: ProfileData = {
 };
 
 export const HERO_EDITORIAL_DATA: HeroEditorialData = {
+  introStatus: "SYS_READY // B.TECH ECE · HARDWARE & FIRMWARE",
+  introGreeting: "Hello! I'm",
+  introName: "Aravind V S",
+  introBio:
+    "Electronics & Communication Engineering undergraduate at VIT-AP University, specializing in embedded systems, bare-metal firmware development, and PCB design.",
+  introScrollCta: "Scroll to explore",
   punchline: "Engineering at the intersection of",
   punchlineHighlight: "bare-metal firmware & physical circuitry.",
   bioBrief:

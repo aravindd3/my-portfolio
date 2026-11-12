@@ -3,7 +3,6 @@ import { Link } from "@astryxdesign/core/Link";
 import { PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { MobileNavDrawer, type NavItem } from "./MobileNavDrawer";
-import { NavbarAsciiName } from "./NavbarAsciiName";
 import { NavbarLinks } from "./NavbarLinks";
 
 const NAV_ITEMS: readonly NavItem[] = [
@@ -32,52 +31,28 @@ export function Navbar() {
       <HStack
         as="nav"
         aria-label="Primary navigation"
-        hAlign="between"
+        hAlign="center"
         vAlign="center"
-        gap={3}
-        className="frosted-glass-nav pointer-events-auto relative mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-4 lg:pr-2.5"
+        className="frosted-glass-nav pointer-events-auto relative mx-auto w-fit rounded-full px-2 py-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.5)]"
       >
-        <HStack
-          gap={2}
-          vAlign="center"
-          className="w-full justify-center pl-1 sm:w-auto sm:justify-start"
-        >
+        {/* Mobile Navigation Capsule: Home CPU Icon + Drawer */}
+        <HStack vAlign="center" gap={3} className="px-2 py-0.5 lg:hidden">
           <Link
             href="#top"
-            label={`${PROFILE_DATA.fullName} — Back to top`}
+            label="Back to top"
             isStandalone
             display="block"
             className="group shrink-0 rounded-full no-underline focus-visible:outline-offset-2"
           >
             <HStack
               as="span"
-              gap={2}
+              hAlign="center"
               vAlign="center"
-              className="transition-opacity duration-200 group-hover:opacity-90"
+              className="size-7 rounded-full bg-white/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 group-hover:scale-[1.04] group-hover:bg-copper group-hover:text-canvas"
             >
-              <HStack
-                as="span"
-                hAlign="center"
-                vAlign="center"
-                className="size-8 rounded-full bg-white/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 group-hover:scale-[1.04] group-hover:bg-copper group-hover:text-canvas"
-              >
-                <AppIcon name="cpu" size="sm" color="inherit" />
-              </HStack>
-
-              <NavbarAsciiName name={PROFILE_DATA.fullName} />
+              <AppIcon name="cpu" size="sm" color="inherit" />
             </HStack>
           </Link>
-        </HStack>
-
-        <HStack
-          as="span"
-          aria-hidden="true"
-          className="hidden h-5 w-px bg-white/15 lg:flex"
-        />
-
-        <NavbarLinks items={NAV_ITEMS} />
-
-        <HStack className="absolute right-1.5 shrink-0 lg:static lg:hidden">
           <MobileNavDrawer
             items={NAV_ITEMS}
             fullName={PROFILE_DATA.fullName}
@@ -88,6 +63,9 @@ export function Navbar() {
             location={PROFILE_DATA.location}
           />
         </HStack>
+
+        {/* Desktop Navigation: Tabs Only */}
+        <NavbarLinks items={NAV_ITEMS} />
       </HStack>
     </HStack>
   );

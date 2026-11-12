@@ -5,7 +5,7 @@ import { CustomPointerMagnifier } from "@/components/CustomPointerMagnifier";
 import { EducationAndCerts } from "@/components/EducationAndCerts";
 import { ExperienceTimeline } from "@/components/ExperienceTimeline";
 import { HardwareSpecsMatrix } from "@/components/HardwareSpecsMatrix";
-import { HeroSection } from "@/components/HeroSection";
+import { HeroIntroSlide, HeroTechnicalSlide } from "@/components/HeroSection";
 import { Navbar } from "@/components/Navbar";
 import { PortfolioWorkspace } from "@/components/PortfolioWorkspace";
 import { ProjectsShowcase } from "@/components/ProjectsShowcase";
@@ -18,7 +18,10 @@ export default function Home() {
       <BackgroundAsciiField />
       <Navbar />
       <VStack as="main" id="main-content" className="relative z-10 w-full flex-1">
-        <HeroSection />
+        <HeroIntroSlide />
+        <ScrollBlurSection>
+          <HeroTechnicalSlide />
+        </ScrollBlurSection>
         <PortfolioWorkspace>
           <ScrollBlurSection>
             <HardwareSpecsMatrix />

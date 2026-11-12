@@ -8,11 +8,103 @@ import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
 
-export function HeroSection() {
+/**
+ * Stage 1: Personal Introduction Hero Slide
+ * Welcomes visitors with high-impact minimalist typography and guides them to scroll.
+ */
+export function HeroIntroSlide() {
   return (
     <VStack
       as="section"
       id="top"
+      aria-labelledby="intro-heading"
+      vAlign="between"
+      hAlign="center"
+      className="relative w-full min-h-svh h-svh overflow-hidden px-6 pt-24 pb-8 sm:pb-12 text-center bg-[radial-gradient(ellipse_75%_60%_at_50%_48%,rgba(20,28,42,0.36)_0%,rgba(6,9,13,0.18)_65%,transparent_100%)]"
+    >
+      {/* Top Status & System Ready Indicator */}
+      <HStack gap={2} vAlign="center" className="opacity-80 pt-2">
+        <HStack
+          as="span"
+          className="size-2 rounded-full bg-signal shadow-[0_0_8px_var(--accent-signal)] animate-pulse"
+        />
+        <Text
+          type="code"
+          size="xsm"
+          className="font-mono text-[11px] font-semibold tracking-[0.24em] uppercase text-secondary"
+        >
+          {HERO_EDITORIAL_DATA.introStatus}
+        </Text>
+      </HStack>
+
+      {/* Centerpiece Typographic Introduction */}
+      <VStack gap={4} hAlign="center" className="mx-auto max-w-4xl my-auto">
+        <Text
+          type="code"
+          size="sm"
+          className="font-mono text-xs sm:text-sm font-semibold tracking-[0.3em] uppercase text-copper"
+        >
+          {HERO_EDITORIAL_DATA.introGreeting}
+        </Text>
+
+        <Heading
+          id="intro-heading"
+          level={1}
+          justify="center"
+          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white"
+        >
+          {HERO_EDITORIAL_DATA.introName}
+        </Heading>
+
+        <Text
+          type="body"
+          justify="center"
+          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-secondary"
+        >
+          {HERO_EDITORIAL_DATA.introBio}
+        </Text>
+      </VStack>
+
+      {/* Bottom Guide to Scroll to Technical Hero Slide */}
+      <Link
+        href="#hero-technical"
+        isStandalone
+        aria-label="Scroll down to technical overview and interactive ASCII core"
+        className="group flex flex-col items-center gap-2.5 no-underline opacity-65 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
+      >
+        <Text
+          type="code"
+          size="xsm"
+          className="font-mono text-[11px] tracking-[0.25em] uppercase text-secondary transition-colors duration-200 group-hover:text-copper"
+        >
+          {HERO_EDITORIAL_DATA.introScrollCta}
+        </Text>
+        <HStack
+          as="span"
+          hAlign="center"
+          vAlign="center"
+          className="size-8 rounded-full border border-white/10 bg-white/[0.03] text-secondary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 group-hover:translate-y-1 group-hover:border-copper/40 group-hover:bg-copper/10 group-hover:text-copper"
+        >
+          <AppIcon name="chevron-down" size="sm" color="inherit" />
+        </HStack>
+        <HStack
+          as="span"
+          className="h-8 w-px bg-gradient-to-b from-white/20 via-copper/50 to-transparent transition-all duration-300 group-hover:h-12 group-hover:via-white"
+        />
+      </Link>
+    </VStack>
+  );
+}
+
+/**
+ * Stage 2: Technical Philosophy & Interactive ASCII Core Hero Slide
+ * Features the engineering punchline, living ASCII hands & star canvas, and direct action channels.
+ */
+export function HeroTechnicalSlide() {
+  return (
+    <VStack
+      as="section"
+      id="hero-technical"
       aria-labelledby="hero-name"
       vAlign="between"
       className="relative w-full overflow-hidden bg-[radial-gradient(ellipse_75%_60%_at_50%_52%,rgba(20,28,42,0.34)_0%,rgba(6,9,13,0.16)_62%,transparent_100%)] lg:h-svh lg:min-h-[680px]"
@@ -25,10 +117,10 @@ export function HeroSection() {
         className="relative z-10 ms-auto me-auto w-full px-5 pt-20 pb-0 md:px-12 md:pt-22"
       >
         <VStack gap={3} hAlign="center" className="mx-auto max-w-3xl text-center">
-          {/* Personal Punchline in clean geometric display font */}
+          {/* Engineering Philosophy Punchline */}
           <Heading
             id="hero-name"
-            level={1}
+            level={2}
             justify="center"
             className="max-w-[26ch] text-center font-brand text-[clamp(1.85rem,3.6vw,3.1rem)] font-bold leading-[1.12] tracking-[-0.03em] text-primary sm:text-pretty"
           >
@@ -82,7 +174,7 @@ export function HeroSection() {
           />
         </HStack>
 
-        {/* Action Channels Matching Exact Minimalist Pill Architecture Positioned Below ASCII Hands */}
+        {/* Action Channels Matching Minimalist Pill Architecture Positioned Below ASCII Hands */}
         <HStack
           wrap="wrap"
           gap={2}
@@ -194,5 +286,17 @@ export function HeroSection() {
         </HStack>
       </VStack>
     </VStack>
+  );
+}
+
+/**
+ * Default composite HeroSection rendering both seamless slides.
+ */
+export function HeroSection() {
+  return (
+    <>
+      <HeroIntroSlide />
+      <HeroTechnicalSlide />
+    </>
   );
 }
