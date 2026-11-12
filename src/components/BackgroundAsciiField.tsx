@@ -50,14 +50,14 @@ export function BackgroundAsciiField() {
     let dpr = 1;
     let particles: CosmicMicroGlyph[] = [];
     let streaks: ShootingStreak[] = [];
-    let nextStreakIn = 3.2;
+    let nextStreakIn = 0.8; // Spawn first shooting star right away so it's immediately noticeable
     let rafId = 0;
     let prevMs = performance.now();
 
     const buildParticles = (w: number, h: number) => {
       const targetCount = Math.max(
-        55,
-        Math.min(150, Math.floor((w * h) / 14500)),
+        150,
+        Math.min(340, Math.floor((w * h) / 5600)),
       );
       const next: CosmicMicroGlyph[] = [];
 
@@ -66,7 +66,7 @@ export function BackgroundAsciiField() {
         const palette = isBlue ? BLUE_TONES : YELLOW_TONES;
         const depth = 0.25 + Math.random() * 0.75;
         const angle = -Math.PI * 0.68 + (Math.random() - 0.5) * 0.9;
-        const speed = (3.5 + Math.random() * 7.5) * depth;
+        const speed = (4.0 + Math.random() * 8.5) * depth;
 
         next.push({
           x: Math.random() * w,
@@ -76,11 +76,11 @@ export function BackgroundAsciiField() {
           depth,
           glyph:
             MICRO_GLYPHS[Math.floor(Math.random() * MICRO_GLYPHS.length)],
-          size: 7.5 + depth * 2.2,
+          size: 7.2 + depth * 2.4,
           color: palette[Math.floor(Math.random() * palette.length)],
-          baseAlpha: 0.14 + depth * 0.34,
+          baseAlpha: 0.20 + depth * 0.40,
           twinklePhase: Math.random() * Math.PI * 2,
-          twinkleSpeed: 0.9 + Math.random() * 1.9,
+          twinkleSpeed: 1.0 + Math.random() * 2.1,
         });
       }
 
@@ -109,14 +109,14 @@ export function BackgroundAsciiField() {
       if (width <= 0 || height <= 0) return;
       const fromLeft = Math.random() < 0.55;
       const startX = fromLeft
-        ? width * (0.08 + Math.random() * 0.55)
-        : width * (0.35 + Math.random() * 0.55);
-      const startY = height * (0.04 + Math.random() * 0.42);
+        ? width * (0.06 + Math.random() * 0.55)
+        : width * (0.38 + Math.random() * 0.55);
+      const startY = height * (0.06 + Math.random() * 0.45);
 
       const angle = fromLeft
-        ? 0.34 + Math.random() * 0.32
-        : Math.PI - (0.34 + Math.random() * 0.32);
-      const speed = 360 + Math.random() * 240;
+        ? 0.36 + Math.random() * 0.32
+        : Math.PI - (0.36 + Math.random() * 0.32);
+      const speed = 520 + Math.random() * 260;
 
       streaks.push({
         x: startX,
@@ -124,8 +124,8 @@ export function BackgroundAsciiField() {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         age: 0,
-        life: 0.85 + Math.random() * 0.45,
-        length: 68 + Math.random() * 52,
+        life: 0.95 + Math.random() * 0.45,
+        length: 140 + Math.random() * 80,
         isBlue: Math.random() < 0.52,
       });
     };
@@ -166,7 +166,7 @@ export function BackgroundAsciiField() {
 
         const twinkle = prefersReducedMotion
           ? 0.85
-          : 0.62 + 0.38 * Math.sin(nowSec * p.twinkleSpeed + p.twinklePhase);
+          : 0.58 + 0.42 * Math.sin(nowSec * p.twinkleSpeed + p.twinklePhase);
 
         ctx.globalAlpha = p.baseAlpha * twinkle;
         ctx.fillStyle = p.color;
@@ -174,12 +174,12 @@ export function BackgroundAsciiField() {
         ctx.fillText(p.glyph, p.x, parallaxY);
       }
 
-      // 2. Occasional shooting star micro-streaks
+      // 2. Luminous Shooting Stars with tapered streaks & ASCII wake
       if (!prefersReducedMotion) {
         nextStreakIn -= dtSec;
         if (nextStreakIn <= 0) {
           spawnShootingStreak();
-          nextStreakIn = 4.6 + Math.random() * 4.8;
+          nextStreakIn = 2.4 + Math.random() * 2.6;
         }
 
         const alive: ShootingStreak[] = [];
@@ -196,25 +196,64 @@ export function BackgroundAsciiField() {
           const ux = s.vx / speedMag;
           const uy = s.vy / speedMag;
 
-          // Tapered trail made of tiny dots
-          const trailDots = 11;
-          for (let i = 0; i < trailDots; i++) {
+          const tailX = s.x - ux * s.length;
+          const tailY = s.y - uy * s.length;
+
+          // Tapered luminous gradient streak line
+          const grad = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+          if (s.isBlue) {
+            grad.addColorStop(0, "rgba(56, 189, 248, 0)");
+            grad.addColorStop(0.65, `rgba(56, 189, 248, ${(envelope * 0.55).toFixed(3)})`);
+            grad.addColorStop(1, `rgba(224, 242, 254, ${(envelope * 0.95).toFixed(3)})`);
+          } else {
+            grad.addColorStop(0, "rgba(229, 169, 60, 0)");
+            grad.addColorStop(0.65, `rgba(229, 169, 60, ${(envelope * 0.55).toFixed(3)})`);
+            grad.addColorStop(1, `rgba(254, 243, 199, ${(envelope * 0.95).toFixed(3)})`);
+          }
+
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.6;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(tailX, tailY);
+          ctx.lineTo(s.x, s.y);
+          ctx.stroke();
+
+          // Glowing pinpoint star head
+          const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 7);
+          halo.addColorStop(
+            0,
+            s.isBlue
+              ? `rgba(224, 242, 254, ${(envelope * 0.95).toFixed(3)})`
+              : `rgba(254, 243, 199, ${(envelope * 0.95).toFixed(3)})`,
+          );
+          halo.addColorStop(
+            0.45,
+            s.isBlue
+              ? `rgba(56, 189, 248, ${(envelope * 0.4).toFixed(3)})`
+              : `rgba(229, 169, 60, ${(envelope * 0.4).toFixed(3)})`,
+          );
+          halo.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, 7, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Subtle trailing micro-ASCII dust wake
+          const trailDots = 9;
+          for (let i = 1; i <= trailDots; i++) {
             const frac = i / trailDots;
-            const tx = s.x - ux * s.length * frac;
-            const ty = s.y - uy * s.length * frac;
-            const dotAlpha = (1 - frac) * (1 - frac) * envelope * 0.72;
-            if (dotAlpha < 0.02) continue;
+            const jitter = Math.sin(i * 4.3 + s.age * 18) * 1.4 * frac;
+            const tx = s.x - ux * s.length * frac - uy * jitter;
+            const ty = s.y - uy * s.length * frac + ux * jitter;
+            const dotAlpha = (1 - frac) * envelope * 0.7;
+            if (dotAlpha < 0.03) continue;
 
             ctx.globalAlpha = dotAlpha;
-            ctx.fillStyle = s.isBlue
-              ? i === 0
-                ? "#E0F2FE"
-                : "#38BDF8"
-              : i === 0
-                ? "#FEF3C7"
-                : "#E5A93C";
-            ctx.font = `600 ${(9.5 - frac * 2.5).toFixed(1)}px ${monoFont}`;
-            ctx.fillText(i === 0 ? "·" : ".", tx, ty);
+            ctx.fillStyle = s.isBlue ? "#7DD3FC" : "#FDE68A";
+            ctx.font = `600 ${(9 - frac * 2.5).toFixed(1)}px ${monoFont}`;
+            ctx.fillText(i % 2 === 0 ? "·" : ".", tx, ty);
           }
 
           alive.push(s);

@@ -37,7 +37,7 @@ export function Navbar() {
         gap={3}
         className="frosted-glass-nav pointer-events-auto mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-4 lg:pr-2.5"
       >
-        <HStack gap={3} vAlign="center" className="shrink-0">
+        <HStack gap={2} vAlign="center" className="shrink-0 pl-1">
           <Link
             href="#top"
             label={`${PROFILE_DATA.fullName} — Back to top`}
@@ -49,13 +49,13 @@ export function Navbar() {
               as="span"
               gap={2}
               vAlign="center"
-              className="rounded-full border border-white/12 bg-white/[0.045] p-0.5 pr-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-all duration-200 group-hover:border-[var(--border-active)] group-hover:bg-white/[0.08]"
+              className="transition-opacity duration-200 group-hover:opacity-90"
             >
               <HStack
                 as="span"
                 hAlign="center"
                 vAlign="center"
-                className="size-9 rounded-full bg-primary text-canvas shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-all duration-200 group-hover:scale-[1.03] group-hover:bg-copper"
+                className="size-8 rounded-full bg-white/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 group-hover:scale-[1.04] group-hover:bg-copper group-hover:text-canvas"
               >
                 <AppIcon name="cpu" size="sm" color="inherit" />
               </HStack>

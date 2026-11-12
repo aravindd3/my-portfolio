@@ -10,10 +10,10 @@
   --bg-surface: #0B0E14;
   --bg-elevated: #11161F;
   --bg-recessed: #06080C;
-  --bg-glass: rgba(10, 15, 24, 0.18);
-  --bg-glass-fallback: rgba(17, 23, 32, 0.88);
-  --border-glass: rgba(255, 255, 255, 0.14);
-  --glass-specular-rim: rgba(255, 255, 255, 0.35);
+  --bg-glass: rgba(8, 12, 18, 0.08);
+  --bg-glass-fallback: rgba(17, 23, 32, 0.86);
+  --border-glass: rgba(255, 255, 255, 0.11);
+  --glass-specular-rim: rgba(255, 255, 255, 0.24);
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
@@ -85,20 +85,19 @@ body {
     background-color: var(--bg-glass);
     background-image: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0.02) 48%,
-      rgba(255, 255, 255, 0.05) 100%
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.01) 48%,
+      rgba(255, 255, 255, 0.03) 100%
     );
     background-clip: padding-box;
-    -webkit-backdrop-filter: blur(16px) saturate(160%) brightness(1.08);
-    backdrop-filter: blur(16px) saturate(160%) brightness(1.08);
+    -webkit-backdrop-filter: blur(14px) saturate(145%) brightness(1.04);
+    backdrop-filter: blur(14px) saturate(145%) brightness(1.04);
     border: 1px solid var(--border-glass);
     box-shadow:
-      0 18px 36px -10px rgba(0, 0, 0, 0.65),
-      0 6px 16px -4px rgba(0, 0, 0, 0.45),
+      0 14px 30px -10px rgba(0, 0, 0, 0.45),
+      0 4px 12px -4px rgba(0, 0, 0, 0.3),
       inset 0 1px 1px var(--glass-specular-rim),
-      inset 0 0 20px rgba(255, 255, 255, 0.04),
-      inset 0 -1px 1px rgba(255, 255, 255, 0.08);
+      inset 0 0 16px rgba(255, 255, 255, 0.025);
   }
 
   /* Specular overhead rim highlight */

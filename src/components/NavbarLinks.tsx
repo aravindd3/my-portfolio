@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Link } from "@astryxdesign/core/Link";
+import { Text } from "@astryxdesign/core/Text";
 import type { NavItem } from "./MobileNavDrawer";
 
 interface NavbarLinksProps {
@@ -81,13 +82,24 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
               color="primary"
               isStandalone
               aria-current={isActive ? "location" : undefined}
-              className={`frosted-glass-nav-link rounded-full border px-3.5 py-2 font-sans text-sm font-medium whitespace-nowrap no-underline transition-all duration-300 focus-visible:outline-offset-2 ${
+              className={`frosted-glass-nav-link relative rounded-full px-3 py-1.5 font-sans text-sm whitespace-nowrap no-underline transition-all duration-200 focus-visible:outline-offset-2 ${
                 isActive
-                  ? "border-white/25 bg-white/15 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_0_18px_rgba(56,189,248,0.16)]"
-                  : "border-transparent text-primary/75 hover:bg-white/10 hover:text-primary"
+                  ? "font-semibold text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]"
+                  : "font-medium text-primary/65 hover:text-white"
               }`}
             >
-              {item.label}
+              <HStack as="span" gap={1.5} vAlign="center">
+                <Text type="inherit" color="inherit">
+                  {item.label}
+                </Text>
+                {isActive && (
+                  <HStack
+                    as="span"
+                    aria-hidden="true"
+                    className="size-1 rounded-full bg-bus shadow-[0_0_8px_var(--accent-bus)]"
+                  />
+                )}
+              </HStack>
             </Link>
           </HStack>
         );

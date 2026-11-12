@@ -8,18 +8,35 @@ interface NavbarAsciiNameProps {
   name: string;
 }
 
-interface GlyphDot {
-  readonly x: number;
-  readonly y: number;
+interface TargetDot {
+  readonly tx: number;
+  readonly ty: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
   readonly u: number;
   readonly v: number;
   readonly intensity: number;
   readonly seed: number;
+  readonly isBlueBase: boolean;
 }
 
-const LOGICAL_W = 132;
-const LOGICAL_H = 28;
-const GRID_STEP = 1.9;
+interface FlowingParticle {
+  u: number;
+  speed: number;
+  dir: 1 | -1;
+  amp: number;
+  freq: number;
+  phase: number;
+  isBlue: boolean;
+  glyph: "." | "·" | ":";
+  targetIdx: number;
+}
+
+const LOGICAL_W = 148;
+const LOGICAL_H = 30;
+const GRID_STEP = 1.85;
 
 export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -35,10 +52,12 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
     ).matches;
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let dots: GlyphDot[] = [];
+    let dots: TargetDot[] = [];
+    let streams: FlowingParticle[] = [];
     let rafId = 0;
     let cancelled = false;
     const startMs = performance.now();
+    let prevMs = startMs;
 
     const syncSize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -62,7 +81,7 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
 
       octx.clearRect(0, 0, offscreen.width, offscreen.height);
       octx.fillStyle = "#FFFFFF";
-      octx.font = `700 ${17.5 * sampleScale}px ${brandFont}`;
+      octx.font = `700 ${18 * sampleScale}px ${brandFont}`;
       octx.textAlign = "center";
       octx.textBaseline = "middle";
       octx.fillText(name, offscreen.width * 0.5, offscreen.height * 0.53);
@@ -73,7 +92,7 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
         offscreen.width,
         offscreen.height,
       ).data;
-      const sampled: GlyphDot[] = [];
+      const sampled: TargetDot[] = [];
 
       for (let y = 1.5; y < LOGICAL_H - 1.5; y += GRID_STEP) {
         for (let x = 2; x < LOGICAL_W - 2; x += GRID_STEP) {
@@ -86,92 +105,156 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
             Math.round(y * sampleScale),
           );
           const alpha = img[(py * offscreen.width + px) * 4 + 3] / 255;
-          if (alpha > 0.24) {
+          if (alpha > 0.25) {
+            const seed = ((Math.round(x * 13) + Math.round(y * 31)) % 97) / 97;
+            const isBlueBase = seed > 0.5;
+            const startX = prefersReducedMotion
+              ? x
+              : isBlueBase
+                ? x - 26 - seed * 24
+                : x + 26 + seed * 24;
+            const startY = prefersReducedMotion
+              ? y
+              : LOGICAL_H * 0.5 + (seed - 0.5) * 24;
+
             sampled.push({
-              x,
-              y,
+              tx: x,
+              ty: y,
+              x: startX,
+              y: startY,
+              vx: 0,
+              vy: 0,
               u: x / LOGICAL_W,
               v: y / LOGICAL_H,
               intensity: Math.min(1, alpha * 1.15),
-              seed: ((Math.round(x * 13) + Math.round(y * 31)) % 97) / 97,
+              seed,
+              isBlueBase,
             });
           }
         }
       }
 
       dots = sampled;
+
+      const streamCount = 26;
+      const nextStreams: FlowingParticle[] = [];
+      for (let i = 0; i < streamCount; i++) {
+        const isBlue = i % 2 === 0;
+        nextStreams.push({
+          u: i / streamCount,
+          speed: 0.16 + (i % 5) * 0.035,
+          dir: isBlue ? 1 : -1,
+          amp: 4 + (i % 4) * 2.1,
+          freq: 2.1 + (i % 3) * 0.45,
+          phase: (i * 0.9) % (Math.PI * 2),
+          isBlue,
+          glyph: i % 3 === 0 ? "·" : i % 3 === 1 ? "." : ":",
+          targetIdx:
+            sampled.length > 0 ? Math.floor((i * 17) % sampled.length) : 0,
+        });
+      }
+      streams = nextStreams;
     };
 
-    const drawFrame = (elapsedSec: number) => {
+    const drawFrame = (dtSec: number, elapsedSec: number) => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
 
       const t = prefersReducedMotion ? 0 : elapsedSec;
+      const cyclePos = ((t * 0.19) % 1.45) - 0.22;
 
-      // Subtle ambient intertwining blue & yellow dot streams behind the letterforms
-      const streamCount = 34;
-      for (let i = 0; i < streamCount; i++) {
-        const u = ((i / streamCount + t * 0.085) % 1 + 1) % 1;
-        const x = 4 + u * (LOGICAL_W - 8);
-        const phase = u * Math.PI * 2.4 - t * 2.0;
+      if (!prefersReducedMotion && dots.length > 0) {
+        ctx.font = '600 8px "JetBrains Mono", monospace';
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-        const yBlue = LOGICAL_H * (0.5 + 0.31 * Math.sin(phase));
-        const yYellow = LOGICAL_H * (0.5 + 0.31 * Math.sin(phase + Math.PI));
+        for (const p of streams) {
+          p.u += p.dir * p.speed * dtSec;
+          if (p.u > 1.05) {
+            p.u = -0.05;
+            p.targetIdx = Math.floor(Math.random() * dots.length);
+          } else if (p.u < -0.05) {
+            p.u = 1.05;
+            p.targetIdx = Math.floor(Math.random() * dots.length);
+          }
 
-        const edgeFade = Math.sin(u * Math.PI);
+          const target = dots[p.targetIdx % dots.length];
+          const progressToCenter = Math.sin(
+            Math.max(0, Math.min(1, p.u)) * Math.PI,
+          );
 
-        ctx.globalAlpha = 0.28 * edgeFade;
-        ctx.fillStyle = "#38BDF8";
-        ctx.beginPath();
-        ctx.arc(x, yBlue, 0.72, 0, Math.PI * 2);
-        ctx.fill();
+          const waveX = p.u * LOGICAL_W;
+          const waveY =
+            LOGICAL_H * 0.5 +
+            Math.sin(p.u * Math.PI * p.freq - t * 2.2 * p.dir + p.phase) * p.amp;
 
-        ctx.globalAlpha = 0.28 * edgeFade;
-        ctx.fillStyle = "#E5A93C";
-        ctx.beginPath();
-        ctx.arc(x, yYellow, 0.72, 0, Math.PI * 2);
-        ctx.fill();
+          const pull = Math.pow(progressToCenter, 1.8) * 0.72;
+          const px = waveX * (1 - pull) + target.tx * pull;
+          const py = waveY * (1 - pull) + target.ty * pull;
+
+          ctx.globalAlpha = 0.25 + progressToCenter * 0.55;
+          ctx.fillStyle = p.isBlue ? "#38BDF8" : "#E5A93C";
+          ctx.fillText(p.glyph, px, py);
+        }
       }
 
-      // Render "Aravind V S" in crisp micro-dots illuminated by intertwining blue & yellow waves
       for (const dot of dots) {
-        const phase = dot.u * Math.PI * 2.4 - t * 2.0;
-        const waveBlueY = 0.5 + 0.33 * Math.sin(phase);
-        const waveYellowY = 0.5 + 0.33 * Math.sin(phase + Math.PI);
+        if (!prefersReducedMotion) {
+          const distFromSweep = Math.abs(dot.u - cyclePos);
+          const sweepLift =
+            distFromSweep < 0.14
+              ? Math.cos((distFromSweep / 0.14) * Math.PI * 0.5)
+              : 0;
 
-        const distBlue = Math.abs(dot.v - waveBlueY);
-        const distYellow = Math.abs(dot.v - waveYellowY);
+          const driftX =
+            sweepLift *
+            (dot.isBlueBase ? -3.2 : 3.2) *
+            Math.sin(t * 4 + dot.seed * 6);
+          const driftY =
+            sweepLift * (dot.seed - 0.5) * 7.5 +
+            Math.sin(t * 1.8 + dot.u * 5.0 + dot.seed * 3.0) * 0.22;
 
-        const blueWeight = Math.exp(-distBlue * distBlue * 11.5);
-        const yellowWeight = Math.exp(-distYellow * distYellow * 11.5);
+          const goalX = dot.tx + driftX;
+          const goalY = dot.ty + driftY;
 
-        const flicker = prefersReducedMotion
-          ? 1
-          : 0.9 + 0.1 * Math.sin(t * 3.4 + dot.seed * Math.PI * 2);
+          const stiffness = 62;
+          const damping = 12;
+          const ax = (goalX - dot.x) * stiffness - dot.vx * damping;
+          const ay = (goalY - dot.y) * stiffness - dot.vy * damping;
 
-        let color = "#E2E8F0";
+          dot.vx += ax * dtSec;
+          dot.vy += ay * dtSec;
+          dot.x += dot.vx * dtSec;
+          dot.y += dot.vy * dtSec;
+        }
+
+        const phase = dot.u * Math.PI * 2.2 - t * 1.75;
+        const waveBlueY = 0.5 + 0.3 * Math.sin(phase);
+        const waveYellowY = 0.5 + 0.3 * Math.sin(phase + Math.PI);
+
+        const dBlue = Math.abs(dot.v - waveBlueY);
+        const dYellow = Math.abs(dot.v - waveYellowY);
+
+        const blueW = Math.exp(-dBlue * dBlue * 10);
+        const yellowW = Math.exp(-dYellow * dYellow * 10);
+
+        let color = "#F1F5F9";
         let radius = 0.72;
-        let alpha = dot.intensity * 0.88 * flicker;
+        let alpha = dot.intensity * 0.92;
 
-        if (blueWeight > 0.52 && yellowWeight > 0.52) {
-          // Crossing intersection shimmer
+        if (blueW > 0.48 && yellowW > 0.48) {
           color = "#FEF3C7";
-          radius = 0.88;
-          alpha = Math.min(1, dot.intensity * 0.98 * flicker);
-        } else if (blueWeight > yellowWeight + 0.08) {
-          color = blueWeight > 0.65 ? "#BAE6FD" : "#38BDF8";
-          radius = blueWeight > 0.65 ? 0.85 : 0.78;
-          alpha = Math.min(1, dot.intensity * (0.88 + blueWeight * 0.12) * flicker);
-        } else if (yellowWeight > blueWeight + 0.08) {
-          color = yellowWeight > 0.65 ? "#FDE68A" : "#E5A93C";
-          radius = yellowWeight > 0.65 ? 0.85 : 0.78;
-          alpha = Math.min(
-            1,
-            dot.intensity * (0.88 + yellowWeight * 0.12) * flicker,
-          );
+          radius = 0.86;
+          alpha = Math.min(1, dot.intensity);
+        } else if (blueW > yellowW + 0.06) {
+          color = blueW > 0.62 ? "#BAE6FD" : "#38BDF8";
+          radius = blueW > 0.62 ? 0.82 : 0.75;
+        } else if (yellowW > blueW + 0.06) {
+          color = yellowW > 0.62 ? "#FDE68A" : "#E5A93C";
+          radius = yellowW > 0.62 ? 0.82 : 0.75;
         } else {
-          color = dot.seed > 0.5 ? "#7DD3FC" : "#FDE68A";
-          alpha = dot.intensity * 0.76 * flicker;
+          color = dot.isBlueBase ? "#7DD3FC" : "#FDE68A";
+          alpha = dot.intensity * 0.84;
         }
 
         ctx.globalAlpha = alpha;
@@ -186,19 +269,21 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
 
     syncSize();
     sampleNameGlyphs();
-    drawFrame(0);
+    drawFrame(0.016, 0);
 
     if (document.fonts?.ready) {
       document.fonts.ready.then(() => {
         if (cancelled) return;
         sampleNameGlyphs();
-        drawFrame((performance.now() - startMs) / 1000);
+        drawFrame(0.016, (performance.now() - startMs) / 1000);
       });
     }
 
     if (!prefersReducedMotion) {
       const tick = (nowMs: number) => {
-        drawFrame((nowMs - startMs) / 1000);
+        const dtSec = Math.min(0.05, Math.max(0.001, (nowMs - prevMs) / 1000));
+        prevMs = nowMs;
+        drawFrame(dtSec, (nowMs - startMs) / 1000);
         rafId = window.requestAnimationFrame(tick);
       };
       rafId = window.requestAnimationFrame(tick);
@@ -216,7 +301,7 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="block h-7 w-[132px] font-brand select-none"
+        className="block h-[30px] w-[148px] font-brand select-none"
       />
     </HStack>
   );
