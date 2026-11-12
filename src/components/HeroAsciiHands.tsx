@@ -207,22 +207,24 @@ function drawHandCells(
     let x = drawCol * cellSize + cellSize * 0.5;
     let y = drawRow * cellSize + cellSize * 0.5;
 
-    // Interactive cursor displacement & cosmic magnification
+    // Fluid water-wake displacement & organic magnification
     let isCursorNear = false;
     let cursorExcitement = 0;
-    if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+    if (cursorLogicalX > -500 && cursorLogicalY > -500) {
       const distToCursor = Math.hypot(x - cursorLogicalX, y - cursorLogicalY);
-      const cursorRadius = 82; // Magnifier lens radius
+      const cursorRadius = 88; // Wake influence radius
       if (distToCursor < cursorRadius) {
         isCursorNear = true;
         const normDist = distToCursor / cursorRadius;
-        cursorExcitement = Math.pow(1 - normDist, 1.6);
-
-        // Spherical lens displacement bulge
+        // Fluid sine-wave displacement: parts smoothly like water and seamlessly rejoins at boundary
+        const waterWake = Math.sin((1 - normDist) * Math.PI);
         const repelAngle = Math.atan2(y - cursorLogicalY, x - cursorLogicalX);
-        const pushDist = (1 - normDist) * 14.5;
+        const pushDist = waterWake * 16.0;
         x += Math.cos(repelAngle) * pushDist;
         y += Math.sin(repelAngle) * pushDist;
+
+        // Smooth cosine falloff for magnification and excitement (0 at boundary, 1 at center)
+        cursorExcitement = 0.5 - 0.5 * Math.cos((1 - normDist) * Math.PI);
       }
     }
 
@@ -274,9 +276,9 @@ function drawHandCells(
     );
 
     if (isCursorNear) {
-      fillColor = cursorExcitement > 0.5 ? "#FFFFFF" : isRobot ? "#BAE6FD" : "#FEF3C7";
-      alpha = Math.min(1, alpha + cursorExcitement * 0.6);
-      const magSize = 10.5 + cursorExcitement * 7.5;
+      fillColor = cursorExcitement > 0.55 ? "#FFFFFF" : isRobot ? "#BAE6FD" : "#FEF3C7";
+      alpha = Math.min(1, alpha + cursorExcitement * 0.4);
+      const magSize = 10.5 + cursorExcitement * 4.5;
       ctx.font = `700 ${magSize.toFixed(1)}px ${monoFont}`;
     } else {
       ctx.font = `600 10.5px ${monoFont}`;
@@ -374,28 +376,30 @@ function drawFingertipBridges(
 
         let isCursorNear = false;
         let cursorExcitement = 0;
-        if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+        if (cursorLogicalX > -500 && cursorLogicalY > -500) {
           const distToCursor = Math.hypot(gx - cursorLogicalX, gy - cursorLogicalY);
-          const cursorRadius = 82;
+          const cursorRadius = 88;
           if (distToCursor < cursorRadius) {
             isCursorNear = true;
             const normDist = distToCursor / cursorRadius;
-            cursorExcitement = Math.pow(1 - normDist, 1.6);
+            const waterWake = Math.sin((1 - normDist) * Math.PI);
             const repelAngle = Math.atan2(gy - cursorLogicalY, gx - cursorLogicalX);
-            const pushDist = (1 - normDist) * 14.0;
+            const pushDist = waterWake * 16.0;
             gx += Math.cos(repelAngle) * pushDist;
             gy += Math.sin(repelAngle) * pushDist;
+
+            cursorExcitement = 0.5 - 0.5 * Math.cos((1 - normDist) * Math.PI);
           }
         }
 
         const isPeak = stream > 0.68 || isCursorNear;
-        const ch = isCursorNear && cursorExcitement > 0.5 ? "@" : isPeak ? "*" : stream > 0.12 ? "+" : "·";
+        const ch = isCursorNear && cursorExcitement > 0.6 ? "@" : isPeak ? "*" : stream > 0.12 ? "+" : "·";
 
         if (isCursorNear) {
-          const fontSz = 10.5 + cursorExcitement * 7.5;
+          const fontSz = 10.5 + cursorExcitement * 4.5;
           ctx.font = `700 ${fontSz.toFixed(1)}px ${monoFont}`;
           ctx.globalAlpha = Math.min(1, 0.95 * visibility + cursorExcitement * 0.4);
-          ctx.fillStyle = cursorExcitement > 0.4 ? "#FFFFFF" : side.isRobot ? "#BAE6FD" : "#FEF3C7";
+          ctx.fillStyle = cursorExcitement > 0.55 ? "#FFFFFF" : side.isRobot ? "#BAE6FD" : "#FEF3C7";
         } else {
           ctx.font = `600 10.5px ${monoFont}`;
           ctx.globalAlpha = (isPeak ? 0.94 : 0.38) * visibility;
@@ -587,22 +591,22 @@ function drawAnimatedStar(
       let gx = drawC * cellSize + cellSize * 0.5;
       let gy = drawR * cellSize + cellSize * 0.5;
 
-      // Interactive cursor magnifier & repulsion for the middle star
+      // Interactive cursor fluid water-wake & magnification for middle star
       let isCursorNear = false;
       let cursorExcitement = 0;
-      if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+      if (cursorLogicalX > -500 && cursorLogicalY > -500) {
         const distToCursor = Math.hypot(gx - cursorLogicalX, gy - cursorLogicalY);
-        const cursorRadius = 82;
+        const cursorRadius = 88;
         if (distToCursor < cursorRadius) {
           isCursorNear = true;
           const normDist = distToCursor / cursorRadius;
-          cursorExcitement = Math.pow(1 - normDist, 1.6);
-
-          // Magnifier lens push / spherical bulge
+          const waterWake = Math.sin((1 - normDist) * Math.PI);
           const repelAngle = Math.atan2(gy - cursorLogicalY, gx - cursorLogicalX);
-          const pushDist = (1 - normDist) * 15.0;
+          const pushDist = waterWake * 16.0;
           gx += Math.cos(repelAngle) * pushDist;
           gy += Math.sin(repelAngle) * pushDist;
+
+          cursorExcitement = 0.5 - 0.5 * Math.cos((1 - normDist) * Math.PI);
         }
       }
 
@@ -622,12 +626,12 @@ function drawAnimatedStar(
       if (isCursorNear) {
         ci = Math.min(
           ASCII_RAMP.length - 1,
-          ci + Math.floor(cursorExcitement * 4 + 1),
+          ci + Math.floor(cursorExcitement * 3 + 1),
         );
-        const fontSz = 10.5 + cursorExcitement * 7.5;
+        const fontSz = 10.5 + cursorExcitement * 4.5;
         ctx.font = `700 ${fontSz.toFixed(1)}px ${monoFont}`;
-        ctx.fillStyle = cursorExcitement > 0.5 ? "#FFFFFF" : dxS < 0 ? "#BAE6FD" : "#FEF3C7";
-        ctx.globalAlpha = Math.min(1, cellAlpha + cursorExcitement * 0.5);
+        ctx.fillStyle = cursorExcitement > 0.55 ? "#FFFFFF" : dxS < 0 ? "#BAE6FD" : "#FEF3C7";
+        ctx.globalAlpha = Math.min(1, cellAlpha + cursorExcitement * 0.4);
       } else {
         ctx.font = `600 10.5px ${monoFont}`;
         ctx.globalAlpha = cellAlpha;
@@ -865,15 +869,20 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         scrollEase * HAND_SCROLL_OFFSET_ROW +
         humanHoverRow;
 
-      // Convert global cursor coordinates to canvas logical coordinates
+      // Convert global cursor coordinates to canvas logical coordinates with smooth proximity buffer
       const cursor = typeof window !== "undefined" ? window.__portfolioCursor : undefined;
-      let cursorLogicalX = -500;
-      let cursorLogicalY = -500;
+      let cursorLogicalX = -1000;
+      let cursorLogicalY = -1000;
       if (cursor && cursor.active) {
         const rect = canvas.getBoundingClientRect();
         const canvasX = cursor.x - rect.left;
         const canvasY = cursor.y - rect.top;
-        if (canvasX >= 0 && canvasX <= width && canvasY >= 0 && canvasY <= height) {
+        if (
+          canvasX >= -120 &&
+          canvasX <= width + 120 &&
+          canvasY >= -120 &&
+          canvasY <= height + 120
+        ) {
           cursorLogicalX = (canvasX - offsetX) / scale;
           cursorLogicalY = (canvasY - offsetY) / scale;
         }
@@ -921,46 +930,6 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         cursorLogicalY,
         monoFont,
       );
-
-      // 5. Holographic interactive Magnifier Lens Ring around cursor
-      if (cursorLogicalX > -100 && cursorLogicalY > -100) {
-        const lensRadius = 82;
-        const lensGrad = ctx.createRadialGradient(
-          cursorLogicalX,
-          cursorLogicalY,
-          0,
-          cursorLogicalX,
-          cursorLogicalY,
-          lensRadius,
-        );
-        lensGrad.addColorStop(0, "rgba(56, 189, 248, 0.08)");
-        lensGrad.addColorStop(0.75, "rgba(255, 255, 255, 0.03)");
-        lensGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
-        ctx.fillStyle = lensGrad;
-        ctx.beginPath();
-        ctx.arc(cursorLogicalX, cursorLogicalY, lensRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.28)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(cursorLogicalX, cursorLogicalY, lensRadius, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Subtle precision crosshair ticks
-        ctx.strokeStyle = "rgba(56, 189, 248, 0.55)";
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.moveTo(cursorLogicalX, cursorLogicalY - lensRadius - 4);
-        ctx.lineTo(cursorLogicalX, cursorLogicalY - lensRadius + 3);
-        ctx.moveTo(cursorLogicalX, cursorLogicalY + lensRadius - 3);
-        ctx.lineTo(cursorLogicalX, cursorLogicalY + lensRadius + 4);
-        ctx.moveTo(cursorLogicalX - lensRadius - 4, cursorLogicalY);
-        ctx.lineTo(cursorLogicalX - lensRadius + 3, cursorLogicalY);
-        ctx.moveTo(cursorLogicalX + lensRadius - 3, cursorLogicalY);
-        ctx.lineTo(cursorLogicalX + lensRadius + 4, cursorLogicalY);
-        ctx.stroke();
-      }
 
       ctx.restore();
     };

@@ -62,7 +62,7 @@ export function HeroSection() {
         vAlign="end"
         hAlign="center"
         gap={3}
-        className="relative z-10 -mt-16 w-full pb-6 lg:-mt-22 lg:pb-8"
+        className="relative z-10 -mt-2 w-full pb-6 lg:-mt-4 lg:pb-8"
       >
         <HStack gap={3} vAlign="center" className="opacity-60">
           <HStack

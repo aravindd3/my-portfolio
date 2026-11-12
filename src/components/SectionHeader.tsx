@@ -28,13 +28,13 @@ export function SectionHeader({
       <HStack
         gap={2}
         vAlign="center"
-        className="rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+        className="text-copper/90 select-none"
       >
         <AppIcon name={icon} size="xsm" color="accent" />
         <Text
           type="code"
           size="xsm"
-          className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-secondary"
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-copper/90"
         >
           {eyebrow}
         </Text>
