@@ -7,11 +7,10 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
-import { HeroVortexMinimal } from "./HeroVortexMinimal";
 
 /**
  * Stage 1: Personal Introduction Hero Slide
- * Welcomes visitors with high-impact minimalist typography and guides them to scroll.
+ * Welcomes visitors with high-impact minimalist typography and a smooth interactive scroll indicator.
  */
 export function HeroIntroSlide() {
   return (
@@ -21,33 +20,24 @@ export function HeroIntroSlide() {
       aria-labelledby="intro-heading"
       vAlign="between"
       hAlign="center"
-      className="relative w-full min-h-svh overflow-hidden px-6 pt-24 pb-4 text-center bg-[#020306] bg-[radial-gradient(ellipse_80%_60%_at_50%_30%,rgba(15,23,42,0.4)_0%,rgba(2,3,6,0.95)_70%,#020306_100%)]"
+      className="relative w-full h-svh min-h-svh overflow-hidden px-6 text-center bg-[var(--bg-canvas)] bg-[radial-gradient(ellipse_75%_55%_at_50%_50%,rgba(20,28,42,0.45)_0%,rgba(6,9,14,0.75)_65%,var(--bg-canvas)_100%)]"
     >
-      {/* Top Status & System Ready Indicator */}
-      <HStack gap={2} vAlign="center" className="relative z-10 opacity-80 pt-2">
-        <HStack
-          as="span"
-          className="size-2 rounded-full bg-signal shadow-[0_0_8px_var(--accent-signal)] animate-pulse"
-        />
-        <Text
-          type="code"
-          size="xsm"
-          className="font-mono text-[11px] font-semibold tracking-[0.24em] uppercase text-secondary"
-        >
-          {HERO_EDITORIAL_DATA.introStatus}
-        </Text>
-      </HStack>
+      {/* Symmetrical Top Spacer matching the bottom indicator height to keep the centerpiece dead center */}
+      <HStack
+        className="w-full h-24 sm:h-28 shrink-0 pointer-events-none"
+        aria-hidden="true"
+      />
 
       {/* Centerpiece Typographic Introduction */}
       <VStack
         gap={4}
         hAlign="center"
-        className="relative z-10 mx-auto max-w-4xl my-auto pt-4"
+        className="relative z-10 mx-auto max-w-4xl my-auto px-4"
       >
         <Text
           type="code"
           size="sm"
-          className="font-mono text-xs sm:text-sm font-semibold tracking-[0.3em] uppercase text-copper"
+          className="font-mono text-xs sm:text-sm font-semibold tracking-[0.32em] uppercase text-copper drop-shadow-[0_0_12px_rgba(229,169,60,0.2)]"
         >
           {HERO_EDITORIAL_DATA.introGreeting}
         </Text>
@@ -56,7 +46,7 @@ export function HeroIntroSlide() {
           id="intro-heading"
           level={1}
           justify="center"
-          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
+          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.85)]"
         >
           {HERO_EDITORIAL_DATA.introName}
         </Heading>
@@ -70,34 +60,48 @@ export function HeroIntroSlide() {
         </Text>
       </VStack>
 
-      {/* Procedural Minimalist Black Hole Vortex at the End of Slide 1 */}
+      {/* Interactive Clean Scroll Down Indicator */}
       <VStack
         hAlign="center"
-        className="relative z-10 w-full mt-auto -mb-2 sm:-mb-4 pointer-events-auto"
+        className="relative z-10 w-full h-24 sm:h-28 shrink-0 justify-end pb-8 sm:pb-10 pointer-events-auto"
       >
-        <HeroVortexMinimal />
-
-        {/* Minimalist Natural Transition to Slide 2 */}
         <Link
           href="#hero-technical"
           isStandalone
-          aria-label="Scroll to technical overview"
-          className="group relative -mt-8 sm:-mt-10 mb-4 flex flex-col items-center gap-2 no-underline opacity-65 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
+          aria-label="Scroll down to technical overview"
+          className="group flex flex-col items-center gap-3 no-underline opacity-70 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
         >
-          <Text
-            type="code"
-            size="xsm"
-            className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted transition-colors duration-200 group-hover:text-copper"
-          >
-            {HERO_EDITORIAL_DATA.introScrollCta}
-          </Text>
+          {/* Minimalist Mouse Pill / Capsule */}
           <HStack
             as="span"
             hAlign="center"
-            vAlign="center"
-            className="size-7 rounded-full border border-white/15 bg-black/60 text-secondary backdrop-blur-sm transition-all duration-300 group-hover:translate-y-1 group-hover:border-copper/40 group-hover:text-copper"
+            className="w-6 h-10 rounded-full border border-white/20 bg-white/[0.02] p-1.5 transition-all duration-300 group-hover:border-copper/70 group-hover:bg-copper/[0.06] group-hover:shadow-[0_0_20px_rgba(229,169,60,0.35)]"
           >
-            <AppIcon name="chevron-down" size="sm" color="inherit" />
+            <HStack
+              as="span"
+              className="size-1.5 rounded-full bg-white transition-colors duration-300 group-hover:bg-copper animate-scroll-wheel"
+            />
+          </HStack>
+
+          {/* Directional Cue & Monospace Text */}
+          <HStack
+            gap={1.5}
+            vAlign="center"
+            className="text-muted group-hover:text-copper transition-colors duration-300"
+          >
+            <Text
+              type="code"
+              size="xsm"
+              className="font-mono text-[10px] tracking-[0.28em] uppercase"
+            >
+              {HERO_EDITORIAL_DATA.introScrollCta}
+            </Text>
+            <AppIcon
+              name="chevron-down"
+              size="xsm"
+              color="inherit"
+              className="transition-transform duration-300 group-hover:translate-y-1"
+            />
           </HStack>
         </Link>
       </VStack>
