@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Text } from "@astryxdesign/core/Text";
 
@@ -38,6 +38,12 @@ const GRID_STEP = 1.85;
 
 export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const hoverRef = useRef(false);
+
+  useEffect(() => {
+    hoverRef.current = isHovered;
+  }, [isHovered]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -52,6 +58,7 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
     let cancelled = false;
     const startMs = performance.now();
     let prevMs = startMs;
+    let hoverTransition = 0; // 0 = static crisp, 1 = dynamic ASCII motion
 
     const syncSize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -101,14 +108,11 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
           const alpha = img[(py * offscreen.width + px) * 4 + 3] / 255;
           if (alpha > 0.25) {
             const seed = ((Math.round(x * 13) + Math.round(y * 31)) % 97) / 97;
-            const startX = seed > 0.5 ? x - 22 - seed * 18 : x + 22 + seed * 18;
-            const startY = LOGICAL_H * 0.5 + (seed - 0.5) * 18;
-
             sampled.push({
               tx: x,
               ty: y,
-              x: startX,
-              y: startY,
+              x,
+              y,
               vx: 0,
               vy: 0,
               u: x / LOGICAL_W,
@@ -122,15 +126,15 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
 
       dots = sampled;
 
-      const streamCount = 26;
+      const streamCount = 22;
       const nextStreams: FlowingParticle[] = [];
       for (let i = 0; i < streamCount; i++) {
         const dir = i % 2 === 0 ? 1 : -1;
         nextStreams.push({
           u: i / streamCount,
-          speed: 0.16 + (i % 5) * 0.035,
+          speed: 0.22 + (i % 5) * 0.045,
           dir,
-          amp: 3.5 + (i % 4) * 1.8,
+          amp: 4 + (i % 4) * 2.2,
           freq: 2.1 + (i % 3) * 0.45,
           phase: (i * 0.9) % (Math.PI * 2),
           glyph: i % 3 === 0 ? "·" : i % 3 === 1 ? "." : ":",
@@ -145,12 +149,16 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
 
-      const t = elapsedSec;
-      const cyclePos = ((t * 0.19) % 1.45) - 0.22;
+      // Smoothly blend hover state: 0 = completely static & sharp, 1 = dynamic ASCII motion
+      const targetHover = hoverRef.current ? 1 : 0;
+      const hoverSpeed = hoverRef.current ? 4.5 : 2.5;
+      hoverTransition += (targetHover - hoverTransition) * Math.min(1, dtSec * hoverSpeed);
 
-      // 1. Draw continuous free-flowing pure-white micro-ASCII dots streaming into letterforms
-      if (dots.length > 0) {
-        ctx.font = '600 8px "JetBrains Mono", monospace';
+      const t = elapsedSec;
+
+      // 1. Draw flowing ASCII stream particles only when hovered
+      if (hoverTransition > 0.02 && dots.length > 0) {
+        ctx.font = '600 8.5px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
@@ -172,50 +180,54 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
           const waveX = p.u * LOGICAL_W;
           const waveY =
             LOGICAL_H * 0.5 +
-            Math.sin(p.u * Math.PI * p.freq - t * 2.2 * p.dir + p.phase) * p.amp;
+            Math.sin(p.u * Math.PI * p.freq - t * 3.2 * p.dir + p.phase) * p.amp;
 
-          const pull = Math.pow(progressToCenter, 1.8) * 0.72;
+          const pull = Math.pow(progressToCenter, 1.8) * 0.75;
           const px = waveX * (1 - pull) + target.tx * pull;
           const py = waveY * (1 - pull) + target.ty * pull;
 
-          // Pure white flowing dots with variable transparency
-          ctx.globalAlpha = 0.20 + progressToCenter * 0.50;
+          ctx.globalAlpha = (0.2 + progressToCenter * 0.6) * hoverTransition;
           ctx.fillStyle = "#FFFFFF";
           ctx.fillText(p.glyph, px, py);
         }
       }
 
-      // 2. Spring physics + smooth coalescence of the letter dots in pure white
+      // 2. Render letter dots: perfectly static when idle, springy ASCII dispersal on hover
       for (const dot of dots) {
-        const distFromSweep = Math.abs(dot.u - cyclePos);
-        const sweepLift =
-          distFromSweep < 0.14
-            ? Math.cos((distFromSweep / 0.14) * Math.PI * 0.5)
-            : 0;
+        if (hoverTransition > 0.005) {
+          // Dynamic wave disturbance on hover
+          const wavePhase = dot.u * Math.PI * 3.5 - t * 4.2;
+          const wavePush = Math.sin(wavePhase);
 
-        const driftX =
-          sweepLift *
-          (dot.seed > 0.5 ? -2.8 : 2.8) *
-          Math.sin(t * 4 + dot.seed * 6);
-        const driftY =
-          sweepLift * (dot.seed - 0.5) * 6.5 +
-          Math.sin(t * 1.8 + dot.u * 5.0 + dot.seed * 3.0) * 0.22;
+          const driftX = hoverTransition * wavePush * 3.2 * (dot.seed > 0.5 ? 1 : -1);
+          const driftY =
+            hoverTransition *
+            (Math.sin(t * 3.0 + dot.seed * 8) * 2.8 + (dot.seed - 0.5) * 4.0);
 
-        const goalX = dot.tx + driftX;
-        const goalY = dot.ty + driftY;
+          const goalX = dot.tx + driftX;
+          const goalY = dot.ty + driftY;
 
-        const stiffness = 65;
-        const damping = 12.5;
-        const ax = (goalX - dot.x) * stiffness - dot.vx * damping;
-        const ay = (goalY - dot.y) * stiffness - dot.vy * damping;
+          const stiffness = 75;
+          const damping = 14;
+          const ax = (goalX - dot.x) * stiffness - dot.vx * damping;
+          const ay = (goalY - dot.y) * stiffness - dot.vy * damping;
 
-        dot.vx += ax * dtSec;
-        dot.vy += ay * dtSec;
-        dot.x += dot.vx * dtSec;
-        dot.y += dot.vy * dtSec;
+          dot.vx += ax * dtSec;
+          dot.vy += ay * dtSec;
+          dot.x += dot.vx * dtSec;
+          dot.y += dot.vy * dtSec;
+        } else {
+          // Snap directly to home position when idle
+          dot.x = dot.tx;
+          dot.y = dot.ty;
+          dot.vx = 0;
+          dot.vy = 0;
+        }
 
-        // Clean monochrome white dot shading
-        const shimmer = 0.88 + 0.12 * Math.sin(t * 3.2 + dot.seed * Math.PI * 2);
+        const shimmer =
+          hoverTransition > 0.01
+            ? 0.85 + 0.15 * Math.sin(t * 4.5 + dot.seed * Math.PI * 2)
+            : 1.0;
         const radius = dot.intensity > 0.8 ? 0.82 : 0.74;
         const alpha = Math.min(1, dot.intensity * 0.95 * shimmer);
 
@@ -256,12 +268,18 @@ export function NavbarAsciiName({ name }: NavbarAsciiNameProps) {
   }, [name]);
 
   return (
-    <HStack as="span" vAlign="center" className="relative">
+    <HStack
+      as="span"
+      vAlign="center"
+      className="relative cursor-pointer select-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Text className="sr-only">{name}</Text>
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="block h-[30px] w-[148px] font-brand select-none"
+        className="block h-[30px] w-[148px] font-brand select-none transition-transform duration-200 hover:scale-[1.02]"
       />
     </HStack>
   );

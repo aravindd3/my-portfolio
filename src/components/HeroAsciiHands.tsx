@@ -180,6 +180,8 @@ function drawHandCells(
   robotOffsetRow: number,
   humanOffsetCol: number,
   humanOffsetRow: number,
+  cursorLogicalX: number,
+  cursorLogicalY: number,
 ) {
   const { cellSize, cols, rows } = HERO_ASCII_GRID;
   const scrollFade = 1 - smoothstep(clamp01((scrollProgress - 0.12) / 0.88)) * 0.88;
@@ -201,8 +203,27 @@ function drawHandCells(
       continue;
     }
 
-    const x = drawCol * cellSize + cellSize * 0.5;
-    const y = drawRow * cellSize + cellSize * 0.5;
+    let x = drawCol * cellSize + cellSize * 0.5;
+    let y = drawRow * cellSize + cellSize * 0.5;
+
+    // Interactive cursor displacement & cosmic excitation when sweeping through ASCII elements
+    let isCursorNear = false;
+    let cursorExcitement = 0;
+    if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+      const distToCursor = Math.hypot(x - cursorLogicalX, y - cursorLogicalY);
+      const cursorRadius = 68; // interaction field radius in logical coordinates
+      if (distToCursor < cursorRadius) {
+        isCursorNear = true;
+        const normDist = distToCursor / cursorRadius;
+        cursorExcitement = Math.pow(1 - normDist, 1.8);
+
+        // Repel / part elements away from cursor as you pass through
+        const repelAngle = Math.atan2(y - cursorLogicalY, x - cursorLogicalX);
+        const pushDist = (1 - normDist) * 16.5;
+        x += Math.cos(repelAngle) * pushDist;
+        y += Math.sin(repelAngle) * pushDist;
+      }
+    }
 
     // Vignette along outer viewport boundaries as hands slide in/out
     let alpha = 1;
@@ -233,7 +254,13 @@ function drawHandCells(
       tipProximity * (0.55 + 0.45 * Math.sin(elapsedSec * 4.0 - cell.distTip * 0.45));
 
     let idx = cell.charIdx;
-    if (cell.charIdx >= 2 && flowWave > 0.62) {
+    if (isCursorNear) {
+      // Elevate character density & brightness on interactive touch
+      idx = Math.min(
+        ASCII_RAMP.length - 1,
+        idx + Math.floor(cursorExcitement * 3.8 + 1),
+      );
+    } else if (cell.charIdx >= 2 && flowWave > 0.62) {
       idx = Math.min(ASCII_RAMP.length - 1, idx + 1);
     } else if (cell.charIdx >= 4 && crossShimmer < -0.78) {
       idx = Math.max(1, idx - 1);
@@ -245,7 +272,10 @@ function drawHandCells(
       entryLockPulse * (1 - wristRatio * 0.65),
     );
 
-    if (tipPulse > 0.48 && cell.charIdx >= 4) {
+    if (isCursorNear) {
+      fillColor = cursorExcitement > 0.6 ? "#FFFFFF" : isRobot ? "#BAE6FD" : "#FEF3C7";
+      alpha = Math.min(1, alpha + cursorExcitement * 0.6);
+    } else if (tipPulse > 0.48 && cell.charIdx >= 4) {
       fillColor = isRobot ? "#E0F2FE" : "#FEF3C7";
       alpha = Math.min(1, alpha + 0.15);
     } else if (surgeHighlight > 0.42 && cell.charIdx >= 4) {
@@ -766,6 +796,20 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         scrollEase * HAND_SCROLL_OFFSET_ROW +
         humanHoverRow;
 
+      // Convert global cursor coordinates to canvas logical coordinates
+      const cursor = typeof window !== "undefined" ? window.__portfolioCursor : undefined;
+      let cursorLogicalX = -500;
+      let cursorLogicalY = -500;
+      if (cursor && cursor.active) {
+        const rect = canvas.getBoundingClientRect();
+        const canvasX = cursor.x - rect.left;
+        const canvasY = cursor.y - rect.top;
+        if (canvasX >= 0 && canvasX <= width && canvasY >= 0 && canvasY <= height) {
+          cursorLogicalX = (canvasX - offsetX) / scale;
+          cursorLogicalY = (canvasY - offsetY) / scale;
+        }
+      }
+
       // 2. Render both ASCII hands with entry convergence, living wave, and scroll retraction
       drawHandCells(
         ctx,
@@ -776,6 +820,8 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         robotOffsetRow,
         humanOffsetCol,
         humanOffsetRow,
+        cursorLogicalX,
+        cursorLogicalY,
       );
 
       // 3. Render animated signal pulses connecting dynamic fingertips <-> center star
