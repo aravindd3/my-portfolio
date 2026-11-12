@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Heading } from "@astryxdesign/core/Heading";
 import { HStack } from "@astryxdesign/core/HStack";
 import { Link } from "@astryxdesign/core/Link";
@@ -70,37 +69,19 @@ export function HeroIntroSlide() {
         </Text>
       </VStack>
 
-      {/* Bottom Corner Ultra-Realistic Picture */}
-      <aside
-        aria-label="Gravitational vortex artwork"
-        className="absolute bottom-6 right-6 sm:bottom-8 sm:right-10 z-20 hidden sm:block pointer-events-auto"
-      >
-        <div className="group relative w-36 sm:w-44 md:w-52 aspect-[9/16] rounded-2xl overflow-hidden border border-white/15 bg-black/90 shadow-[0_16px_48px_rgba(0,0,0,0.95),0_0_1px_1px_rgba(255,255,255,0.1)] transition-all duration-300 hover:scale-[1.03] hover:border-white/35">
-          <Image
-            src="/images/blackhole-vortex.jpg"
-            alt="Ultra-realistic gravitational vortex and lone observer at the event horizon"
-            fill
-            sizes="(max-width: 768px) 176px, 208px"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            priority
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-20" />
-        </div>
-      </aside>
-
-      {/* Bottom Guide to Scroll to Technical Hero Slide */}
+      {/* Bottom Guide to Scroll to Event Horizon Transition */}
       <Link
-        href="#hero-technical"
+        href="#vortex-transition"
         isStandalone
-        aria-label="Scroll down to technical overview and interactive ASCII core"
-        className="group relative z-10 flex flex-col items-center gap-2.5 no-underline opacity-70 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
+        aria-label="Scroll down to gravitational event horizon transition"
+        className="group relative z-10 flex flex-col items-center gap-2.5 no-underline opacity-75 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
       >
         <Text
           type="code"
           size="xsm"
           className="font-mono text-[11px] tracking-[0.25em] uppercase text-secondary transition-colors duration-200 group-hover:text-copper"
         >
-          {HERO_EDITORIAL_DATA.introScrollCta}
+          DESCEND TO EVENT HORIZON
         </Text>
         <HStack
           as="span"
