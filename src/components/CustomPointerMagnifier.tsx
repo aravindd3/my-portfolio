@@ -2,17 +2,19 @@
 
 import { useEffect, useRef } from "react";
 
-interface DustParticle {
+interface HollowKnightMote {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  glyph: "." | "·" | "+" | "✦";
-  size: number;
+  radius: number;
+  glowRadius: number;
   alpha: number;
   life: number;
   maxLife: number;
-  isBlue: boolean;
+  buoyancy: number;
+  driftPhase: number;
+  driftSpeed: number;
 }
 
 export function CustomPointerMagnifier() {
@@ -39,27 +41,24 @@ export function CustomPointerMagnifier() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
     };
 
     syncSize();
     window.addEventListener("resize", syncSize, { passive: true });
 
-    let mouseX = -200;
-    let mouseY = -200;
-    let prevMouseX = -200;
-    let prevMouseY = -200;
-    let reticleX = -200;
-    let reticleY = -200;
+    let mouseX = -500;
+    let mouseY = -500;
+    let prevMouseX = -500;
+    let prevMouseY = -500;
     let isHoveringInteractive = false;
-    let isMouseOnScreen = false;
 
-    const particles: DustParticle[] = [];
-    const GLYPHS = [".", "·", "+", "✦"] as const;
+    const particles: HollowKnightMote[] = [];
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      isMouseOnScreen = true;
 
       // Broadcast mouse coordinates to window for ASCII Canvas interactive ripple
       window.__portfolioCursor = {
@@ -75,30 +74,41 @@ export function CustomPointerMagnifier() {
         );
       }
 
-      // Emit starry white cosmic dust trail based on cursor velocity
-      const dx = mouseX - (prevMouseX === -200 ? mouseX : prevMouseX);
-      const dy = mouseY - (prevMouseY === -200 ? mouseY : prevMouseY);
+      // Hollow Knight Soul/Dream Motes emission along cursor trajectory
+      const dx = mouseX - (prevMouseX === -500 ? mouseX : prevMouseX);
+      const dy = mouseY - (prevMouseY === -500 ? mouseY : prevMouseY);
       const dist = Math.hypot(dx, dy);
 
-      if (dist > 1.5) {
-        const emitCount = Math.min(4, Math.max(1, Math.floor(dist / 9)));
-        for (let i = 0; i < emitCount; i++) {
-          const spreadAngle = Math.random() * Math.PI * 2;
-          const spreadSpeed = Math.random() * 18 + 4;
-          const glyph = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-          const isBlue = Math.random() < 0.28; // mostly pure white starry dust with rare subtle cyan flecks
+      if (dist > 1.2) {
+        // Spawn small glowing spirit dots behind cursor
+        const count = Math.min(
+          isHoveringInteractive ? 6 : 4,
+          Math.max(1, Math.floor(dist / 8)),
+        );
+
+        for (let i = 0; i < count; i++) {
+          const frac = i / count;
+          // Interpolate positions between previous and current mouse to eliminate gaps during fast motion
+          const spawnX = prevMouseX + dx * frac + (Math.random() - 0.5) * 3;
+          const spawnY = prevMouseY + dy * frac + (Math.random() - 0.5) * 3;
+
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 12 + 2;
+          const baseRadius = 0.8 + Math.random() * 1.5;
 
           particles.push({
-            x: mouseX + (Math.random() - 0.5) * 6,
-            y: mouseY + (Math.random() - 0.5) * 6,
-            vx: -dx * 0.12 + Math.cos(spreadAngle) * spreadSpeed,
-            vy: -dy * 0.12 + Math.sin(spreadAngle) * spreadSpeed - 3,
-            glyph,
-            size: glyph === "✦" ? 10.5 : glyph === "+" ? 9 : 7.5,
+            x: spawnX,
+            y: spawnY,
+            vx: -dx * 0.08 + Math.cos(angle) * speed,
+            vy: -dy * 0.08 + Math.sin(angle) * speed - 6, // gentle upward spirit buoyancy
+            radius: isHoveringInteractive ? baseRadius * 1.25 : baseRadius,
+            glowRadius: baseRadius * (3.8 + Math.random() * 2.2),
             alpha: 0.85 + Math.random() * 0.15,
             life: 0,
-            maxLife: 0.45 + Math.random() * 0.35,
-            isBlue,
+            maxLife: 0.55 + Math.random() * 0.35,
+            buoyancy: 8 + Math.random() * 14,
+            driftPhase: Math.random() * Math.PI * 2,
+            driftSpeed: 3.5 + Math.random() * 4.0,
           });
         }
       }
@@ -108,8 +118,9 @@ export function CustomPointerMagnifier() {
     };
 
     const onMouseLeave = () => {
-      isMouseOnScreen = false;
       window.__portfolioCursor = { x: -500, y: -500, active: false };
+      prevMouseX = -500;
+      prevMouseY = -500;
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
@@ -125,7 +136,7 @@ export function CustomPointerMagnifier() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Draw Starry White Dust Particle Trail
+      // Render Hollow Knight Ethereal Spirit Dust Trail
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.life += dtSec;
@@ -134,84 +145,47 @@ export function CustomPointerMagnifier() {
           continue;
         }
 
+        // Gentle spirit drift & buoyancy
+        p.y -= p.buoyancy * dtSec;
+        p.x += Math.sin(nowMs * 0.003 * p.driftSpeed + p.driftPhase) * 14 * dtSec;
+
         p.x += p.vx * dtSec;
         p.y += p.vy * dtSec;
-        p.vx *= 0.94;
-        p.vy *= 0.94;
+        p.vx *= 0.92;
+        p.vy *= 0.92;
 
-        const lifeFrac = p.life / p.maxLife;
-        const currentAlpha = (1 - lifeFrac) * p.alpha;
+        const progress = p.life / p.maxLife;
+        const fade = Math.sin((1 - progress) * Math.PI * 0.5); // smooth non-linear decay
+        const currentAlpha = p.alpha * fade;
 
-        ctx.globalAlpha = currentAlpha;
-        ctx.fillStyle = p.isBlue ? "#7DD3FC" : "#FFFFFF";
-        ctx.font = `600 ${p.size}px "JetBrains Mono", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(p.glyph, p.x, p.y);
-      }
+        if (currentAlpha < 0.01) continue;
 
-      // 2. Draw Sleek Focus Reticle Ring
-      if (isMouseOnScreen && mouseX > 0 && mouseY > 0) {
-        const ease = 0.22;
-        reticleX += (mouseX - reticleX) * ease;
-        reticleY += (mouseY - reticleY) * ease;
-
-        const ringRadius = isHoveringInteractive ? 20 : 13;
-        const ringAlpha = isHoveringInteractive ? 0.75 : 0.45;
-
-        // Soft halo
+        // 1. Soft glowing outer spirit aura
         const halo = ctx.createRadialGradient(
-          reticleX,
-          reticleY,
+          p.x,
+          p.y,
           0,
-          reticleX,
-          reticleY,
-          ringRadius * 1.5,
+          p.x,
+          p.y,
+          p.glowRadius,
         );
-        halo.addColorStop(0, "rgba(255, 255, 255, 0.08)");
-        halo.addColorStop(0.8, "rgba(255, 255, 255, 0.02)");
+        halo.addColorStop(0, `rgba(255, 255, 255, ${(currentAlpha * 0.85).toFixed(3)})`);
+        halo.addColorStop(0.35, `rgba(240, 248, 255, ${(currentAlpha * 0.45).toFixed(3)})`);
+        halo.addColorStop(0.7, `rgba(224, 242, 254, ${(currentAlpha * 0.18).toFixed(3)})`);
         halo.addColorStop(1, "rgba(255, 255, 255, 0)");
 
         ctx.globalAlpha = 1;
         ctx.fillStyle = halo;
         ctx.beginPath();
-        ctx.arc(reticleX, reticleY, ringRadius * 1.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.glowRadius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Thin reticle circle
-        ctx.globalAlpha = ringAlpha;
-        ctx.strokeStyle = isHoveringInteractive ? "#38BDF8" : "rgba(255, 255, 255, 0.65)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(reticleX, reticleY, ringRadius, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Center micro-dot
-        ctx.globalAlpha = 0.95;
+        // 2. Crisp luminous pure white center dot
+        ctx.globalAlpha = currentAlpha;
         ctx.fillStyle = "#FFFFFF";
         ctx.beginPath();
-        ctx.arc(mouseX, mouseY, 1.8, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
-
-        // Precision reticle ticks when hovering buttons/links
-        if (isHoveringInteractive) {
-          ctx.strokeStyle = "#38BDF8";
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          // Top
-          ctx.moveTo(reticleX, reticleY - ringRadius - 3);
-          ctx.lineTo(reticleX, reticleY - ringRadius + 1);
-          // Bottom
-          ctx.moveTo(reticleX, reticleY + ringRadius - 1);
-          ctx.lineTo(reticleX, reticleY + ringRadius + 3);
-          // Left
-          ctx.moveTo(reticleX - ringRadius - 3, reticleY);
-          ctx.lineTo(reticleX - ringRadius + 1, reticleY);
-          // Right
-          ctx.moveTo(reticleX + ringRadius - 1, reticleY);
-          ctx.lineTo(reticleX + ringRadius + 3, reticleY);
-          ctx.stroke();
-        }
       }
 
       ctx.globalAlpha = 1;
