@@ -9,8 +9,6 @@ export type ProtocolId =
   | "nfc";
 
 export interface HeroEditorialData {
-  eyebrowBadge: string;
-  name: string;
   punchline: string;
   punchlineHighlight: string;
   bioBrief: string;
@@ -207,12 +205,10 @@ export const PROFILE_DATA: ProfileData = {
 };
 
 export const HERO_EDITORIAL_DATA: HeroEditorialData = {
-  eyebrowBadge: "ELECTRONICS & COMMUNICATION ENGINEERING · EMBEDDED SYSTEMS",
-  name: "Aravind V S",
   punchline: "Engineering at the intersection of",
   punchlineHighlight: "bare-metal firmware & physical circuitry.",
   bioBrief:
-    "Electronics & Communication Engineering undergraduate at VIT-AP specializing in embedded systems and PCB design. Focused on bridging hardware-level architectures with deterministic firmware to build robust, interconnected devices.",
+    "Focused on bridging hardware-level architectures with deterministic firmware to build robust, interconnected devices.",
   primaryCtaLabel: "Explore Projects",
   primaryCtaHref: "#projects",
   asciiArtAlt:

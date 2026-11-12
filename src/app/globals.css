@@ -47,7 +47,6 @@
 
 html {
   color-scheme: dark;
-  scroll-behavior: smooth;
   scroll-padding-top: 5rem;
   background-color: var(--bg-canvas);
   color: var(--text-primary);

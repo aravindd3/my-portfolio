@@ -19,13 +19,14 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     }
 
     const lenis = new Lenis({
-      duration: 1.35, // slightly slower, luxurious smooth deceleration
+      duration: 1.45,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 0.9, // reduced scroll speed for refined pacing
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.4,
+      anchors: { offset: -76 },
       infinite: false,
     });
 

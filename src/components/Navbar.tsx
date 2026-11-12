@@ -34,7 +34,7 @@ export function Navbar() {
         hAlign="between"
         vAlign="center"
         gap={3}
-        className="frosted-glass-nav pointer-events-auto mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-5"
+        className="frosted-glass-nav pointer-events-auto mx-auto w-full max-w-md rounded-full p-1.5 md:w-fit md:max-w-none lg:gap-4 lg:pr-2.5"
       >
         <HStack gap={3} vAlign="center" className="shrink-0">
           <Link
@@ -42,27 +42,46 @@ export function Navbar() {
             label={`${PROFILE_DATA.fullName} — Back to top`}
             isStandalone
             display="block"
-            className="shrink-0 rounded-full no-underline focus-visible:outline-offset-2"
+            className="group shrink-0 rounded-full no-underline focus-visible:outline-offset-2"
           >
             <HStack
               as="span"
-              hAlign="center"
+              gap={2}
               vAlign="center"
-              className="size-10 rounded-full bg-primary text-canvas shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-all duration-200 hover:scale-[1.03] hover:bg-copper"
+              className="rounded-full border border-white/12 bg-white/[0.045] p-0.5 pr-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-all duration-200 group-hover:border-[var(--border-active)] group-hover:bg-white/[0.08]"
             >
-              <AppIcon name="cpu" size="md" color="inherit" />
+              <HStack
+                as="span"
+                hAlign="center"
+                vAlign="center"
+                className="size-9 rounded-full bg-primary text-canvas shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-all duration-200 group-hover:scale-[1.03] group-hover:bg-copper"
+              >
+                <AppIcon name="cpu" size="sm" color="inherit" />
+              </HStack>
+
+              <HStack as="span" gap={1.5} vAlign="center">
+                <Text
+                  type="inherit"
+                  color="primary"
+                  className="frosted-glass-nav-link font-brand text-[15px] font-bold tracking-[-0.025em] whitespace-nowrap text-primary"
+                >
+                  {PROFILE_DATA.fullName}
+                </Text>
+                <HStack
+                  as="span"
+                  aria-hidden="true"
+                  className="size-1.5 rounded-full bg-copper shadow-[0_0_8px_var(--accent-copper)]"
+                />
+              </HStack>
             </HStack>
           </Link>
-
-          <Link
-            href="#top"
-            color="primary"
-            isStandalone
-            className="frosted-glass-nav-link pr-1 font-display text-sm font-semibold tracking-tight text-primary no-underline lg:hidden"
-          >
-            {PROFILE_DATA.fullName}
-          </Link>
         </HStack>
+
+        <HStack
+          as="span"
+          aria-hidden="true"
+          className="hidden h-5 w-px bg-white/15 lg:flex"
+        />
 
         <HStack
           as="ul"
@@ -84,40 +103,16 @@ export function Navbar() {
           ))}
         </HStack>
 
-        <HStack gap={2} vAlign="center" className="shrink-0">
-          <Link
-            href={`mailto:${PROFILE_DATA.email}`}
-            isStandalone
-            display="block"
-            className="hidden shrink-0 rounded-full no-underline focus-visible:outline-offset-2 md:block"
-          >
-            <HStack
-              as="span"
-              hAlign="center"
-              vAlign="center"
-              className="h-10 rounded-full bg-primary px-5 text-canvas shadow-[0_2px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:bg-copper"
-            >
-              <Text
-                type="inherit"
-                color="inherit"
-                className="font-sans text-sm font-medium tracking-[-0.01em] whitespace-nowrap"
-              >
-                {PROFILE_DATA.email}
-              </Text>
-            </HStack>
-          </Link>
-
-          <HStack className="lg:hidden">
-            <MobileNavDrawer
-              items={NAV_ITEMS}
-              fullName={PROFILE_DATA.fullName}
-              systemId={PROFILE_DATA.systemId}
-              statusBanner={PROFILE_DATA.statusBanner}
-              resumePdfUrl={PROFILE_DATA.resumePdfUrl}
-              university={PROFILE_DATA.university}
-              location={PROFILE_DATA.location}
-            />
-          </HStack>
+        <HStack className="shrink-0 lg:hidden">
+          <MobileNavDrawer
+            items={NAV_ITEMS}
+            fullName={PROFILE_DATA.fullName}
+            systemId={PROFILE_DATA.systemId}
+            statusBanner={PROFILE_DATA.statusBanner}
+            resumePdfUrl={PROFILE_DATA.resumePdfUrl}
+            university={PROFILE_DATA.university}
+            location={PROFILE_DATA.location}
+          />
         </HStack>
       </HStack>
     </HStack>

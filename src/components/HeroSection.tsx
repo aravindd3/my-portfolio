@@ -16,65 +16,42 @@ export function HeroSection() {
       id="top"
       aria-labelledby="hero-name"
       vAlign="between"
-      className="relative w-full overflow-hidden bg-[radial-gradient(ellipse_80%_65%_at_50%_52%,rgba(20,28,42,0.48)_0%,rgba(6,9,13,0.95)_64%,#06090D_100%)] lg:min-h-svh"
+      className="relative w-full overflow-hidden bg-[radial-gradient(ellipse_80%_65%_at_50%_52%,rgba(20,28,42,0.48)_0%,rgba(6,9,13,0.95)_64%,#06090D_100%)] lg:h-svh lg:min-h-[680px]"
     >
       {/* Top Centered Editorial Copy Stack */}
       <Section
         variant="transparent"
         padding={0}
         maxWidth={1152}
-        className="relative z-10 ms-auto me-auto w-full px-5 pt-20 pb-2 md:px-12 md:pt-24 md:pb-2"
+        className="relative z-10 ms-auto me-auto w-full px-5 pt-20 pb-0 md:px-12 md:pt-22"
       >
-        <VStack gap={4} hAlign="center" className="mx-auto max-w-3xl text-center">
-          {/* Industry & Specialization Tag */}
-          <HStack
-            gap={2}
-            vAlign="center"
-            className="rounded-full border border-hairline/80 bg-surface/60 px-3.5 py-1 backdrop-blur-md"
-          >
-            <HStack as="span" className="size-2 rounded-full bg-signal shadow-[0_0_8px_var(--accent-signal)]" />
-            <Text
-              type="code"
-              size="xsm"
-              className="font-mono text-[10.5px] font-medium tracking-wider text-secondary uppercase sm:text-[11.5px]"
-            >
-              {HERO_EDITORIAL_DATA.eyebrowBadge}
-            </Text>
-          </HStack>
-
-          {/* Name in clean, modern, minimalistic geometric display font matching user specification */}
+        <VStack gap={3} hAlign="center" className="mx-auto max-w-3xl text-center">
+          {/* Personal Punchline in clean geometric display font */}
           <Heading
             id="hero-name"
             level={1}
             justify="center"
-            className="text-center font-brand text-[clamp(2.75rem,6vw,4.5rem)] font-bold leading-[1.02] tracking-[-0.035em] text-primary"
+            className="max-w-[26ch] text-center font-brand text-[clamp(1.85rem,3.6vw,3.1rem)] font-bold leading-[1.12] tracking-[-0.03em] text-primary sm:text-pretty"
           >
-            {HERO_EDITORIAL_DATA.name}
-          </Heading>
-
-          {/* Personal Punchline: Connecting Hardware & Firmware */}
-          <Heading
-            level={2}
-            justify="center"
-            className="max-w-[34ch] text-center font-display text-[clamp(1.15rem,2.2vw,1.6rem)] font-normal leading-[1.32] tracking-[-0.015em] text-secondary sm:text-pretty"
-          >
-            <span>{HERO_EDITORIAL_DATA.punchline} </span>
-            <span className="font-medium text-primary">
+            <Text type="inherit" color="primary" className="block">
+              {HERO_EDITORIAL_DATA.punchline}
+            </Text>
+            <Text type="inherit" color="secondary" className="block text-secondary">
               {HERO_EDITORIAL_DATA.punchlineHighlight}
-            </span>
+            </Text>
           </Heading>
 
-          {/* Short, sleek 2-line about me & career focus */}
+          {/* Short, sleek single-sentence career focus */}
           <Text
             type="body"
             justify="center"
-            className="max-w-[62ch] text-center font-sans text-sm leading-relaxed text-secondary sm:text-base sm:leading-relaxed"
+            className="max-w-[58ch] text-center font-sans text-sm leading-relaxed text-secondary sm:text-[15px]"
           >
             {HERO_EDITORIAL_DATA.bioBrief}
           </Text>
 
           {/* Action CTAs */}
-          <VStack gap={2} hAlign="center" className="pt-2">
+          <VStack gap={2} hAlign="center" className="pt-1">
             <Button
               label={HERO_EDITORIAL_DATA.primaryCtaLabel}
               href={HERO_EDITORIAL_DATA.primaryCtaHref}
@@ -89,7 +66,7 @@ export function HeroSection() {
               gap={3}
               hAlign="center"
               vAlign="center"
-              className="pt-1"
+              className="pt-0.5"
             >
               <Link
                 href={PROFILE_DATA.resumePdfUrl}
@@ -184,25 +161,35 @@ export function HeroSection() {
       </Section>
 
       {/* Full-Width ASCII Art Hands & Animated Embedded Core Stage */}
-      <VStack className="relative z-0 mt-2 w-full lg:-mt-6 xl:-mt-10">
+      <VStack className="relative z-0 -mt-1 w-full lg:-mt-8 xl:-mt-10">
         <HeroAsciiHands altText={HERO_EDITORIAL_DATA.asciiArtAlt} />
       </VStack>
 
       {/* Atmospheric Transition Gradient Zone to Next Section */}
-      <div
+      <VStack
         aria-hidden="true"
-        className="pointer-events-none relative z-10 -mt-16 h-32 w-full bg-gradient-to-b from-transparent via-[rgba(6,9,13,0.7)] to-[#06090D] lg:-mt-24 lg:h-44"
+        vAlign="end"
+        hAlign="center"
+        className="pointer-events-none relative z-10 -mt-12 h-20 w-full bg-gradient-to-b from-transparent via-[rgba(6,9,13,0.75)] to-[#06090D] pb-4 lg:-mt-20 lg:h-28 lg:pb-5"
       >
-        <div className="mx-auto flex h-full max-w-5xl items-end justify-center pb-6">
-          <div className="flex items-center gap-3 opacity-60 transition-opacity hover:opacity-100">
-            <span className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--border-hairline)]" />
-            <span className="font-mono text-[10px] tracking-widest text-muted uppercase">
-              Scroll to explore
-            </span>
-            <span className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--border-hairline)]" />
-          </div>
-        </div>
-      </div>
+        <HStack gap={3} vAlign="center" className="opacity-60">
+          <HStack
+            as="span"
+            className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--border-hairline)]"
+          />
+          <Text
+            type="code"
+            size="xsm"
+            className="font-mono text-[10px] tracking-widest text-muted uppercase"
+          >
+            Scroll to explore
+          </Text>
+          <HStack
+            as="span"
+            className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--border-hairline)]"
+          />
+        </HStack>
+      </VStack>
     </VStack>
   );
 }
