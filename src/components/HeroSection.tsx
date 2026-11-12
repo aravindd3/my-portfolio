@@ -7,6 +7,7 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
+import { HeroBlackHoleAscii } from "./HeroBlackHoleAscii";
 
 /**
  * Stage 1: Personal Introduction Hero Slide
@@ -20,10 +21,13 @@ export function HeroIntroSlide() {
       aria-labelledby="intro-heading"
       vAlign="between"
       hAlign="center"
-      className="relative w-full min-h-svh h-svh overflow-hidden px-6 pt-24 pb-8 sm:pb-12 text-center bg-[radial-gradient(ellipse_75%_60%_at_50%_48%,rgba(20,28,42,0.36)_0%,rgba(6,9,13,0.18)_65%,transparent_100%)]"
+      className="relative w-full min-h-svh h-svh overflow-hidden px-6 pt-24 pb-8 sm:pb-12 text-center bg-[#020306]"
     >
+      {/* Living Interactive ASCII Black Hole & Event Horizon with Lone Observer */}
+      <HeroBlackHoleAscii />
+
       {/* Top Status & System Ready Indicator */}
-      <HStack gap={2} vAlign="center" className="opacity-80 pt-2">
+      <HStack gap={2} vAlign="center" className="relative z-10 opacity-80 pt-2">
         <HStack
           as="span"
           className="size-2 rounded-full bg-signal shadow-[0_0_8px_var(--accent-signal)] animate-pulse"
@@ -38,7 +42,7 @@ export function HeroIntroSlide() {
       </HStack>
 
       {/* Centerpiece Typographic Introduction */}
-      <VStack gap={4} hAlign="center" className="mx-auto max-w-4xl my-auto">
+      <VStack gap={4} hAlign="center" className="relative z-10 mx-auto max-w-4xl my-auto">
         <Text
           type="code"
           size="sm"
@@ -51,7 +55,7 @@ export function HeroIntroSlide() {
           id="intro-heading"
           level={1}
           justify="center"
-          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white"
+          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]"
         >
           {HERO_EDITORIAL_DATA.introName}
         </Heading>
@@ -59,7 +63,7 @@ export function HeroIntroSlide() {
         <Text
           type="body"
           justify="center"
-          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-secondary"
+          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-secondary drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]"
         >
           {HERO_EDITORIAL_DATA.introBio}
         </Text>
@@ -70,7 +74,7 @@ export function HeroIntroSlide() {
         href="#hero-technical"
         isStandalone
         aria-label="Scroll down to technical overview and interactive ASCII core"
-        className="group flex flex-col items-center gap-2.5 no-underline opacity-65 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
+        className="group relative z-10 flex flex-col items-center gap-2.5 no-underline opacity-70 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
       >
         <Text
           type="code"
@@ -83,7 +87,7 @@ export function HeroIntroSlide() {
           as="span"
           hAlign="center"
           vAlign="center"
-          className="size-8 rounded-full border border-white/10 bg-white/[0.03] text-secondary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-300 group-hover:translate-y-1 group-hover:border-copper/40 group-hover:bg-copper/10 group-hover:text-copper"
+          className="size-8 rounded-full border border-white/15 bg-black/40 text-secondary backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-300 group-hover:translate-y-1 group-hover:border-copper/40 group-hover:bg-copper/10 group-hover:text-copper"
         >
           <AppIcon name="chevron-down" size="sm" color="inherit" />
         </HStack>

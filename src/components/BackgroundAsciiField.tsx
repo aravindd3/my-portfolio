@@ -30,6 +30,7 @@ interface ShootingStreak {
 
 const MICRO_GLYPHS = [".", "·", ":", ",", "'", "`"] as const;
 const BLUE_TONES = ["#38BDF8", "#7DD3FC", "#BAE6FD"] as const;
+const WHITE_TONES = ["#FFFFFF", "#F8FAFC", "#E2E8F0"] as const;
 const YELLOW_TONES = ["#E5A93C", "#FDE68A", "#FEF3C7"] as const;
 
 export function BackgroundAsciiField() {
@@ -62,8 +63,9 @@ export function BackgroundAsciiField() {
       const next: CosmicMicroGlyph[] = [];
 
       for (let i = 0; i < targetCount; i++) {
-        const isBlue = Math.random() < 0.54;
-        const palette = isBlue ? BLUE_TONES : YELLOW_TONES;
+        const roll = Math.random();
+        const palette =
+          roll < 0.46 ? WHITE_TONES : roll < 0.78 ? BLUE_TONES : YELLOW_TONES;
         const depth = 0.25 + Math.random() * 0.75;
         const angle = -Math.PI * 0.68 + (Math.random() - 0.5) * 0.9;
         const speed = (4.0 + Math.random() * 8.5) * depth;

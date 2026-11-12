@@ -6,15 +6,15 @@
 @import "@astryxdesign/theme-neutral/theme.css";
 
 :root {
-  --bg-canvas: #06090D;
-  --bg-surface: #0B0E14;
-  --bg-elevated: #11161F;
-  --bg-recessed: #06080C;
-  --bg-glass: rgba(8, 12, 18, 0.08);
-  --bg-glass-fallback: rgba(17, 23, 32, 0.86);
-  --border-glass: rgba(255, 255, 255, 0.11);
-  --glass-specular-rim: rgba(255, 255, 255, 0.24);
-  --text-primary: #F1F5F9;
+  --bg-canvas: #020306;
+  --bg-surface: #07090F;
+  --bg-elevated: #0E121A;
+  --bg-recessed: #000000;
+  --bg-glass: rgba(6, 9, 14, 0.45);
+  --bg-glass-fallback: rgba(8, 12, 18, 0.94);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --glass-specular-rim: rgba(255, 255, 255, 0.28);
+  --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
   --accent-copper: #E5A93C;
@@ -23,7 +23,7 @@
   --accent-signal-subtle: rgba(16, 185, 129, 0.12);
   --accent-bus: #38BDF8;
   --accent-bus-subtle: rgba(56, 189, 248, 0.12);
-  --border-hairline: #1B222E;
+  --border-hairline: #141923;
   --border-active: rgba(229, 169, 60, 0.48);
 }
 
