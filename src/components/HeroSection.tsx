@@ -42,7 +42,11 @@ export function HeroIntroSlide() {
       </HStack>
 
       {/* Centerpiece Typographic Introduction */}
-      <VStack gap={4} hAlign="center" className="relative z-10 mx-auto max-w-4xl my-auto">
+      <VStack
+        gap={4}
+        hAlign="center"
+        className="relative z-10 mx-auto max-w-4xl my-auto px-4 py-2 bg-[radial-gradient(ellipse_at_center,rgba(2,3,6,0.72)_0%,rgba(2,3,6,0.35)_45%,transparent_72%)]"
+      >
         <Text
           type="code"
           size="sm"
@@ -55,7 +59,7 @@ export function HeroIntroSlide() {
           id="intro-heading"
           level={1}
           justify="center"
-          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]"
+          className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_32px_rgba(0,0,0,1)] [text-shadow:_0_3px_20px_rgb(0_0_0_/_95%)]"
         >
           {HERO_EDITORIAL_DATA.introName}
         </Heading>
@@ -63,7 +67,7 @@ export function HeroIntroSlide() {
         <Text
           type="body"
           justify="center"
-          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-secondary drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]"
+          className="max-w-[54ch] text-center font-sans text-base sm:text-lg leading-relaxed text-white/95 drop-shadow-[0_2px_20px_rgba(0,0,0,1)] [text-shadow:_0_2px_16px_rgb(0_0_0_/_95%),_0_0_24px_rgb(0_0_0_/_90%)]"
         >
           {HERO_EDITORIAL_DATA.introBio}
         </Text>

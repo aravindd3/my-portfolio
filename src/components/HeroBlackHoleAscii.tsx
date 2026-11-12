@@ -2,34 +2,50 @@
 
 import { useEffect, useRef } from "react";
 
-interface VortexStar {
-  readonly ringIdx: number;
-  readonly baseAngle: number;
-  readonly radialFactor: number;
-  readonly seed: number;
-  angle: number;
-  r: number;
-  z: number;
-  glyph: string;
-  size: number;
-  color: string;
-  baseAlpha: number;
-  shimmerPhase: number;
-}
+/**
+ * High-Definition Interactive 3D ASCII Black Hole & Cosmic Vortex Engine
+ *
+ * Faithfully recreates the user's reference photograph:
+ * - 47,000+ real-time simulated points (tight ASCII glyphs + sub-pixel starlight dust)
+ * - Top-down bird's-eye perspective looking down into a deep gravitational sinkhole
+ * - Wide elliptical rim tilted diagonally (~ -22 deg roll) to match the reference composition
+ * - Deep 3D funnel with steep, luminous white/silver interior walls and striated spiral grooves
+ * - Pitch-black event horizon singularity void seated at the deepest core of the funnel
+ * - Lone observer silhouette perched at the foreground precipice rim, gazing down into the abyss
+ * - Pre-rendered offscreen sprite atlas (12px cell, 8px font) for 60 FPS hardware-accelerated GPU blitting
+ * - Interactive 3D camera parallax responding to mouse movements with smooth inertia
+ */
 
-const RIM_GLYPHS = ["@", "8", "%", "#", "*", "+"] as const;
-const MID_GLYPHS = ["*", "+", "=", ":", "·", "•"] as const;
-const OUTER_GLYPHS = ["·", ".", "'", ",", "`"] as const;
-
-const STAR_COLORS = [
-  "#FFFFFF",
-  "#F8FAFC",
-  "#F1F5F9",
-  "#E2E8F0",
-  "#BAE6FD",
-  "#7DD3FC",
-  "#FEF3C7",
+const ASCII_CHARS = [
+  "@",
+  "%",
+  "#",
+  "8",
+  "0",
+  "1",
+  "*",
+  "+",
+  "=",
+  ":",
+  "-",
+  "·",
+  ".",
+  "'",
+  "`",
 ] as const;
+
+// 6 Luminance & Chromatic Tiers for the Atlas
+const TIER_COLORS = [
+  "#FFFFFF", // Tier 0: Pure radiant starlight (inner throat walls & core rim)
+  "#F8FAFC", // Tier 1: Silver-white (funnel striations)
+  "#BAE6FD", // Tier 2: Starlight cyan (Doppler & gravitational dispersion)
+  "#CBD5E1", // Tier 3: Mid starlight slate (accretion disc streamlines)
+  "#64748B", // Tier 4: Faint cosmic dust (outer galactic plane)
+  "#FEF3C7", // Tier 5: Warm cosmic gold accent (subtle stellar flares)
+] as const;
+
+const ATLAS_CELL = 12;
+const HALF_CELL = 6;
 
 export function HeroBlackHoleAscii() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -37,7 +53,7 @@ export function HeroBlackHoleAscii() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
     const prefersReducedMotion = window.matchMedia(
@@ -49,98 +65,235 @@ export function HeroBlackHoleAscii() {
     let dpr = 1;
     let rafId = 0;
     let prevMs = performance.now();
+    let isVisible = true;
 
-    // Smooth interactive camera orientation
-    let targetTiltX = 0;
-    let targetTiltY = 0;
-    let currentTiltX = 0;
-    let currentTiltY = 0;
+    // Camera angles:
+    // Viewing down from above at ~60 degrees pitch
+    // Tilted counterclockwise by ~22 degrees roll
+    const BASE_PITCH = (60 * Math.PI) / 180;
+    const BASE_ROLL = (-22 * Math.PI) / 180;
+    let targetTiltYaw = 0;
+    let targetTiltPitch = 0;
+    let currentTiltYaw = 0;
+    let currentTiltPitch = 0;
 
-    let stars: VortexStar[] = [];
+    // Interactive mouse coordinates
+    let mouseX = -9999;
+    let mouseY = -9999;
+    let targetMouseX = -9999;
+    let targetMouseY = -9999;
 
-    const resolveMonoFont = () => {
-      const computed = window.getComputedStyle(canvas).fontFamily;
-      return computed && computed.trim().length > 0
-        ? computed
-        : '"JetBrains Mono", ui-monospace, monospace';
-    };
+    // -------------------------------------------------------------------------
+    // 1. Pre-rendered Offscreen Sprite Atlas
+    // -------------------------------------------------------------------------
+    let atlasCanvas: HTMLCanvasElement | null = null;
 
-    let monoFont = resolveMonoFont();
+    const buildSpriteAtlas = () => {
+      const atlas = document.createElement("canvas");
+      atlas.width = ASCII_CHARS.length * ATLAS_CELL;
+      atlas.height = TIER_COLORS.length * ATLAS_CELL;
+      const actx = atlas.getContext("2d");
+      if (!actx) return atlas;
 
-    const buildVortexStars = (w: number, h: number) => {
-      const nextStars: VortexStar[] = [];
-      const baseDim = Math.min(w, h);
-      const rHorizon = Math.max(54, baseDim * 0.125);
-      const rMax = Math.max(w, h) * 0.88;
-      const numRings = Math.min(48, Math.max(30, Math.floor(baseDim / 22)));
+      actx.font =
+        '700 8.0px "JetBrains Mono", "Fira Code", ui-monospace, monospace';
+      actx.textAlign = "center";
+      actx.textBaseline = "middle";
 
-      for (let ring = 0; ring < numRings; ring++) {
-        const u = ring / (numRings - 1); // 0 at event horizon, 1 at outer cosmos
-        // Non-linear power spacing to cluster dense starlight filaments near the horizon
-        const ringR = rHorizon + (rMax - rHorizon) * Math.pow(u, 1.48);
-        const depthZ = -Math.max(160, baseDim * 0.38) * Math.pow(1 - u, 2.1);
-
-        // Density scaling: high particle count at inner rings
-        const densityFactor = 1 - u * 0.45;
-        const circumference = 2 * Math.PI * ringR;
-        const starSpacing = 16 / densityFactor;
-        const countOnRing = Math.max(
-          14,
-          Math.min(96, Math.floor(circumference / starSpacing)),
-        );
-
-        for (let s = 0; s < countOnRing; s++) {
-          const baseAngle = (s / countOnRing) * Math.PI * 2;
-          const radialJitter = (Math.sin(s * 7.3 + ring * 3.1) * 0.5) * (4 + u * 12);
-          const seed = ((ring * 79 + s * 37) % 100) / 100;
-
-          // Glyph selection based on proximity to the black hole
-          let glyph: string;
-          let color: string;
-          let size: number;
-          let baseAlpha: number;
-
-          if (u < 0.12) {
-            // Intense radiant accretion lip
-            glyph = RIM_GLYPHS[Math.floor(seed * RIM_GLYPHS.length)];
-            color = seed > 0.35 ? "#FFFFFF" : "#BAE6FD";
-            size = 9.5 + seed * 2.5;
-            baseAlpha = 0.88 + seed * 0.12;
-          } else if (u < 0.45) {
-            // Flowing mid-accretion streamlines
-            glyph = MID_GLYPHS[Math.floor(seed * MID_GLYPHS.length)];
-            color =
-              STAR_COLORS[Math.floor(seed * STAR_COLORS.length)] || "#FFFFFF";
-            size = 8.0 + seed * 2.0;
-            baseAlpha = 0.55 + seed * 0.35;
-          } else {
-            // Distant cosmos & outer gravitational filaments
-            glyph = OUTER_GLYPHS[Math.floor(seed * OUTER_GLYPHS.length)];
-            color = seed > 0.4 ? "#F1F5F9" : "#94A3B8";
-            size = 6.8 + seed * 2.0;
-            baseAlpha = 0.22 + seed * 0.40;
-          }
-
-          nextStars.push({
-            ringIdx: ring,
-            baseAngle,
-            radialFactor: u,
-            seed,
-            angle: baseAngle,
-            r: ringR + radialJitter,
-            z: depthZ,
-            glyph,
-            size,
-            color,
-            baseAlpha,
-            shimmerPhase: Math.random() * Math.PI * 2,
-          });
+      for (let t = 0; t < TIER_COLORS.length; t++) {
+        actx.fillStyle = TIER_COLORS[t];
+        const rowY = t * ATLAS_CELL + HALF_CELL;
+        for (let c = 0; c < ASCII_CHARS.length; c++) {
+          const colX = c * ATLAS_CELL + HALF_CELL;
+          actx.fillText(ASCII_CHARS[c], colX, rowY);
         }
       }
 
-      stars = nextStars;
+      return atlas;
     };
 
+    atlasCanvas = buildSpriteAtlas();
+
+    // -------------------------------------------------------------------------
+    // 2. High-Density Particle Simulation Buffers (Float32Arrays)
+    // -------------------------------------------------------------------------
+    let asciiCount = 0;
+    let asciiR: Float32Array;
+    let asciiAngle: Float32Array;
+    let asciiSpeed: Float32Array;
+    let asciiGlyph: Uint8Array;
+    let asciiTier: Uint8Array;
+    let asciiSpiralOffset: Float32Array;
+
+    let dustCount = 0;
+    let dustR: Float32Array;
+    let dustAngle: Float32Array;
+    let dustSpeed: Float32Array;
+    let dustSize: Float32Array;
+    let dustTier: Uint8Array;
+    let dustSpiralOffset: Float32Array;
+
+    // Funnel geometry parameters
+    let rCore = 65; // Radius of deepest singularity hole
+    let rThroat = 145; // Radius of glowing white throat wall
+    let rRim = 330; // Radius of the funnel precipice rim
+    let rMax = 880; // Outer boundary of starry plane
+    let funnelDepth = 250; // Depth D of the funnel plunge
+
+    const computeFunnelZ = (r: number) => {
+      if (r <= rCore) {
+        return -funnelDepth;
+      }
+      if (r < rRim) {
+        // C1-smooth gravitational plunge:
+        // u = 1 at rim -> Z = 0
+        // u = 0 at core -> Z = -funnelDepth
+        const u = (r - rCore) / (rRim - rCore);
+        return -funnelDepth * Math.pow(1 - u, 1.85);
+      }
+      // Outer galactic plane: gentle undulating cosmic depression
+      const outerT = Math.min(1, (r - rRim) / (rMax - rRim));
+      return Math.sin(outerT * Math.PI) * 10;
+    };
+
+    const initParticleBuffers = (w: number, h: number) => {
+      const minDim = Math.min(w, h);
+      const isMobile = minDim < 640;
+
+      rCore = Math.max(45, minDim * 0.095);
+      rThroat = Math.max(98, minDim * 0.21);
+      rRim = Math.max(215, minDim * 0.44);
+      rMax = Math.max(w, h) * 0.96;
+      funnelDepth = Math.max(190, minDim * 0.35);
+
+      // High density matching Aadith portfolio (47,000+ points on desktop)
+      asciiCount = isMobile ? 5500 : 12000;
+      dustCount = isMobile ? 18000 : 35000;
+
+      // Allocate ASCII arrays
+      asciiR = new Float32Array(asciiCount);
+      asciiAngle = new Float32Array(asciiCount);
+      asciiSpeed = new Float32Array(asciiCount);
+      asciiGlyph = new Uint8Array(asciiCount);
+      asciiTier = new Uint8Array(asciiCount);
+      asciiSpiralOffset = new Float32Array(asciiCount);
+
+      // Allocate Dust arrays
+      dustR = new Float32Array(dustCount);
+      dustAngle = new Float32Array(dustCount);
+      dustSpeed = new Float32Array(dustCount);
+      dustSize = new Float32Array(dustCount);
+      dustTier = new Uint8Array(dustCount);
+      dustSpiralOffset = new Float32Array(dustCount);
+
+      // 1. Populate ASCII particles
+      for (let i = 0; i < asciiCount; i++) {
+        const roll = Math.random();
+        let r: number;
+        let isInsideFunnel = false;
+
+        if (roll < 0.54) {
+          // Inside the glowing funnel (rCore to rRim)
+          isInsideFunnel = true;
+          const u = Math.pow(Math.random(), 1.35);
+          r = rCore + (rRim - rCore) * u;
+        } else {
+          // Outer accretion plane (rRim to rMax)
+          const u = Math.pow(Math.random(), 1.5);
+          r = rRim + (rMax - rRim) * u;
+        }
+
+        const angle = Math.random() * Math.PI * 2;
+        const relR = Math.max(1, r / rCore);
+
+        // Keplerian orbital speed: inner particles orbit faster
+        const speed =
+          (0.44 / Math.pow(relR, 1.25)) * (0.85 + Math.random() * 0.3);
+
+        // Logarithmic spiral twist
+        const spiralOffset = Math.log(relR) * 2.3;
+
+        let glyphIdx = 0;
+        let tierIdx = 0;
+
+        if (isInsideFunnel) {
+          if (r < rThroat) {
+            // Intense white throat: dense glyphs (@, %, #, 8)
+            glyphIdx = Math.floor(Math.random() * 4);
+            tierIdx = Math.random() < 0.82 ? 0 : 2; // Radiant white / cyan
+          } else {
+            // Mid funnel slope: (*, +, =, :)
+            glyphIdx = 4 + Math.floor(Math.random() * 5);
+            tierIdx = Math.random() < 0.68 ? 1 : 3;
+          }
+        } else {
+          // Outer plane: fine stipples (-, ·, ., ', `)
+          glyphIdx = 9 + Math.floor(Math.random() * 6);
+          tierIdx = Math.random() < 0.55 ? 3 : 4;
+          if (Math.random() < 0.035) tierIdx = 5; // Rare stellar gold accent
+        }
+
+        asciiR[i] = r;
+        asciiAngle[i] = angle;
+        asciiSpeed[i] = speed;
+        asciiGlyph[i] = glyphIdx;
+        asciiTier[i] = tierIdx;
+        asciiSpiralOffset[i] = spiralOffset;
+      }
+
+      // 2. Populate Micro-starlight dust particles
+      for (let i = 0; i < dustCount; i++) {
+        const roll = Math.random();
+        let r: number;
+        let isInsideFunnel = false;
+
+        if (roll < 0.48) {
+          isInsideFunnel = true;
+          const u = Math.pow(Math.random(), 1.3);
+          r = rCore + (rRim - rCore) * u;
+        } else {
+          const u = Math.pow(Math.random(), 1.4);
+          r = rRim + (rMax - rRim) * u;
+        }
+
+        const angle = Math.random() * Math.PI * 2;
+        const relR = Math.max(1, r / rCore);
+        const speed =
+          (0.38 / Math.pow(relR, 1.22)) * (0.8 + Math.random() * 0.4);
+        const spiralOffset = Math.log(relR) * 2.2;
+
+        let tier = 3;
+        let size = 1.0;
+
+        if (isInsideFunnel) {
+          if (r < rThroat) {
+            tier = Math.random() < 0.78 ? 0 : 2;
+            size = 1.5 + Math.random() * 0.8;
+          } else {
+            tier = Math.random() < 0.62 ? 1 : 2;
+            size = 1.2 + Math.random() * 0.6;
+          }
+        } else {
+          tier = Math.random() < 0.52 ? 3 : 4;
+          size = 0.9 + Math.random() * 0.5;
+          if (Math.random() < 0.03) {
+            tier = 5;
+            size = 1.4;
+          }
+        }
+
+        dustR[i] = r;
+        dustAngle[i] = angle;
+        dustSpeed[i] = speed;
+        dustSize[i] = size;
+        dustTier[i] = tier;
+        dustSpiralOffset[i] = spiralOffset;
+      }
+    };
+
+    // -------------------------------------------------------------------------
+    // 3. Canvas Resizing & Viewport Observers
+    // -------------------------------------------------------------------------
     const syncSize = () => {
       const rect = canvas.getBoundingClientRect();
       const nextW = rect.width || window.innerWidth;
@@ -152,296 +305,447 @@ export function HeroBlackHoleAscii() {
       height = nextH;
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = Math.max(1, Math.round(height * dpr));
-      monoFont = resolveMonoFont();
-      buildVortexStars(width, height);
+
+      initParticleBuffers(width, height);
     };
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        isVisible = entry ? entry.isIntersecting : true;
+      },
+      { threshold: 0.05 },
+    );
+    intersectionObserver.observe(canvas);
 
     const handleMouseMove = (e: MouseEvent) => {
       const nX = (e.clientX / window.innerWidth) * 2 - 1;
       const nY = (e.clientY / window.innerHeight) * 2 - 1;
-      targetTiltX = nX * 0.15; // Max ~8.5 degrees yaw
-      targetTiltY = -nY * 0.12; // Max ~6.8 degrees pitch
+      targetTiltYaw = nX * 0.12;
+      targetTiltPitch = -nY * 0.08;
+      targetMouseX = e.clientX;
+      targetMouseY = e.clientY;
+    };
+
+    const handleMouseLeave = () => {
+      targetTiltYaw = 0;
+      targetTiltPitch = 0;
+      targetMouseX = -9999;
+      targetMouseY = -9999;
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+    window.addEventListener("resize", syncSize, { passive: true });
 
-    // Draw the silhouette of the man standing on the glowing edge
+    // -------------------------------------------------------------------------
+    // 4. Lone Observer Silhouette at the Foreground Precipice Rim
+    // -------------------------------------------------------------------------
     const drawLoneObserver = (
-      ctx2d: CanvasRenderingContext2D,
-      x: number,
-      y: number,
+      targetCtx: CanvasRenderingContext2D,
+      projX: number,
+      projY: number,
       scale: number,
       elapsedSec: number,
     ) => {
-      ctx2d.save();
-      ctx2d.translate(x, y);
+      targetCtx.save();
+      targetCtx.translate(projX, projY);
 
-      const manHeight = Math.max(18, 22 * scale);
-      const manWidth = manHeight * 0.34;
-      const breathing = Math.sin(elapsedSec * 2.2) * 0.8;
+      // Person scale: proportional to the funnel
+      const hScale = Math.max(0.65, Math.min(1.3, scale));
+      const personHeight = 27 * hScale;
+      const personWidth = personHeight * 0.38;
+      const breathing = Math.sin(elapsedSec * 2.3) * 0.5;
 
-      // 1. Soft gravitational shadow stretching behind him
-      const shadowGrad = ctx2d.createLinearGradient(0, 0, 0, manHeight * 0.8);
-      shadowGrad.addColorStop(0, "rgba(0, 0, 0, 0.75)");
-      shadowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx2d.fillStyle = shadowGrad;
-      ctx2d.beginPath();
-      ctx2d.ellipse(0, 2, manWidth * 1.4, 4, 0, 0, Math.PI * 2);
-      ctx2d.fill();
+      // A. Gravitational Shadow cast forward into the glowing funnel slope below
+      const shadowGradient = targetCtx.createLinearGradient(
+        0,
+        0,
+        -personWidth * 0.4,
+        -personHeight * 1.6,
+      );
+      shadowGradient.addColorStop(0, "rgba(0, 0, 0, 0.96)");
+      shadowGradient.addColorStop(0.5, "rgba(0, 0, 0, 0.65)");
+      shadowGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
-      // 2. High-contrast silhouette of the lone human
-      // Deep black void silhouette with sharp starlight rim lighting
-      ctx2d.fillStyle = "#020306";
-      ctx2d.strokeStyle = "rgba(255, 255, 255, 0.95)";
-      ctx2d.lineWidth = 1;
+      targetCtx.fillStyle = shadowGradient;
+      targetCtx.beginPath();
+      targetCtx.ellipse(
+        -personWidth * 0.1,
+        2,
+        personWidth * 1.25,
+        personHeight * 0.35,
+        -0.35,
+        0,
+        Math.PI * 2,
+      );
+      targetCtx.fill();
 
-      // Legs / Stance
-      ctx2d.beginPath();
-      ctx2d.moveTo(-manWidth * 0.32, 0);
-      ctx2d.lineTo(-manWidth * 0.22, -manHeight * 0.42);
-      ctx2d.lineTo(0, -manHeight * 0.46);
-      ctx2d.lineTo(manWidth * 0.22, -manHeight * 0.42);
-      ctx2d.lineTo(manWidth * 0.32, 0);
-      ctx2d.closePath();
-      ctx2d.fill();
+      // B. Razor-sharp silhouette of the lone human perched on the precipice
+      targetCtx.fillStyle = "#010204"; // Absolute obsidian black
 
-      // Torso & Trenchcoat / Silhouette Body
-      ctx2d.beginPath();
-      ctx2d.moveTo(-manWidth * 0.48, -manHeight * 0.42);
-      ctx2d.lineTo(-manWidth * 0.40, -manHeight * 0.78 + breathing * 0.3);
-      ctx2d.lineTo(manWidth * 0.40, -manHeight * 0.78 + breathing * 0.3);
-      ctx2d.lineTo(manWidth * 0.48, -manHeight * 0.42);
-      ctx2d.closePath();
-      ctx2d.fill();
+      // Seated legs / lower ledge
+      targetCtx.beginPath();
+      targetCtx.moveTo(-personWidth * 0.45, 0);
+      targetCtx.lineTo(-personWidth * 0.35, -personHeight * 0.42);
+      targetCtx.lineTo(personWidth * 0.35, -personHeight * 0.42);
+      targetCtx.lineTo(personWidth * 0.45, 0);
+      targetCtx.closePath();
+      targetCtx.fill();
 
-      // Head
-      const headRadius = manHeight * 0.125;
-      const headCenterY = -manHeight * 0.86 + breathing * 0.3;
-      ctx2d.beginPath();
-      ctx2d.arc(0, headCenterY, headRadius, 0, Math.PI * 2);
-      ctx2d.fill();
+      // Torso / Overcoat
+      targetCtx.beginPath();
+      targetCtx.moveTo(-personWidth * 0.5, -personHeight * 0.4);
+      targetCtx.lineTo(
+        -personWidth * 0.38,
+        -personHeight * 0.78 + breathing * 0.3,
+      );
+      targetCtx.lineTo(
+        personWidth * 0.38,
+        -personHeight * 0.78 + breathing * 0.3,
+      );
+      targetCtx.lineTo(personWidth * 0.5, -personHeight * 0.4);
+      targetCtx.closePath();
+      targetCtx.fill();
 
-      // 3. Crisp starlight rim highlights (contour glow as seen in the reference photo)
-      ctx2d.strokeStyle = "rgba(255, 255, 255, 0.85)";
-      ctx2d.lineWidth = 0.9;
+      // Head (gazing down into the glowing funnel)
+      const headRadius = personHeight * 0.13;
+      const headCenterY = -personHeight * 0.86 + breathing * 0.3;
+      targetCtx.beginPath();
+      targetCtx.arc(0, headCenterY, headRadius, 0, Math.PI * 2);
+      targetCtx.fill();
 
-      // Left shoulder & neck starlight glint
-      ctx2d.beginPath();
-      ctx2d.arc(0, headCenterY, headRadius, -Math.PI * 0.8, -Math.PI * 0.2);
-      ctx2d.stroke();
+      // C. Delicate Starlight Rim Highlights (Contour edge from the glowing throat)
+      targetCtx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+      targetCtx.lineWidth = 1.0;
 
-      ctx2d.beginPath();
-      ctx2d.moveTo(-manWidth * 0.42, -manHeight * 0.78);
-      ctx2d.lineTo(-manWidth * 0.48, -manHeight * 0.50);
-      ctx2d.stroke();
+      // Rim light around head
+      targetCtx.beginPath();
+      targetCtx.arc(
+        0,
+        headCenterY,
+        headRadius,
+        -Math.PI * 0.9,
+        -Math.PI * 0.1,
+      );
+      targetCtx.stroke();
 
-      // Subtle upward micro ASCII spark shed from his stance into the event horizon
-      const sparkY = headCenterY - 8 - ((elapsedSec * 16) % 18);
-      const sparkAlpha = Math.max(0, 1 - Math.abs(sparkY - headCenterY) / 22);
-      if (sparkAlpha > 0.05) {
-        ctx2d.fillStyle = "#BAE6FD";
-        ctx2d.globalAlpha = sparkAlpha * 0.75;
-        ctx2d.font = `600 7px ${monoFont}`;
-        ctx2d.textAlign = "center";
-        ctx2d.fillText("·", 0, sparkY);
-      }
+      // Rim light on shoulders
+      targetCtx.beginPath();
+      targetCtx.moveTo(-personWidth * 0.38, -personHeight * 0.78);
+      targetCtx.lineTo(-personWidth * 0.5, -personHeight * 0.46);
+      targetCtx.stroke();
 
-      ctx2d.restore();
+      targetCtx.beginPath();
+      targetCtx.moveTo(personWidth * 0.38, -personHeight * 0.78);
+      targetCtx.lineTo(personWidth * 0.5, -personHeight * 0.46);
+      targetCtx.stroke();
+
+      targetCtx.restore();
     };
 
+    // -------------------------------------------------------------------------
+    // 5. Main 60 FPS Render Loop
+    // -------------------------------------------------------------------------
     const renderFrame = (nowMs: number) => {
+      if (!isVisible) {
+        rafId = window.requestAnimationFrame(renderFrame);
+        return;
+      }
+
       const dt = Math.min((nowMs - prevMs) / 1000, 0.1);
       prevMs = nowMs;
       const elapsedSec = nowMs / 1000;
 
-      // Smooth inertia on 3D camera tilt
-      const tiltLerp = prefersReducedMotion ? 1 : Math.min(1, dt * 4.8);
-      currentTiltX += (targetTiltX - currentTiltX) * tiltLerp;
-      currentTiltY += (targetTiltY - currentTiltY) * tiltLerp;
+      // Smooth camera interpolation
+      const lerp = prefersReducedMotion ? 1 : Math.min(1, dt * 5.0);
+      currentTiltYaw += (targetTiltYaw - currentTiltYaw) * lerp;
+      currentTiltPitch += (targetTiltPitch - currentTiltPitch) * lerp;
+      mouseX += (targetMouseX - mouseX) * lerp;
+      mouseY += (targetMouseY - mouseY) * lerp;
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, width, height);
+      // Camera pitch (looking down from above) + interactive tilt
+      const phi = BASE_PITCH + currentTiltPitch;
+      const sinPhi = Math.sin(phi);
+      const cosPhi = Math.cos(phi);
 
-      // Deep celestial blackness
-      ctx.fillStyle = "#020306";
-      ctx.fillRect(0, 0, width, height);
+      // Roll angle (tilted ellipse matching reference photo)
+      const roll = BASE_ROLL;
+      const cosRoll = Math.cos(roll);
+      const sinRoll = Math.sin(roll);
 
-      const baseDim = Math.min(width, height);
-      const rHorizon = Math.max(54, baseDim * 0.125);
-
-      // Center the black hole slightly below mid-screen for optimal typographic balance
-      const cx = width * 0.5;
-      const cy = height * 0.54;
-
-      // Base camera perspective tilt (looking down into the funnel at an angle ~63 deg)
-      const basePitch = Math.PI * 0.35 + currentTiltY;
-      const cosPitch = Math.cos(basePitch);
-      const sinPitch = Math.sin(basePitch);
-      const yaw = currentTiltX;
+      // Yaw angle (interactive horizontal parallax)
+      const yaw = currentTiltYaw;
       const cosYaw = Math.cos(yaw);
       const sinYaw = Math.sin(yaw);
 
-      const focalLength = 520;
+      // Camera projection constants
+      const focalLength = 700;
+      const camDist = 380;
+
+      // Vortex screen center: centered horizontally, positioned to frame the hero copy gracefully
+      const cx = width * 0.5;
+      const cy = height * 0.58;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Deep void black background
+      ctx.fillStyle = "#020306";
+      ctx.fillRect(0, 0, width, height);
+
+      // -----------------------------------------------------------------------
+      // Projection helper: transforms 3D point (Xw, Yw, Zw) to screen (px, py)
+      // -----------------------------------------------------------------------
+      const project3D = (Xw: number, Yw: number, Zw: number) => {
+        // Yaw around Z axis
+        const Xy = Xw * cosYaw - Yw * sinYaw;
+        const Yy = Xw * sinYaw + Yw * cosYaw;
+        const Zy = Zw;
+
+        // Camera pitch looking down:
+        // Ycam: foreshortened along visual elevation
+        // Zcam: depth distance along line of sight
+        const Ycam = Yy * sinPhi + Zy * cosPhi;
+        const Zcam = Yy * cosPhi - Zy * sinPhi;
+
+        const scale = focalLength / (focalLength + Zcam + camDist);
+        const Xp = Xy * scale;
+        const Yp = -Ycam * scale;
+
+        // Apply roll rotation (counterclockwise tilt of the ellipse)
+        const px = cx + (Xp * cosRoll - Yp * sinRoll);
+        const py = cy + (Xp * sinRoll + Yp * cosRoll);
+
+        return { px, py, scale, Zcam };
+      };
+
+      // -----------------------------------------------------------------------
+      // A. Radiant Funnel Throat Background Glow (Matching Photo)
+      // -----------------------------------------------------------------------
+      // Project the core center depth onto screen
+      const holeProj = project3D(0, 0, -funnelDepth * 0.95);
+      const throatRadiusProjX = rThroat * holeProj.scale * 1.5;
+      const throatRadiusProjY = rThroat * sinPhi * holeProj.scale * 1.35;
+
+      const throatGlow = ctx.createRadialGradient(
+        holeProj.px,
+        holeProj.py,
+        rCore * 0.25 * holeProj.scale,
+        holeProj.px,
+        holeProj.py,
+        throatRadiusProjX * 2.4,
+      );
+      throatGlow.addColorStop(0, "rgba(255, 255, 255, 0.48)");
+      throatGlow.addColorStop(0.25, "rgba(241, 245, 249, 0.35)");
+      throatGlow.addColorStop(0.52, "rgba(186, 230, 253, 0.18)");
+      throatGlow.addColorStop(0.82, "rgba(15, 23, 42, 0.06)");
+      throatGlow.addColorStop(1, "rgba(2, 3, 6, 0)");
 
       ctx.save();
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.fillStyle = throatGlow;
+      ctx.beginPath();
+      ctx.ellipse(
+        holeProj.px,
+        holeProj.py,
+        throatRadiusProjX * 2.2,
+        throatRadiusProjY * 2.2,
+        roll,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.restore();
 
-      // 1. Sort stars by projected depth so inner/closer particles render with proper occlusion
-      // Update orbital rotation with Keplerian time dilation: closer orbits spin faster!
-      const projectedStars: {
-        sx: number;
-        sy: number;
-        depth: number;
-        star: VortexStar;
-        isNearRim: boolean;
-      }[] = [];
+      // -----------------------------------------------------------------------
+      // B. Render Ultra-Dense Micro-Starlight Dust Particles (~35,000 points)
+      // -----------------------------------------------------------------------
+      const tierFillStyles = [
+        "#FFFFFF",
+        "#F8FAFC",
+        "#BAE6FD",
+        "#94A3B8",
+        "#475569",
+        "#FEF3C7",
+      ];
 
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
+      const bucketX: number[][] = [[], [], [], [], [], []];
+      const bucketY: number[][] = [[], [], [], [], [], []];
+      const bucketSize: number[][] = [[], [], [], [], [], []];
 
+      for (let i = 0; i < dustCount; i++) {
         if (!prefersReducedMotion) {
-          // Keplerian orbital angular velocity: ω ∝ 1 / (r/R_h)^1.35
-          const omega = 0.58 / Math.pow(Math.max(1, s.r / rHorizon), 1.35);
-          s.angle += omega * dt;
+          dustAngle[i] += dustSpeed[i] * dt;
+        }
 
-          // Subtle spiral wind: logarithmic geodesic curve
-          const spiralTwist = Math.log(s.r / rHorizon) * 0.45;
-          const currentA = s.angle + spiralTwist;
+        const r = dustR[i];
+        const theta = dustAngle[i] + dustSpiralOffset[i];
 
-          // 3D coordinates on the funnel surface
-          const x3d = s.r * Math.cos(currentA);
-          const y3d = s.r * Math.sin(currentA);
-          const z3d = s.z;
+        // Concentric striations matching photo grooves
+        const relR = Math.max(1, r / rCore);
+        const striation = Math.sin(26 * Math.log(relR) - 3 * theta);
+        const z = computeFunnelZ(r) + striation * (r < rRim ? 2.5 : 1.0);
 
-          // Rotate by yaw & pitch
-          const xRot = x3d * cosYaw - y3d * sinYaw;
-          const yRot = x3d * sinYaw + y3d * cosYaw;
+        const Xw = r * Math.cos(theta);
+        const Yw = r * Math.sin(theta);
+        const Zw = z;
 
-          const yP = yRot * cosPitch - z3d * sinPitch;
-          const zP = yRot * sinPitch + z3d * cosPitch;
+        const proj = project3D(Xw, Yw, Zw);
 
-          const projScale = focalLength / (focalLength + zP + 280);
-          const sx = cx + xRot * projScale;
-          const sy = cy + yP * projScale;
+        if (
+          proj.px >= -20 &&
+          proj.px <= width + 20 &&
+          proj.py >= -20 &&
+          proj.py <= height + 20
+        ) {
+          const t = dustTier[i];
+          bucketX[t].push(proj.px);
+          bucketY[t].push(proj.py);
+          bucketSize[t].push(dustSize[i] * proj.scale);
+        }
+      }
 
-          if (sx >= -40 && sx <= width + 40 && sy >= -40 && sy <= height + 40) {
-            projectedStars.push({
+      // Draw all dust particles grouped by tier for maximum batch performance
+      for (let t = 0; t < tierFillStyles.length; t++) {
+        const xs = bucketX[t];
+        const ys = bucketY[t];
+        const sizes = bucketSize[t];
+        const count = xs.length;
+        if (count === 0) continue;
+
+        ctx.fillStyle = tierFillStyles[t];
+        for (let j = 0; j < count; j++) {
+          const sz = sizes[j];
+          ctx.fillRect(xs[j] | 0, ys[j] | 0, sz, sz);
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // C. Render Primary ASCII Streamline Particles (~12,000 particles)
+      // -----------------------------------------------------------------------
+      if (atlasCanvas) {
+        for (let i = 0; i < asciiCount; i++) {
+          if (!prefersReducedMotion) {
+            asciiAngle[i] += asciiSpeed[i] * dt;
+          }
+
+          const r = asciiR[i];
+          const theta = asciiAngle[i] + asciiSpiralOffset[i];
+
+          const relR = Math.max(1, r / rCore);
+          const striation = Math.cos(28 * Math.log(relR) - 4 * theta);
+          const z = computeFunnelZ(r) + striation * (r < rRim ? 3.5 : 1.2);
+
+          const Xw = r * Math.cos(theta);
+          const Yw = r * Math.sin(theta);
+          const Zw = z;
+
+          const proj = project3D(Xw, Yw, Zw);
+
+          if (
+            proj.px >= -20 &&
+            proj.px <= width + 20 &&
+            proj.py >= -20 &&
+            proj.py <= height + 20
+          ) {
+            const gIdx = asciiGlyph[i];
+            const tIdx = asciiTier[i];
+
+            const sx = gIdx * ATLAS_CELL;
+            const sy = tIdx * ATLAS_CELL;
+
+            ctx.drawImage(
+              atlasCanvas,
               sx,
               sy,
-              depth: zP,
-              star: s,
-              isNearRim: s.radialFactor < 0.14,
-            });
+              ATLAS_CELL,
+              ATLAS_CELL,
+              (proj.px - HALF_CELL) | 0,
+              (proj.py - HALF_CELL) | 0,
+              ATLAS_CELL,
+              ATLAS_CELL,
+            );
           }
         }
       }
 
-      // Sort back-to-front
-      projectedStars.sort((a, b) => b.depth - a.depth);
+      // -----------------------------------------------------------------------
+      // D. Render Event Horizon Singularity Void (Pitch-Black Abyss at Core)
+      // -----------------------------------------------------------------------
+      // Located at the bottom of the funnel (Zw = -funnelDepth)
+      const coreHole = project3D(0, 0, -funnelDepth * 1.05);
+      const coreHoleRadiusX = rCore * coreHole.scale * 1.15;
+      const coreHoleRadiusY = rCore * sinPhi * coreHole.scale * 1.05;
 
-      // 2. Render all ASCII geodesic stars & starlight filaments
-      for (let i = 0; i < projectedStars.length; i++) {
-        const p = projectedStars[i];
-        const s = p.star;
-
-        // Micro-shimmer
-        const shimmer =
-          0.75 + 0.25 * Math.sin(elapsedSec * 3.2 + s.shimmerPhase);
-        const alpha = Math.min(1, s.baseAlpha * shimmer);
-
-        ctx.font = `600 ${s.size}px ${monoFont}`;
-        ctx.fillStyle = s.color;
-        ctx.globalAlpha = alpha;
-        ctx.fillText(s.glyph, p.sx, p.sy);
-      }
-
-      // 3. Render the Black Hole Event Horizon Singularity Void (Pitch-Black Ellipse)
-      // Calculated from the projected horizon radius and camera pitch
-      const horizonScale = focalLength / (focalLength + 280);
-      const horizonRadiusX = rHorizon * horizonScale;
-      const horizonRadiusY = rHorizon * cosPitch * horizonScale;
-
-      // Soft gravitational absorption shadow surrounding the rim
-      const voidGradient = ctx.createRadialGradient(
-        cx,
-        cy,
-        0,
-        cx,
-        cy,
-        horizonRadiusX * 1.25,
+      // Soft gravitational absorption shadow surrounding the singularity
+      const coreShadow = ctx.createRadialGradient(
+        coreHole.px,
+        coreHole.py,
+        coreHoleRadiusX * 0.35,
+        coreHole.px,
+        coreHole.py,
+        coreHoleRadiusX * 1.6,
       );
-      voidGradient.addColorStop(0, "rgba(2, 3, 6, 1)");
-      voidGradient.addColorStop(0.72, "rgba(2, 3, 6, 0.98)");
-      voidGradient.addColorStop(0.92, "rgba(2, 3, 6, 0.65)");
-      voidGradient.addColorStop(1, "rgba(2, 3, 6, 0)");
+      coreShadow.addColorStop(0, "rgba(0, 0, 0, 1)");
+      coreShadow.addColorStop(0.75, "rgba(1, 2, 4, 0.98)");
+      coreShadow.addColorStop(0.92, "rgba(1, 2, 4, 0.65)");
+      coreShadow.addColorStop(1, "rgba(1, 2, 4, 0)");
 
       ctx.save();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = voidGradient;
+      ctx.fillStyle = coreShadow;
       ctx.beginPath();
       ctx.ellipse(
-        cx,
-        cy,
-        horizonRadiusX * 1.35,
-        horizonRadiusY * 1.35,
-        currentTiltX * 0.4,
+        coreHole.px,
+        coreHole.py,
+        coreHoleRadiusX * 1.55,
+        coreHoleRadiusY * 1.55,
+        roll,
         0,
         Math.PI * 2,
       );
       ctx.fill();
 
-      // True absolute Singularity Void (pure deep blackness)
-      ctx.fillStyle = "#010204";
+      // Absolute pure black singularity void
+      ctx.fillStyle = "#000000";
       ctx.beginPath();
       ctx.ellipse(
-        cx,
-        cy,
-        horizonRadiusX * 0.94,
-        horizonRadiusY * 0.94,
-        currentTiltX * 0.4,
+        coreHole.px,
+        coreHole.py,
+        coreHoleRadiusX,
+        coreHoleRadiusY,
+        roll,
         0,
         Math.PI * 2,
       );
       ctx.fill();
       ctx.restore();
 
-      // 4. Radiant Photon Sphere Accretion Lip (Dense ASCII Halo right at the boundary)
-      const rimGlyphCount = Math.max(38, Math.floor(horizonRadiusX * 0.75));
-      ctx.font = `700 9px ${monoFont}`;
-      for (let r = 0; r < rimGlyphCount; r++) {
-        const rimAngle = (r / rimGlyphCount) * Math.PI * 2;
-        // Doppler asymmetry: starlight approaching the viewer on one side is brighter!
-        const doppler = 0.55 + 0.45 * Math.sin(rimAngle - Math.PI * 0.25);
-        const rimX = cx + Math.cos(rimAngle) * horizonRadiusX;
-        const rimY = cy + Math.sin(rimAngle) * horizonRadiusY;
+      // -----------------------------------------------------------------------
+      // E. Render The Lone Observer on the Foreground Precipice Rim
+      // -----------------------------------------------------------------------
+      // Placed at the near rim: Yw = -rRim, Zw = 0
+      // In camera projection, this sits right at the bottom edge of the elliptical opening
+      const observerPos = project3D(0, -rRim * 0.96, 0);
 
-        const rimChar = doppler > 0.8 ? "@" : doppler > 0.45 ? "*" : "·";
-        ctx.fillStyle = doppler > 0.75 ? "#FFFFFF" : "#BAE6FD";
-        ctx.globalAlpha = 0.45 + doppler * 0.55;
-        ctx.fillText(rimChar, rimX, rimY);
-      }
+      drawLoneObserver(
+        ctx,
+        observerPos.px,
+        observerPos.py,
+        observerPos.scale,
+        elapsedSec,
+      );
 
-      // 5. The Lone Man Standing at the Edge of the Event Horizon
-      // Positioned right at the front lip (closest to the viewer, gazing into the black hole)
-      const manHorizonAngle = Math.PI * 0.5; // Bottom front rim of the ellipse
-      const manX = cx + Math.cos(manHorizonAngle) * horizonRadiusX;
-      const manY = cy + Math.sin(manHorizonAngle) * horizonRadiusY;
-
-      drawLoneObserver(ctx, manX, manY, horizonScale, elapsedSec);
-
-      ctx.restore();
       rafId = window.requestAnimationFrame(renderFrame);
     };
 
+    // Initialize
     syncSize();
     rafId = window.requestAnimationFrame(renderFrame);
-
-    window.addEventListener("resize", syncSize, { passive: true });
 
     return () => {
       window.removeEventListener("resize", syncSize);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      intersectionObserver.disconnect();
       if (rafId !== 0) window.cancelAnimationFrame(rafId);
     };
   }, []);
@@ -453,7 +757,7 @@ export function HeroBlackHoleAscii() {
     >
       <canvas
         ref={canvasRef}
-        className="h-full w-full opacity-90 transition-opacity duration-1000"
+        className="h-full w-full opacity-100 transition-opacity duration-1000"
       />
     </div>
   );
