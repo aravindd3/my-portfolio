@@ -7,6 +7,7 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
+import { HeroVortexMinimal } from "./HeroVortexMinimal";
 
 /**
  * Stage 1: Personal Introduction Hero Slide
@@ -20,7 +21,7 @@ export function HeroIntroSlide() {
       aria-labelledby="intro-heading"
       vAlign="between"
       hAlign="center"
-      className="relative w-full min-h-svh h-svh overflow-hidden px-6 pt-24 pb-8 sm:pb-12 text-center bg-[#020306] bg-[radial-gradient(ellipse_80%_60%_at_50%_35%,rgba(15,23,42,0.45)_0%,rgba(2,3,6,0.95)_70%,#020306_100%)]"
+      className="relative w-full min-h-svh overflow-hidden px-6 pt-24 pb-4 text-center bg-[#020306] bg-[radial-gradient(ellipse_80%_60%_at_50%_30%,rgba(15,23,42,0.4)_0%,rgba(2,3,6,0.95)_70%,#020306_100%)]"
     >
       {/* Top Status & System Ready Indicator */}
       <HStack gap={2} vAlign="center" className="relative z-10 opacity-80 pt-2">
@@ -41,7 +42,7 @@ export function HeroIntroSlide() {
       <VStack
         gap={4}
         hAlign="center"
-        className="relative z-10 mx-auto max-w-4xl my-auto"
+        className="relative z-10 mx-auto max-w-4xl my-auto pt-4"
       >
         <Text
           type="code"
@@ -69,33 +70,37 @@ export function HeroIntroSlide() {
         </Text>
       </VStack>
 
-      {/* Bottom Guide to Scroll to Event Horizon Transition */}
-      <Link
-        href="#vortex-transition"
-        isStandalone
-        aria-label="Scroll down to gravitational event horizon transition"
-        className="group relative z-10 flex flex-col items-center gap-2.5 no-underline opacity-75 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
+      {/* Procedural Minimalist Black Hole Vortex at the End of Slide 1 */}
+      <VStack
+        hAlign="center"
+        className="relative z-10 w-full mt-auto -mb-2 sm:-mb-4 pointer-events-auto"
       >
-        <Text
-          type="code"
-          size="xsm"
-          className="font-mono text-[11px] tracking-[0.25em] uppercase text-secondary transition-colors duration-200 group-hover:text-copper"
+        <HeroVortexMinimal />
+
+        {/* Minimalist Natural Transition to Slide 2 */}
+        <Link
+          href="#hero-technical"
+          isStandalone
+          aria-label="Scroll to technical overview"
+          className="group relative -mt-8 sm:-mt-10 mb-4 flex flex-col items-center gap-2 no-underline opacity-65 transition-all duration-300 hover:opacity-100 focus-visible:outline-offset-4"
         >
-          DESCEND TO EVENT HORIZON
-        </Text>
-        <HStack
-          as="span"
-          hAlign="center"
-          vAlign="center"
-          className="size-8 rounded-full border border-white/15 bg-black/40 text-secondary backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-300 group-hover:translate-y-1 group-hover:border-copper/40 group-hover:bg-copper/10 group-hover:text-copper"
-        >
-          <AppIcon name="chevron-down" size="sm" color="inherit" />
-        </HStack>
-        <HStack
-          as="span"
-          className="h-8 w-px bg-gradient-to-b from-white/20 via-copper/50 to-transparent transition-all duration-300 group-hover:h-12 group-hover:via-white"
-        />
-      </Link>
+          <Text
+            type="code"
+            size="xsm"
+            className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted transition-colors duration-200 group-hover:text-copper"
+          >
+            {HERO_EDITORIAL_DATA.introScrollCta}
+          </Text>
+          <HStack
+            as="span"
+            hAlign="center"
+            vAlign="center"
+            className="size-7 rounded-full border border-white/15 bg-black/60 text-secondary backdrop-blur-sm transition-all duration-300 group-hover:translate-y-1 group-hover:border-copper/40 group-hover:text-copper"
+          >
+            <AppIcon name="chevron-down" size="sm" color="inherit" />
+          </HStack>
+        </Link>
+      </VStack>
     </VStack>
   );
 }

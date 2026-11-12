@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     template: "%s | Aravind V S",
   },
   description:
-    "Engineering portfolio of Aravind V S, Electronics & Communication Engineering undergraduate at VIT-AP University specializing in embedded systems, KiCad 10.0 PCB layout, Embedded C firmware, and wired/wireless hardware protocols (UART, SPI, I²C, I²S, CAN, LoRa, Bluetooth, NFC).",
+    "Engineering portfolio of Aravind V S, Electronics & Communication Engineering undergraduate specializing in embedded systems, KiCad 10.0 PCB layout, Embedded C firmware, and wired/wireless hardware protocols (UART, SPI, I²C, I²S, CAN, LoRa, Bluetooth, NFC).",
   keywords: [
     "Aravind V S",
     "Embedded Systems Engineer",

@@ -150,7 +150,7 @@ export const PROFILE_DATA: ProfileData = {
   instagramUrl: "https://instagram.com",
   instagramLabel: "instagram",
   resumePdfUrl: "/docs/Aravind_VS_Resume.pdf",
-  bio: "Electronics and Communication Engineering undergraduate at VIT-AP University focused on embedded systems, hardware design, PCB layout, and firmware development. Experienced in building practical electronic systems that integrate microcontrollers, custom KiCad PCBs, sensors, and wireless communication interfaces (LoRa, Bluetooth, UART, SPI, I²C, I²S, CAN). Dedicated to embedded hardware engineering, circuit prototyping, and low-level firmware validation.",
+  bio: "Electronics and Communication Engineering undergraduate focused on embedded systems, hardware design, PCB layout, and firmware development. Experienced in building practical electronic systems that integrate microcontrollers, custom KiCad PCBs, sensors, and wireless communication interfaces (LoRa, Bluetooth, UART, SPI, I²C, I²S, CAN). Dedicated to embedded hardware engineering, circuit prototyping, and low-level firmware validation.",
   quickMetrics: [
     {
       label: "Cumulative GPA",
@@ -218,7 +218,7 @@ export const HERO_EDITORIAL_DATA: HeroEditorialData = {
   introGreeting: "Hello! I'm",
   introName: "Aravind V S",
   introBio:
-    "Electronics & Communication Engineering undergraduate at VIT-AP University, specializing in embedded systems, bare-metal firmware development, and PCB design.",
+    "Electronics & Communication Engineering undergraduate, specializing in embedded systems, bare-metal firmware development, and PCB design.",
   introScrollCta: "Scroll to explore",
   punchline: "Engineering at the intersection of",
   punchlineHighlight: "bare-metal firmware & physical circuitry.",

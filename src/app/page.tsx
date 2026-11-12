@@ -6,7 +6,6 @@ import { EducationAndCerts } from "@/components/EducationAndCerts";
 import { ExperienceTimeline } from "@/components/ExperienceTimeline";
 import { HardwareSpecsMatrix } from "@/components/HardwareSpecsMatrix";
 import { HeroIntroSlide, HeroTechnicalSlide } from "@/components/HeroSection";
-import { HeroVortexTransition } from "@/components/HeroVortexTransition";
 import { Navbar } from "@/components/Navbar";
 import { PortfolioWorkspace } from "@/components/PortfolioWorkspace";
 import { ProjectsShowcase } from "@/components/ProjectsShowcase";
@@ -20,7 +19,6 @@ export default function Home() {
       <Navbar />
       <VStack as="main" id="main-content" className="relative z-10 w-full flex-1">
         <HeroIntroSlide />
-        <HeroVortexTransition />
         <ScrollBlurSection>
           <HeroTechnicalSlide />
         </ScrollBlurSection>
