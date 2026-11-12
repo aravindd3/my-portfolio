@@ -182,6 +182,7 @@ function drawHandCells(
   humanOffsetRow: number,
   cursorLogicalX: number,
   cursorLogicalY: number,
+  monoFont: string,
 ) {
   const { cellSize, cols, rows } = HERO_ASCII_GRID;
   const scrollFade = 1 - smoothstep(clamp01((scrollProgress - 0.12) / 0.88)) * 0.88;
@@ -206,20 +207,20 @@ function drawHandCells(
     let x = drawCol * cellSize + cellSize * 0.5;
     let y = drawRow * cellSize + cellSize * 0.5;
 
-    // Interactive cursor displacement & cosmic excitation when sweeping through ASCII elements
+    // Interactive cursor displacement & cosmic magnification
     let isCursorNear = false;
     let cursorExcitement = 0;
     if (cursorLogicalX > -100 && cursorLogicalY > -100) {
       const distToCursor = Math.hypot(x - cursorLogicalX, y - cursorLogicalY);
-      const cursorRadius = 68; // interaction field radius in logical coordinates
+      const cursorRadius = 82; // Magnifier lens radius
       if (distToCursor < cursorRadius) {
         isCursorNear = true;
         const normDist = distToCursor / cursorRadius;
-        cursorExcitement = Math.pow(1 - normDist, 1.8);
+        cursorExcitement = Math.pow(1 - normDist, 1.6);
 
-        // Repel / part elements away from cursor as you pass through
+        // Spherical lens displacement bulge
         const repelAngle = Math.atan2(y - cursorLogicalY, x - cursorLogicalX);
-        const pushDist = (1 - normDist) * 16.5;
+        const pushDist = (1 - normDist) * 14.5;
         x += Math.cos(repelAngle) * pushDist;
         y += Math.sin(repelAngle) * pushDist;
       }
@@ -258,7 +259,7 @@ function drawHandCells(
       // Elevate character density & brightness on interactive touch
       idx = Math.min(
         ASCII_RAMP.length - 1,
-        idx + Math.floor(cursorExcitement * 3.8 + 1),
+        idx + Math.floor(cursorExcitement * 4 + 1),
       );
     } else if (cell.charIdx >= 2 && flowWave > 0.62) {
       idx = Math.min(ASCII_RAMP.length - 1, idx + 1);
@@ -273,21 +274,26 @@ function drawHandCells(
     );
 
     if (isCursorNear) {
-      fillColor = cursorExcitement > 0.6 ? "#FFFFFF" : isRobot ? "#BAE6FD" : "#FEF3C7";
+      fillColor = cursorExcitement > 0.5 ? "#FFFFFF" : isRobot ? "#BAE6FD" : "#FEF3C7";
       alpha = Math.min(1, alpha + cursorExcitement * 0.6);
-    } else if (tipPulse > 0.48 && cell.charIdx >= 4) {
-      fillColor = isRobot ? "#E0F2FE" : "#FEF3C7";
-      alpha = Math.min(1, alpha + 0.15);
-    } else if (surgeHighlight > 0.42 && cell.charIdx >= 4) {
-      fillColor = isRobot
-        ? cell.charIdx >= 7
-          ? "#BAE6FD"
-          : "#38BDF8"
-        : cell.charIdx >= 7
-          ? "#FDE68A"
-          : "#E5A93C";
-    } else if (crossShimmer > 0.85 && cell.charIdx >= 6) {
-      fillColor = isRobot ? "#BAE6FD" : "#FDE68A";
+      const magSize = 10.5 + cursorExcitement * 7.5;
+      ctx.font = `700 ${magSize.toFixed(1)}px ${monoFont}`;
+    } else {
+      ctx.font = `600 10.5px ${monoFont}`;
+      if (tipPulse > 0.48 && cell.charIdx >= 4) {
+        fillColor = isRobot ? "#E0F2FE" : "#FEF3C7";
+        alpha = Math.min(1, alpha + 0.15);
+      } else if (surgeHighlight > 0.42 && cell.charIdx >= 4) {
+        fillColor = isRobot
+          ? cell.charIdx >= 7
+            ? "#BAE6FD"
+            : "#38BDF8"
+          : cell.charIdx >= 7
+            ? "#FDE68A"
+            : "#E5A93C";
+      } else if (crossShimmer > 0.85 && cell.charIdx >= 6) {
+        fillColor = isRobot ? "#BAE6FD" : "#FDE68A";
+      }
     }
 
     ctx.globalAlpha = alpha;
@@ -323,6 +329,9 @@ function drawFingertipBridges(
   robotTipRow: number,
   humanTipCol: number,
   humanTipRow: number,
+  cursorLogicalX: number,
+  cursorLogicalY: number,
+  monoFont: string,
 ) {
   const { cellSize, sparkCenterCol, sparkCenterRow } = HERO_ASCII_GRID;
 
@@ -360,19 +369,45 @@ function drawFingertipBridges(
       const br = side.tipRow + dy * u + ny * harmonicWave;
 
       if (stream > 0.12 || s % 3 === 0) {
-        const isPeak = stream > 0.68;
-        const ch = isPeak ? "*" : stream > 0.12 ? "+" : "·";
-        const gx = Math.round(bc) * cellSize + cellSize * 0.5;
-        const gy = Math.round(br) * cellSize + cellSize * 0.5;
+        let gx = Math.round(bc) * cellSize + cellSize * 0.5;
+        let gy = Math.round(br) * cellSize + cellSize * 0.5;
 
-        ctx.globalAlpha = (isPeak ? 0.94 : 0.38) * visibility;
-        ctx.fillStyle = side.isRobot
-          ? isPeak
-            ? "#BAE6FD"
-            : "#38BDF8"
-          : isPeak
-            ? "#FEF3C7"
-            : "#E5A93C";
+        let isCursorNear = false;
+        let cursorExcitement = 0;
+        if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+          const distToCursor = Math.hypot(gx - cursorLogicalX, gy - cursorLogicalY);
+          const cursorRadius = 82;
+          if (distToCursor < cursorRadius) {
+            isCursorNear = true;
+            const normDist = distToCursor / cursorRadius;
+            cursorExcitement = Math.pow(1 - normDist, 1.6);
+            const repelAngle = Math.atan2(gy - cursorLogicalY, gx - cursorLogicalX);
+            const pushDist = (1 - normDist) * 14.0;
+            gx += Math.cos(repelAngle) * pushDist;
+            gy += Math.sin(repelAngle) * pushDist;
+          }
+        }
+
+        const isPeak = stream > 0.68 || isCursorNear;
+        const ch = isCursorNear && cursorExcitement > 0.5 ? "@" : isPeak ? "*" : stream > 0.12 ? "+" : "·";
+
+        if (isCursorNear) {
+          const fontSz = 10.5 + cursorExcitement * 7.5;
+          ctx.font = `700 ${fontSz.toFixed(1)}px ${monoFont}`;
+          ctx.globalAlpha = Math.min(1, 0.95 * visibility + cursorExcitement * 0.4);
+          ctx.fillStyle = cursorExcitement > 0.4 ? "#FFFFFF" : side.isRobot ? "#BAE6FD" : "#FEF3C7";
+        } else {
+          ctx.font = `600 10.5px ${monoFont}`;
+          ctx.globalAlpha = (isPeak ? 0.94 : 0.38) * visibility;
+          ctx.fillStyle = side.isRobot
+            ? isPeak
+              ? "#BAE6FD"
+              : "#38BDF8"
+            : isPeak
+              ? "#FEF3C7"
+              : "#E5A93C";
+        }
+
         ctx.fillText(ch, gx, gy);
       }
     }
@@ -425,6 +460,9 @@ function drawAnimatedStar(
   entryProgress: number,
   scrollProgress: number,
   pulseBreathe: number,
+  cursorLogicalX: number,
+  cursorLogicalY: number,
+  monoFont: string,
 ) {
   const { cellSize, cols, rows, sparkCenterCol, sparkCenterRow } = HERO_ASCII_GRID;
 
@@ -452,7 +490,7 @@ function drawAnimatedStar(
   const minCol = Math.max(0, sparkCenterCol - 24);
   const maxCol = Math.min(cols - 1, sparkCenterCol + 24);
 
-  // 1. Primary 6-arm isometric star + counter-rotating minor rays (with scroll radial scatter)
+  // 1. Primary 6-arm isometric star + counter-rotating minor rays (with scroll radial scatter & cursor magnifier)
   for (let r = minRow; r <= maxRow; r++) {
     for (let c = minCol; c <= maxCol; c++) {
       const dxS = c - sparkCenterCol;
@@ -546,12 +584,34 @@ function drawAnimatedStar(
         continue;
       }
 
+      let gx = drawC * cellSize + cellSize * 0.5;
+      let gy = drawR * cellSize + cellSize * 0.5;
+
+      // Interactive cursor magnifier & repulsion for the middle star
+      let isCursorNear = false;
+      let cursorExcitement = 0;
+      if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+        const distToCursor = Math.hypot(gx - cursorLogicalX, gy - cursorLogicalY);
+        const cursorRadius = 82;
+        if (distToCursor < cursorRadius) {
+          isCursorNear = true;
+          const normDist = distToCursor / cursorRadius;
+          cursorExcitement = Math.pow(1 - normDist, 1.6);
+
+          // Magnifier lens push / spherical bulge
+          const repelAngle = Math.atan2(gy - cursorLogicalY, gx - cursorLogicalX);
+          const pushDist = (1 - normDist) * 15.0;
+          gx += Math.cos(repelAngle) * pushDist;
+          gy += Math.sin(repelAngle) * pushDist;
+        }
+      }
+
       const cycleOffset =
         dist > 2.2 && val < 0.85
           ? Math.round(Math.sin(elapsedSec * 5.2 + c * 0.8 + r * 0.6) * 0.7)
           : 0;
       const dispersedVal = disperse > 0.2 ? val * (1 - disperse * 0.55) : val;
-      const ci = Math.min(
+      let ci = Math.min(
         ASCII_RAMP.length - 1,
         Math.max(
           1,
@@ -559,29 +619,38 @@ function drawAnimatedStar(
         ),
       );
 
-      const gx = drawC * cellSize + cellSize * 0.5;
-      const gy = drawR * cellSize + cellSize * 0.5;
-
-      ctx.globalAlpha = cellAlpha;
-      if (dist < 2.8 && val > 0.68 && disperse < 0.55) {
-        ctx.fillStyle = "#FFFFFF";
-      } else if (dxS < -1.8) {
-        ctx.fillStyle =
-          val > 0.66 && bevel >= 0.9
-            ? "#E0F2FE"
-            : val > 0.42
-              ? "#38BDF8"
-              : "#0284C7";
-      } else if (dxS > 1.8) {
-        ctx.fillStyle =
-          val > 0.66 && bevel >= 0.9
-            ? "#FEF3C7"
-            : val > 0.42
-              ? "#E5A93C"
-              : "#B45309";
+      if (isCursorNear) {
+        ci = Math.min(
+          ASCII_RAMP.length - 1,
+          ci + Math.floor(cursorExcitement * 4 + 1),
+        );
+        const fontSz = 10.5 + cursorExcitement * 7.5;
+        ctx.font = `700 ${fontSz.toFixed(1)}px ${monoFont}`;
+        ctx.fillStyle = cursorExcitement > 0.5 ? "#FFFFFF" : dxS < 0 ? "#BAE6FD" : "#FEF3C7";
+        ctx.globalAlpha = Math.min(1, cellAlpha + cursorExcitement * 0.5);
       } else {
-        ctx.fillStyle =
-          val > 0.66 ? "#F8FAFC" : val > 0.4 ? "#CBD5E1" : "#64748B";
+        ctx.font = `600 10.5px ${monoFont}`;
+        ctx.globalAlpha = cellAlpha;
+        if (dist < 2.8 && val > 0.68 && disperse < 0.55) {
+          ctx.fillStyle = "#FFFFFF";
+        } else if (dxS < -1.8) {
+          ctx.fillStyle =
+            val > 0.66 && bevel >= 0.9
+              ? "#E0F2FE"
+              : val > 0.42
+                ? "#38BDF8"
+                : "#0284C7";
+        } else if (dxS > 1.8) {
+          ctx.fillStyle =
+            val > 0.66 && bevel >= 0.9
+              ? "#FEF3C7"
+              : val > 0.42
+                ? "#E5A93C"
+                : "#B45309";
+        } else {
+          ctx.fillStyle =
+            val > 0.66 ? "#F8FAFC" : val > 0.4 ? "#CBD5E1" : "#64748B";
+        }
       }
 
       ctx.fillText(ASCII_RAMP[ci], gx, gy);
@@ -810,7 +879,7 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         }
       }
 
-      // 2. Render both ASCII hands with entry convergence, living wave, and scroll retraction
+      // 2. Render both ASCII hands with entry convergence, living wave, scroll retraction & cursor magnifier
       drawHandCells(
         ctx,
         elapsedSec,
@@ -822,6 +891,7 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         humanOffsetRow,
         cursorLogicalX,
         cursorLogicalY,
+        monoFont,
       );
 
       // 3. Render animated signal pulses connecting dynamic fingertips <-> center star
@@ -834,9 +904,12 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         robotTipRow + robotOffsetRow,
         humanTipCol + humanOffsetCol,
         humanTipRow + humanOffsetRow,
+        cursorLogicalX,
+        cursorLogicalY,
+        monoFont,
       );
 
-      // 4. Render dynamically rotating, blooming, sparking, scroll-reactive ASCII Star
+      // 4. Render dynamically rotating, blooming, sparking, scroll-reactive ASCII Star & interactive cursor magnifier
       drawAnimatedStar(
         ctx,
         elapsedSec,
@@ -844,7 +917,50 @@ export function HeroAsciiHands({ altText }: HeroAsciiHandsProps) {
         entryProgress,
         scrollProgress,
         pulseBreathe,
+        cursorLogicalX,
+        cursorLogicalY,
+        monoFont,
       );
+
+      // 5. Holographic interactive Magnifier Lens Ring around cursor
+      if (cursorLogicalX > -100 && cursorLogicalY > -100) {
+        const lensRadius = 82;
+        const lensGrad = ctx.createRadialGradient(
+          cursorLogicalX,
+          cursorLogicalY,
+          0,
+          cursorLogicalX,
+          cursorLogicalY,
+          lensRadius,
+        );
+        lensGrad.addColorStop(0, "rgba(56, 189, 248, 0.08)");
+        lensGrad.addColorStop(0.75, "rgba(255, 255, 255, 0.03)");
+        lensGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
+        ctx.fillStyle = lensGrad;
+        ctx.beginPath();
+        ctx.arc(cursorLogicalX, cursorLogicalY, lensRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.28)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(cursorLogicalX, cursorLogicalY, lensRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Subtle precision crosshair ticks
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.55)";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cursorLogicalX, cursorLogicalY - lensRadius - 4);
+        ctx.lineTo(cursorLogicalX, cursorLogicalY - lensRadius + 3);
+        ctx.moveTo(cursorLogicalX, cursorLogicalY + lensRadius - 3);
+        ctx.lineTo(cursorLogicalX, cursorLogicalY + lensRadius + 4);
+        ctx.moveTo(cursorLogicalX - lensRadius - 4, cursorLogicalY);
+        ctx.lineTo(cursorLogicalX - lensRadius + 3, cursorLogicalY);
+        ctx.moveTo(cursorLogicalX + lensRadius - 3, cursorLogicalY);
+        ctx.lineTo(cursorLogicalX + lensRadius + 4, cursorLogicalY);
+        ctx.stroke();
+      }
 
       ctx.restore();
     };

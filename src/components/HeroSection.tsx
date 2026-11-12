@@ -97,11 +97,19 @@ export function HeroSection() {
             color="primary"
             isStandalone
             display="block"
-            className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+            className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.45)]"
           >
             <HStack as="span" gap={2} vAlign="center">
-              <AppIcon name="folder-git" size="sm" />
-              <Text type="inherit" color="inherit" className="tracking-wide">
+              <AppIcon
+                name="folder-git"
+                size="sm"
+                className="transition-colors duration-200 group-hover:text-black"
+              />
+              <Text
+                type="inherit"
+                color="inherit"
+                className="tracking-wide transition-colors duration-200 group-hover:text-black"
+              >
                 Github
               </Text>
             </HStack>
@@ -114,11 +122,19 @@ export function HeroSection() {
             color="primary"
             isStandalone
             display="block"
-            className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+            className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.45)]"
           >
             <HStack as="span" gap={2} vAlign="center">
-              <AppIcon name="external-link" size="sm" />
-              <Text type="inherit" color="inherit" className="tracking-wide">
+              <AppIcon
+                name="external-link"
+                size="sm"
+                className="transition-colors duration-200 group-hover:text-black"
+              />
+              <Text
+                type="inherit"
+                color="inherit"
+                className="tracking-wide transition-colors duration-200 group-hover:text-black"
+              >
                 Linkedin
               </Text>
             </HStack>
@@ -132,11 +148,19 @@ export function HeroSection() {
               color="primary"
               isStandalone
               display="block"
-              className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+              className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.45)]"
             >
               <HStack as="span" gap={2} vAlign="center">
-                <AppIcon name="instagram" size="sm" />
-                <Text type="inherit" color="inherit" className="tracking-wide">
+                <AppIcon
+                  name="instagram"
+                  size="sm"
+                  className="transition-colors duration-200 group-hover:text-black"
+                />
+                <Text
+                  type="inherit"
+                  color="inherit"
+                  className="tracking-wide transition-colors duration-200 group-hover:text-black"
+                >
                   Instagram
                 </Text>
               </HStack>
@@ -150,11 +174,19 @@ export function HeroSection() {
             color="primary"
             isStandalone
             display="block"
-            className="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+            className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.45)]"
           >
             <HStack as="span" gap={2} vAlign="center">
-              <AppIcon name="file-down" size="sm" />
-              <Text type="inherit" color="inherit" className="tracking-wide">
+              <AppIcon
+                name="file-down"
+                size="sm"
+                className="transition-colors duration-200 group-hover:text-black"
+              />
+              <Text
+                type="inherit"
+                color="inherit"
+                className="tracking-wide transition-colors duration-200 group-hover:text-black"
+              >
                 Resume
               </Text>
             </HStack>

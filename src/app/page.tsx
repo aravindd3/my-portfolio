@@ -9,6 +9,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { Navbar } from "@/components/Navbar";
 import { PortfolioWorkspace } from "@/components/PortfolioWorkspace";
 import { ProjectsShowcase } from "@/components/ProjectsShowcase";
+import { ScrollBlurSection } from "@/components/ScrollBlurSection";
 
 export default function Home() {
   return (
@@ -19,13 +20,23 @@ export default function Home() {
       <VStack as="main" id="main-content" className="relative z-10 w-full flex-1">
         <HeroSection />
         <PortfolioWorkspace>
-          <HardwareSpecsMatrix />
-          <ProjectsShowcase />
+          <ScrollBlurSection>
+            <HardwareSpecsMatrix />
+          </ScrollBlurSection>
+          <ScrollBlurSection>
+            <ProjectsShowcase />
+          </ScrollBlurSection>
         </PortfolioWorkspace>
-        <ExperienceTimeline />
-        <EducationAndCerts />
+        <ScrollBlurSection>
+          <ExperienceTimeline />
+        </ScrollBlurSection>
+        <ScrollBlurSection>
+          <EducationAndCerts />
+        </ScrollBlurSection>
       </VStack>
-      <ContactFooter />
+      <ScrollBlurSection>
+        <ContactFooter />
+      </ScrollBlurSection>
     </>
   );
 }
