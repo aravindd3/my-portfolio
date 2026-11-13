@@ -139,6 +139,50 @@ body {
   animation: dynamicArrowSlide 1.8s ease-in-out infinite;
 }
 
+/* Precision I-Beam Cursor Animations */
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.12;
+  }
+}
+
+.animate-cursor-blink {
+  animation: cursorBlink 0.65s ease-in-out infinite;
+}
+
+@keyframes cursorComeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-cursor-come-up {
+  animation: cursorComeUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cursorGoAway {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.9);
+  }
+}
+
+.animate-cursor-go-away {
+  animation: cursorGoAway 0.35s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
 @layer components {
   /* Frosted Glass Floating Navigation Capsule (Figr Glassmorphism Pillars) */
   .frosted-glass-nav {

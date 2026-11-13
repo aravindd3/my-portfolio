@@ -7,6 +7,7 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
+import { HeroTypewriterName } from "./HeroTypewriterName";
 
 /**
  * Stage 1: Personal Introduction Hero Slide
@@ -49,7 +50,7 @@ export function HeroIntroSlide() {
           justify="center"
           className="text-center font-brand text-[clamp(2.75rem,8vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.85)]"
         >
-          {HERO_EDITORIAL_DATA.introName}
+          <HeroTypewriterName fullName={HERO_EDITORIAL_DATA.introName} />
         </Heading>
 
         <Text
