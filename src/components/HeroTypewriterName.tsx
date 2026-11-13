@@ -12,28 +12,27 @@ interface HeroTypewriterNameProps {
 const emptySubscribe = () => () => {};
 
 type AnimationStage =
-  | "initial" // Settle period before cursor appears
-  | "cursor-in" // I-beam cursor comes up into view
-  | "typing" // Typing letters at a steady constant speed
+  | "initial" // Brief settle period before cursor emerges
+  | "cursor-in" // I-beam cursor rises smoothly into view ("comes up")
+  | "typing" // Typing letters left-to-right at a constant steady speed
   | "completed" // Finished typing, cursor rests and blinks briefly
-  | "cursor-out" // Cursor gracefully fades out and departs
-  | "done"; // Final static state
+  | "cursor-out" // Cursor gracefully dissolves away ("goes away")
+  | "done"; // Final clean text state
 
-// Precise timing parameters for a crisp, tactile typing cadence
+// Timing parameters for clean, intentional typewriter cadence
 const TYPING_SPEED_MS = 85; // Strict constant speed per character
-const SETTLE_DELAY_MS = 320; // Initial page settle delay
-const CURSOR_IN_DURATION_MS = 340; // Cursor come-up duration
-const COMPLETION_PAUSE_MS = 650; // Pause & gentle cursor blink at end
+const SETTLE_DELAY_MS = 240; // Initial delay before cursor appears
+const CURSOR_IN_DURATION_MS = 320; // Cursor come-up duration
+const COMPLETION_PAUSE_MS = 700; // Pause & gentle cursor blink at end
 const CURSOR_OUT_DURATION_MS = 360; // Cursor departure fade duration
 
 /**
  * Stage 1 Hero Name Typewriter Component:
- * Faithfully executes the user's specification:
- * 1. The custom I-beam cursor (matching the shared asset) emerges at the initial position ("comes up").
- * 2. It traverses from left to right, typing each character of Aravind's name at a strictly constant speed.
- * 3. After completing the name, the cursor rests for a moment and cleanly dissolves away ("goes away").
- * 4. Includes zero-layout-shift ghost sizing, WCAG AA / screen-reader accessibility,
- *    prefers-reduced-motion compliance, and interactive click-to-replay.
+ * 1. The custom I-beam cursor emerges on the left ("comes up").
+ * 2. It traverses from left to right, typing each letter at a constant speed.
+ * 3. After completing the name, the cursor pauses/blinks, then cleanly goes away.
+ * 4. Zero layout shift via ghost container, accessible screen-reader markup,
+ *    and interactive click-to-replay.
  */
 export function HeroTypewriterName({ fullName }: HeroTypewriterNameProps) {
   const [typedLength, setTypedLength] = useState<number>(0);
@@ -55,25 +54,15 @@ export function HeroTypewriterName({ fullName }: HeroTypewriterNameProps) {
   const runAnimationSequence = useCallback(() => {
     clearActiveTimer();
 
-    // Honor users who prefer reduced motion
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      setTypedLength(fullName.length);
-      setStage("done");
-      return;
-    }
-
     // Step 0: Reset to start
     setTypedLength(0);
     setStage("initial");
 
-    // Step 1: Wait for page settle, then cursor emerges ("comes up")
+    // Step 1: Cursor emerges on the left ("comes up")
     timerRef.current = setTimeout(() => {
       setStage("cursor-in");
 
-      // Step 2: Cursor finishes entry and starts constant-speed typing
+      // Step 2: Cursor begins typing letters left-to-right at constant speed
       timerRef.current = setTimeout(() => {
         setStage("typing");
 
@@ -112,7 +101,7 @@ export function HeroTypewriterName({ fullName }: HeroTypewriterNameProps) {
   useEffect(() => {
     const startTimer = setTimeout(() => {
       runAnimationSequence();
-    }, 10);
+    }, 20);
 
     return () => {
       clearTimeout(startTimer);
@@ -120,7 +109,7 @@ export function HeroTypewriterName({ fullName }: HeroTypewriterNameProps) {
     };
   }, [clearActiveTimer, runAnimationSequence]);
 
-  // Click handler to allow visitors to replay the crisp animation
+  // Click handler to allow visitors to replay the crisp animation anytime
   const handleReplay = useCallback(() => {
     runAnimationSequence();
   }, [runAnimationSequence]);

@@ -8,9 +8,10 @@ export interface IBeamCursorProps {
 /**
  * High-precision vector I-beam text insertion cursor.
  * Faithfully matches the iconic serif I-beam insertion pointer from the user specification:
- * - Symmetrical top and bottom serif bars with central alignment notches
+ * - Symmetrical top and bottom serif bars with central optical notches
  * - Smooth inner fillets transitioning into the central stem
  * - High-contrast crisp white fill with dual copper/white hardware luminescence
+ * - Guaranteed fixed aspect ratio and explicit sizing across all browser engines
  */
 export function IBeamCursor({ className = "", isBlinking = false }: IBeamCursorProps) {
   return (
@@ -26,7 +27,8 @@ export function IBeamCursor({ className = "", isBlinking = false }: IBeamCursorP
       <svg
         viewBox="0 0 72 272"
         fill="currentColor"
-        className="h-[0.86em] w-auto text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.85)] drop-shadow-[0_0_16px_rgba(229,169,60,0.55)] transition-colors duration-200"
+        className="h-[0.88em] w-[0.233em] shrink-0 text-white fill-white drop-shadow-[0_0_8px_rgba(255,255,255,0.95)] drop-shadow-[0_0_16px_rgba(229,169,60,0.7)] transition-opacity duration-200"
+        style={{ aspectRatio: "72 / 272" }}
         aria-hidden="true"
         focusable="false"
       >

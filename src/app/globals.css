@@ -66,9 +66,9 @@ body {
   outline-offset: 3px;
 }
 
-/* Respect Reduced Motion Preferences */
+/* Respect Reduced Motion Preferences (while preserving bespoke hero cursor typewriter) */
 @media (prefers-reduced-motion: reduce) {
-  *,
+  *:not([class*="animate-cursor-"]):not([class*="animate-cursor-"] *),
   ::before,
   ::after {
     animation-duration: 0.01ms !important;
