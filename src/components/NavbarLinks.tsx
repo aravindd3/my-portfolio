@@ -84,22 +84,13 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
               aria-current={isActive ? "location" : undefined}
               className={`frosted-glass-nav-link relative rounded-full px-3 py-1.5 font-sans text-sm whitespace-nowrap no-underline transition-all duration-200 focus-visible:outline-offset-2 ${
                 isActive
-                  ? "font-semibold text-white"
-                  : "font-medium text-secondary hover:text-white"
+                  ? "font-semibold text-white bg-white/[0.08]"
+                  : "font-medium text-secondary hover:text-white hover:bg-white/[0.03]"
               }`}
             >
-              <HStack as="span" gap={1.5} vAlign="center">
-                <Text type="inherit" color="inherit">
-                  {item.label}
-                </Text>
-                {isActive && (
-                  <HStack
-                    as="span"
-                    aria-hidden="true"
-                    className="size-1 rounded-full bg-copper"
-                  />
-                )}
-              </HStack>
+              <Text type="inherit" color="inherit">
+                {item.label}
+              </Text>
             </Link>
           </HStack>
         );

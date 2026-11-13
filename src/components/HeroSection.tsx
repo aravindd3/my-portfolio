@@ -82,18 +82,18 @@ export function HeroIntroSlide() {
             color="primary"
             isStandalone
             display="block"
-            className="group rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs text-primary/80 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+            className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
           >
             <HStack as="span" gap={2} vAlign="center">
               <AppIcon
                 name="folder-git"
                 size="sm"
-                className="transition-colors duration-200 text-secondary group-hover:text-white"
+                className="transition-colors duration-200 group-hover:text-black"
               />
               <Text
                 type="inherit"
                 color="inherit"
-                className="tracking-wide transition-colors duration-200 text-secondary group-hover:text-white"
+                className="tracking-wide transition-colors duration-200 group-hover:text-black"
               >
                 Github
               </Text>
@@ -107,18 +107,18 @@ export function HeroIntroSlide() {
             color="primary"
             isStandalone
             display="block"
-            className="group rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs text-primary/80 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+            className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
           >
             <HStack as="span" gap={2} vAlign="center">
               <AppIcon
                 name="external-link"
                 size="sm"
-                className="transition-colors duration-200 text-secondary group-hover:text-white"
+                className="transition-colors duration-200 group-hover:text-black"
               />
               <Text
                 type="inherit"
                 color="inherit"
-                className="tracking-wide transition-colors duration-200 text-secondary group-hover:text-white"
+                className="tracking-wide transition-colors duration-200 group-hover:text-black"
               >
                 Linkedin
               </Text>
@@ -133,18 +133,18 @@ export function HeroIntroSlide() {
               color="primary"
               isStandalone
               display="block"
-              className="group rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs text-primary/80 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+              className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
             >
               <HStack as="span" gap={2} vAlign="center">
                 <AppIcon
                   name="instagram"
                   size="sm"
-                  className="transition-colors duration-200 text-secondary group-hover:text-white"
+                  className="transition-colors duration-200 group-hover:text-black"
                 />
                 <Text
                   type="inherit"
                   color="inherit"
-                  className="tracking-wide transition-colors duration-200 text-secondary group-hover:text-white"
+                  className="tracking-wide transition-colors duration-200 group-hover:text-black"
                 >
                   Instagram
                 </Text>
@@ -159,18 +159,18 @@ export function HeroIntroSlide() {
             color="primary"
             isStandalone
             display="block"
-            className="group rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 font-mono text-xs text-primary/80 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+            className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
           >
             <HStack as="span" gap={2} vAlign="center">
               <AppIcon
                 name="file-down"
                 size="sm"
-                className="transition-colors duration-200 text-secondary group-hover:text-white"
+                className="transition-colors duration-200 group-hover:text-black"
               />
               <Text
                 type="inherit"
                 color="inherit"
-                className="tracking-wide transition-colors duration-200 text-secondary group-hover:text-white"
+                className="tracking-wide transition-colors duration-200 group-hover:text-black"
               >
                 Resume
               </Text>
