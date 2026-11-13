@@ -7,12 +7,11 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
-import { HeroInteractiveBackground } from "./HeroInteractiveBackground";
 
 /**
  * Stage 1: Personal Introduction Hero Slide
- * Welcomes visitors with lively interactive circuit background, centered typography,
- * social/resume link pills at the bottom, and a clean minimalist scroll prompt.
+ * Welcomes visitors with centered typography, social/resume link pills at the bottom,
+ * and a clean minimalist scroll prompt on the deep cosmic universe background.
  */
 export function HeroIntroSlide() {
   return (
@@ -22,11 +21,8 @@ export function HeroIntroSlide() {
       aria-labelledby="intro-heading"
       vAlign="between"
       hAlign="center"
-      className="relative w-full h-svh min-h-svh overflow-hidden px-6 text-center bg-[var(--bg-canvas)] bg-[radial-gradient(ellipse_80%_60%_at_50%_48%,rgba(20,28,42,0.4)_0%,rgba(6,9,14,0.8)_65%,var(--bg-canvas)_100%)]"
+      className="relative w-full h-svh min-h-svh overflow-hidden px-6 text-center bg-transparent"
     >
-      {/* Dynamic Interactive Hardware Circuit & Signal Mesh Background */}
-      <HeroInteractiveBackground />
-
       {/* Symmetrical Top Spacer to balance the bottom section and keep the name dead-center */}
       <HStack
         className="w-full h-28 sm:h-36 shrink-0 pointer-events-none"
@@ -242,7 +238,7 @@ export function HeroTechnicalSlide() {
       id="hero-technical"
       aria-labelledby="hero-name"
       vAlign="between"
-      className="relative w-full overflow-hidden bg-[radial-gradient(ellipse_75%_60%_at_50%_52%,rgba(20,28,42,0.34)_0%,rgba(6,9,13,0.16)_62%,transparent_100%)] lg:h-svh lg:min-h-[680px]"
+      className="relative w-full overflow-hidden bg-transparent lg:h-svh lg:min-h-[680px]"
     >
       {/* Top Centered Editorial Copy Stack */}
       <Section
