@@ -84,8 +84,8 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
               aria-current={isActive ? "location" : undefined}
               className={`frosted-glass-nav-link relative rounded-full px-3 py-1.5 font-sans text-sm whitespace-nowrap no-underline transition-all duration-200 focus-visible:outline-offset-2 ${
                 isActive
-                  ? "font-semibold text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]"
-                  : "font-medium text-primary/65 hover:text-white"
+                  ? "font-semibold text-white"
+                  : "font-medium text-secondary hover:text-white"
               }`}
             >
               <HStack as="span" gap={1.5} vAlign="center">
@@ -96,7 +96,7 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
                   <HStack
                     as="span"
                     aria-hidden="true"
-                    className="size-1 rounded-full bg-bus shadow-[0_0_8px_var(--accent-bus)]"
+                    className="size-1 rounded-full bg-copper"
                   />
                 )}
               </HStack>

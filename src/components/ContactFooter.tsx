@@ -98,7 +98,7 @@ export function ContactFooter() {
                     variant="primary"
                     size="md"
                     icon={<AppIcon name="mail" size="sm" />}
-                    className="!rounded-full !bg-primary !px-5 !font-sans !text-sm !font-semibold !text-canvas shadow-[0_0_24px_rgba(241,245,249,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:!bg-copper"
+                    className="!rounded-full !bg-primary !px-5 !font-sans !text-sm !font-semibold !text-canvas transition-all duration-200 hover:-translate-y-0.5 hover:!bg-copper"
                   />
 
                   <CopyEmailButton email={PROFILE_DATA.email} />
