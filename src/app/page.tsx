@@ -5,7 +5,7 @@ import { CustomPointerMagnifier } from "@/components/CustomPointerMagnifier";
 import { EducationAndCerts } from "@/components/EducationAndCerts";
 import { ExperienceTimeline } from "@/components/ExperienceTimeline";
 import { HardwareSpecsMatrix } from "@/components/HardwareSpecsMatrix";
-import { HeroIntroSlide, HeroTechnicalSlide } from "@/components/HeroSection";
+import { HeroCinematicIntro } from "@/components/HeroCinematicIntro";
 import { Navbar } from "@/components/Navbar";
 import { PortfolioWorkspace } from "@/components/PortfolioWorkspace";
 import { ProjectsShowcase } from "@/components/ProjectsShowcase";
@@ -18,10 +18,11 @@ export default function Home() {
       <BackgroundAsciiField />
       <Navbar />
       <VStack as="main" id="main-content" className="relative z-10 w-full flex-1">
-        <HeroIntroSlide />
-        <ScrollBlurSection>
-          <HeroTechnicalSlide />
-        </ScrollBlurSection>
+        {/* Cinematic Hero:
+            1. Types "Hello! I'm Aravind V S" centered with surrounding atmospheric depth blur
+            2. Smoothly scroll-pans out to reveal the living ASCII hands art and the pill links below them */}
+        <HeroCinematicIntro />
+
         <PortfolioWorkspace>
           <ScrollBlurSection>
             <HardwareSpecsMatrix />
