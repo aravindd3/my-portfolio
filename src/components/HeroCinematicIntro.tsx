@@ -27,8 +27,8 @@ const LINE_PAUSE_MS = 180; // Breath between greeting line & name line
 const COMPLETION_PAUSE_MS = 550; // Cursor rest & blink at end
 const CURSOR_OUT_MS = 320; // Fade out duration for cursor
 
-// Scroll runway: 100vh of scroll distance for the cinematic pan-out
-const SCROLL_RUNWAY_VH = 100;
+// Scroll runway: 90vh of scroll distance for the smooth pan-out transition
+const SCROLL_RUNWAY_VH = 90;
 
 /* ──────────────────────────────────────────────────────────────────────── */
 
@@ -53,22 +53,18 @@ function easeOutQuad(x: number): number {
   return 1 - (1 - x) * (1 - x);
 }
 
-function easeInOutCubic(x: number): number {
-  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-}
-
 /**
  * Award-Winning Cinematic Hero Experience:
  * 1. Initial State (scroll = 0):
- *    - Centralized, dramatic vignette with heavy depth-of-field background blur (22px).
+ *    - Centralized, dramatic vignette with subtle background depth blur (20px).
  *    - "Hello! I'm" types out in refined copper monospace script.
  *    - The custom I-beam cursor drops down and types "Aravind V S" large and centered at constant speed.
  *    - Cursor blinks with specular white/copper aura, then cleanly dissolves.
- * 2. Scroll Pan-Out (0 -> 100vh):
- *    - Camera pulls back: central title scales down and floats to the top header position.
- *    - Environmental blur melts away from 22px to 0px.
- *    - Leads directly to the live ASCII hands animation with the glowing embedded core.
- *    - Reveals the engineering punchline and the interactive frosted-glass pill links directly below the hands!
+ * 2. Scroll Down (Pan-Out & Disappear):
+ *    - Central name gently pans out and dissolves away completely (opacity -> 0) before reaching the background texts.
+ *    - Background blur melts away from 20px to 0px, revealing the punchline, living ASCII hands, and pill links below.
+ * 3. Scroll Up (Pan-In & Re-Blur):
+ *    - Reverses seamlessly: background smoothly re-blurs while the name slowly pans back into the center.
  */
 export function HeroCinematicIntro() {
   const greeting = HERO_EDITORIAL_DATA.introGreeting;
@@ -227,26 +223,23 @@ export function HeroCinematicIntro() {
 
   // ─── Derived Interpolations ───
   const p = scrollProgress;
-  const easedP = easeInOutCubic(p);
   const visualP = easeOutQuad(p);
 
-  // Background atmosphere interpolation
-  const bgBlur = (22 * (1 - visualP)).toFixed(2); // 22px -> 0px
-  const bgOpacity = (0.32 + 0.68 * visualP).toFixed(3); // 0.32 -> 1.0 (subtle atmospheric silhouette at start!)
-  const bgScale = (0.94 + 0.06 * visualP).toFixed(3); // 0.94 -> 1.0
+  // Background atmosphere interpolation (subtly blurred out at start, crystal clear on scroll)
+  const bgBlur = (20 * (1 - visualP)).toFixed(2); // 20px -> 0px
+  const bgOpacity = (0.32 + 0.68 * visualP).toFixed(3); // 0.32 -> 1.0
+  const bgScale = (0.95 + 0.05 * visualP).toFixed(3); // 0.95 -> 1.0
 
-  // Central title pan-out interpolation
-  // Scale down from 1.15 to 1.0
-  const titleScale = (1.15 - 0.15 * easedP).toFixed(3);
-  // Float from dead center (0vh) to top hero title position (-22vh)
-  const titleTranslateY = (-22 * easedP).toFixed(2);
-
-  // Punchline and bio fade in as you scroll out
-  const editorialOpacity = clamp01((p - 0.2) / 0.5); // Fades in between 20% and 70% scroll
-
-  // Pill links slide up and fade in smoothly
-  const pillsTranslateY = ((1 - visualP) * 20).toFixed(2); // 20px down -> 0px
-  const pillsOpacity = clamp01((p - 0.25) / 0.45); // Fades in as camera pulls back
+  // Central title pan-out & disappear interpolation:
+  // Name gently scales down and pulls back in z-space (1.0 -> 0.88)
+  const titleScale = (1.0 - 0.12 * Math.min(1, p * 2.5)).toFixed(3);
+  // Slight upward float (-5vh) as it recedes
+  const titleTranslateY = (-5 * Math.min(1, p * 2.5)).toFixed(2);
+  // Opacity smoothly fades to 0 as user scrolls down (1.0 at p=0, 0.0 by p=0.38)
+  // And when user scrolls up, smoothly comes back from 0.0 -> 1.0!
+  const titleOpacity = clamp01(1 - p / 0.38).toFixed(3);
+  // Subtle soft-focus depth blur as title recedes (0px -> 4px)
+  const titleBlur = (4 * Math.min(1, p * 2.5)).toFixed(2);
 
   const displayedGreeting = isMounted ? greeting.slice(0, greetingLen) : "";
   const displayedName = isMounted ? fullName.slice(0, nameLen) : "";
@@ -258,6 +251,8 @@ export function HeroCinematicIntro() {
     phase === "typing-name" ||
     phase === "completed" ||
     phase === "cursor-out";
+
+  const isTitleInteractive = Number(titleOpacity) > 0.15;
 
   return (
     <div
@@ -274,55 +269,41 @@ export function HeroCinematicIntro() {
         <VStack
           vAlign="between"
           hAlign="center"
-          className="absolute inset-0 z-0 w-full h-full transform-gpu will-change-[filter,opacity,transform] px-4 pt-20 pb-6 sm:px-6 sm:pt-24 sm:pb-8"
+          className="absolute inset-0 z-0 w-full h-full transform-gpu will-change-[filter,opacity,transform] px-4 pt-16 pb-6 sm:px-6 sm:pt-20 sm:pb-8"
           style={{
             filter: `blur(${bgBlur}px)`,
             opacity: bgOpacity,
             transform: `scale(${bgScale})`,
-            pointerEvents: p > 0.65 ? "auto" : "none",
+            pointerEvents: p > 0.35 ? "auto" : "none",
           }}
         >
-          {/* Top Placeholder to balance typography */}
-          <HStack className="w-full h-16 shrink-0 pointer-events-none" aria-hidden="true" />
-
-          {/* Center Stage: Engineering Punchline + Living ASCII Hands */}
-          <VStack gap={2} hAlign="center" className="relative z-10 w-full max-w-4xl my-auto">
-            {/* Punchline editorial text (smoothly reveals during pan-out) */}
-            <VStack
-              gap={2}
-              hAlign="center"
-              className="text-center px-4 transform-gpu transition-opacity duration-300"
-              style={{
-                opacity: editorialOpacity,
-                transform: `translateY(${(1 - editorialOpacity) * 12}px)`,
-              }}
+          {/* Top Section: Engineering Punchline & Bio Focus */}
+          <VStack gap={2} hAlign="center" className="relative z-10 w-full max-w-3xl text-center mx-auto pt-2 sm:pt-4">
+            <Heading
+              level={2}
+              justify="center"
+              className="max-w-[28ch] text-center font-brand text-[clamp(1.5rem,3.2vw,2.5rem)] font-bold leading-[1.14] tracking-[-0.03em] text-primary"
             >
-              <Heading
-                level={2}
-                justify="center"
-                className="max-w-[28ch] text-center font-brand text-[clamp(1.5rem,3.2vw,2.5rem)] font-bold leading-[1.14] tracking-[-0.03em] text-primary"
-              >
-                <Text type="inherit" color="primary" className="inline">
-                  {HERO_EDITORIAL_DATA.punchline}{" "}
-                </Text>
-                <Text type="inherit" color="secondary" className="inline text-copper">
-                  {HERO_EDITORIAL_DATA.punchlineHighlight}
-                </Text>
-              </Heading>
-
-              <Text
-                type="body"
-                justify="center"
-                className="max-w-[54ch] text-center font-sans text-xs sm:text-sm leading-relaxed text-secondary drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
-              >
-                {HERO_EDITORIAL_DATA.bioBrief}
+              <Text type="inherit" color="primary" className="inline">
+                {HERO_EDITORIAL_DATA.punchline}{" "}
               </Text>
-            </VStack>
+              <Text type="inherit" color="secondary" className="inline text-copper">
+                {HERO_EDITORIAL_DATA.punchlineHighlight}
+              </Text>
+            </Heading>
 
-            {/* The Majestic ASCII Hands Art Canvas */}
-            <VStack className="relative z-0 w-full -mt-2 sm:-mt-4">
-              <HeroAsciiHands altText={HERO_EDITORIAL_DATA.asciiArtAlt} />
-            </VStack>
+            <Text
+              type="body"
+              justify="center"
+              className="max-w-[54ch] text-center font-sans text-xs sm:text-sm leading-relaxed text-secondary drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
+            >
+              {HERO_EDITORIAL_DATA.bioBrief}
+            </Text>
+          </VStack>
+
+          {/* Center Stage: The Majestic ASCII Hands Art Canvas */}
+          <VStack className="relative z-0 w-full my-auto -mt-1 sm:-mt-2">
+            <HeroAsciiHands altText={HERO_EDITORIAL_DATA.asciiArtAlt} />
           </VStack>
 
           {/* Bottom Section: Action Channels (Pill Links Below ASCII Hands) */}
@@ -330,10 +311,6 @@ export function HeroCinematicIntro() {
             gap={3}
             hAlign="center"
             className="relative z-10 w-full shrink-0 justify-end pb-2 sm:pb-4 pointer-events-auto transform-gpu"
-            style={{
-              opacity: pillsOpacity,
-              transform: `translateY(${pillsTranslateY}px)`,
-            }}
           >
             <HStack
               wrap="wrap"
@@ -464,13 +441,17 @@ export function HeroCinematicIntro() {
           </VStack>
         </VStack>
 
-        {/* ── FOREGROUND LAYER: The Grand Centered Typing Hero Title ── */}
+        {/* ── FOREGROUND LAYER: Centered Typing Intro (Pans out & disappears smoothly) ── */}
         <VStack
           vAlign="center"
           hAlign="center"
-          className="absolute inset-0 z-20 pointer-events-none transform-gpu will-change-transform px-6"
+          className="absolute inset-0 z-20 transform-gpu will-change-[transform,opacity,filter] px-6 pointer-events-none"
           style={{
             transform: `scale(${titleScale}) translateY(${titleTranslateY}vh)`,
+            opacity: titleOpacity,
+            filter: `blur(${titleBlur}px)`,
+            pointerEvents: isTitleInteractive ? "auto" : "none",
+            display: Number(titleOpacity) <= 0.002 ? "none" : "flex",
           }}
         >
           <VStack
@@ -486,7 +467,7 @@ export function HeroCinematicIntro() {
               }
             }}
             aria-label={`${greeting} ${fullName}`}
-            className="group relative cursor-pointer select-none text-center max-w-4xl px-4 pointer-events-auto outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-copper/70 focus-visible:ring-offset-8 focus-visible:ring-offset-black"
+            className="group relative cursor-pointer select-none text-center max-w-4xl px-4 outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-copper/70 focus-visible:ring-offset-8 focus-visible:ring-offset-black"
           >
             {/* Screen Reader Full Content */}
             <Text as="span" className="sr-only">
