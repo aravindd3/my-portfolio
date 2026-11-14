@@ -69,28 +69,52 @@ export function NavbarLinks({ items }: NavbarLinksProps) {
   return (
     <HStack
       as="ul"
-      gap={1}
+      gap={6}
       vAlign="center"
-      className="m-0 hidden list-none p-0 lg:flex"
+      className="m-0 hidden list-none items-center p-0 lg:flex"
     >
       {items.map((item) => {
         const isActive = activeHref === item.href;
         return (
-          <HStack as="li" key={item.href}>
+          <HStack as="li" key={item.href} className="relative">
             <Link
               href={item.href}
               color="primary"
               isStandalone
               aria-current={isActive ? "location" : undefined}
-              className={`frosted-glass-nav-link relative rounded-full px-3 py-1.5 font-sans text-sm whitespace-nowrap no-underline transition-all duration-200 focus-visible:outline-offset-2 ${
+              className={`group relative inline-flex flex-col items-center py-1 font-mono text-xs uppercase tracking-[0.18em] no-underline transition-colors duration-200 focus-visible:outline-offset-4 ${
                 isActive
-                  ? "font-semibold text-white bg-white/[0.08]"
-                  : "font-medium text-secondary hover:text-white hover:bg-white/[0.03]"
+                  ? "font-semibold text-white"
+                  : "font-medium text-secondary/70 hover:text-white"
               }`}
             >
-              <Text type="inherit" color="inherit">
+              <Text as="span" type="inherit" color="inherit">
                 {item.label}
               </Text>
+
+              {/* Mehmet Burak Erman Wavy Menu Line Effect */}
+              <HStack
+                as="span"
+                aria-hidden="true"
+                className={`pointer-events-none absolute -bottom-1.5 left-0 h-[7px] w-full overflow-hidden transition-opacity duration-300 ${
+                  isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+              >
+                <svg
+                  className="h-full w-[200%] shrink-0 text-copper animate-wavy-glide"
+                  viewBox="0 0 200 8"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M 0 4 Q 5 0, 10 4 T 20 4 T 30 4 T 40 4 T 50 4 T 60 4 T 70 4 T 80 4 T 90 4 T 100 4 T 110 4 T 120 4 T 130 4 T 140 4 T 150 4 T 160 4 T 170 4 T 180 4 T 190 4 T 200 4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </HStack>
             </Link>
           </HStack>
         );

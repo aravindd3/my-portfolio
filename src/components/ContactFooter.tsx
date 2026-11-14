@@ -284,56 +284,46 @@ export function ContactFooter() {
             </Grid>
           </Card>
 
+          {/* Immersive Interactive Return to Top */}
           <HStack
-            hAlign="between"
+            hAlign="center"
             vAlign="center"
-            wrap="wrap"
-            gap={3}
-            className="min-w-0 border-t border-white/[0.07] pt-6"
+            className="w-full border-t border-white/[0.07] pt-10 pb-4"
           >
-            <HStack gap={3} vAlign="center" wrap="wrap" className="min-w-0">
-              <Text
-                type="code"
-                size="xsm"
-                className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5 font-mono text-xs font-semibold text-copper"
-              >
-                [{PROFILE_DATA.monogram}]
-              </Text>
-              <Text
-                type="supporting"
-                size="xsm"
-                color="secondary"
-                className="font-mono text-xs text-secondary"
-              >
-                {PROFILE_DATA.fullName} · {PROFILE_DATA.university} ·{" "}
-                {PROFILE_DATA.location}
-              </Text>
-            </HStack>
+            <Link
+              href="#top"
+              color="secondary"
+              isStandalone
+              aria-label="Return to top of page"
+              className="group relative inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 font-mono text-xs uppercase tracking-[0.24em] text-secondary no-underline backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-copper hover:bg-copper/[0.1] hover:text-white hover:shadow-[0_0_30px_rgba(229,169,60,0.35)] focus-visible:outline-offset-4"
+            >
+              {/* Radar pulse aura on hover */}
+              <HStack
+                as="span"
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full border border-copper/30 opacity-0 transition-opacity duration-300 group-hover:animate-ping group-hover:opacity-60"
+              />
 
-            <HStack gap={4} vAlign="center" wrap="wrap">
+              <HStack
+                as="span"
+                hAlign="center"
+                vAlign="center"
+                className="size-6 rounded-full border border-white/20 bg-white/5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:border-copper group-hover:bg-copper group-hover:text-canvas"
+              >
+                <AppIcon name="arrow-up" size="xsm" color="inherit" />
+              </HStack>
+
               <Text
-                type="code"
-                size="xsm"
-                className="font-mono text-xs text-secondary"
+                as="span"
+                type="inherit"
+                color="inherit"
+                className="font-mono text-xs font-medium tracking-[0.2em] transition-colors group-hover:text-copper"
               >
-                {PROFILE_DATA.systemId}
+                Back to Top
               </Text>
-              <Link
-                href="#top"
-                color="secondary"
-                isStandalone
-                type="code"
-                size="xsm"
-                className="font-mono text-xs text-secondary no-underline transition-colors hover:text-copper"
-              >
-                <HStack as="span" gap={1} vAlign="center">
-                  <Text type="inherit" color="inherit">
-                    Back to Top
-                  </Text>
-                  <AppIcon name="arrow-up" size="xsm" />
-                </HStack>
-              </Link>
-            </HStack>
+
+              <HStack as="span" className="h-1.5 w-1.5 rounded-full bg-signal/80 shadow-[0_0_6px_#10B981]" />
+            </Link>
           </HStack>
         </VStack>
       </Section>

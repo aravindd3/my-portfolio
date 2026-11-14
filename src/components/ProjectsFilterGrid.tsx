@@ -79,81 +79,118 @@ function ProjectCard({
     <Card
       padding={0}
       className={[
-        "group relative flex h-full min-w-0 flex-col rounded-2xl border transition-all duration-200 ease-out",
-        "hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]",
+        "group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border transition-all duration-500 ease-out",
+        "hover:-translate-y-2 hover:border-copper/40 hover:shadow-[0_24px_50px_-15px_rgba(0,0,0,0.9),0_0_24px_rgba(229,169,60,0.12)]",
         isMatch
           ? "border-[var(--border-active)] bg-gradient-to-b from-[rgba(229,169,60,0.08)] via-[#0D1017] to-[#080A0F] shadow-[0_12px_36px_-16px_rgba(229,169,60,0.22),inset_0_1px_0_rgba(229,169,60,0.18)]"
           : "border-white/[0.08] bg-gradient-to-b from-white/[0.035] via-[#0B0E14]/95 to-[#080A0F]/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]",
         isDimmed ? "opacity-45 hover:opacity-95" : "opacity-100",
       ].join(" ")}
     >
-      <VStack gap={4} className="h-full min-w-0 p-6 md:p-7">
-        <VStack gap={3} className="min-w-0">
-          <HStack hAlign="between" vAlign="center" gap={2} wrap="wrap">
-            <HStack gap={2} vAlign="center" wrap="wrap">
-              <Text
-                type="code"
-                size="xsm"
-                hasTabularNumbers
-                className={[
-                  "font-mono text-xs font-medium tracking-wider",
-                  isMatch ? "text-copper" : "text-secondary",
-                ].join(" ")}
-              >
-                {project.id}
-              </Text>
+      {/* Bobby Korec Gallery Hover Header: Hardware Canvas with Smooth Zoom */}
+      <HStack
+        as="div"
+        className="relative h-20 w-full overflow-hidden border-b border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-black/60"
+      >
+        {/* Ambient Circuit Trace Grid */}
+        <HStack
+          as="div"
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:14px_14px] transition-transform duration-700 ease-out group-hover:scale-110"
+        />
 
-              {isMatch && activeProtocol ? (
-                <Text
-                  type="code"
-                  size="xsm"
-                  className="rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-copper"
-                >
-                  {activeProtocol.name} Match
-                </Text>
-              ) : null}
-            </HStack>
+        {/* Ambient Bus Route Silicon Vector Traces */}
+        <svg
+          className="absolute inset-0 h-full w-full opacity-25 transition-all duration-700 ease-out group-hover:scale-110 group-hover:opacity-45"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M 12 18 L 70 18 L 100 45 L 240 45 L 270 70 L 380 70"
+            fill="none"
+            stroke="#E5A93C"
+            strokeWidth="1"
+            strokeDasharray="4 4"
+          />
+          <circle cx="70" cy="18" r="2.5" fill="#E5A93C" />
+          <circle cx="240" cy="45" r="2.5" fill="#10B981" />
+        </svg>
 
-            <HStack gap={1.5} vAlign="center" className="shrink-0">
-              {project.isOngoing ? (
-                <StatusDot
-                  variant="success"
-                  isPulsing
-                  label="Ongoing hardware prototype"
-                />
-              ) : null}
-              <Text
-                type="code"
-                size="xsm"
-                hasTabularNumbers
-                className={[
-                  "font-mono text-xs",
-                  project.isOngoing
-                    ? "font-medium text-signal"
-                    : "text-secondary",
-                ].join(" ")}
-              >
-                {project.dates}
-              </Text>
-            </HStack>
-          </HStack>
+        {/* Specular Shimmer Sweep */}
+        <HStack
+          as="span"
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 ease-out group-hover:translate-x-full"
+        />
 
-          <VStack gap={1} className="min-w-0">
-            <Heading
-              level={3}
-              className="font-display text-lg font-semibold leading-snug text-primary md:text-xl"
-            >
-              {project.title}
-            </Heading>
+        {/* Header Metadata */}
+        <HStack
+          hAlign="between"
+          vAlign="center"
+          className="relative z-10 w-full px-5 py-3"
+        >
+          <HStack gap={2} vAlign="center">
             <Text
               type="code"
               size="xsm"
-              color="secondary"
-              className="font-mono text-xs leading-relaxed text-secondary"
+              hasTabularNumbers
+              className={[
+                "font-mono text-xs font-semibold tracking-wider",
+                isMatch ? "text-copper" : "text-white/80",
+              ].join(" ")}
             >
-              {project.primaryFocus}
+              {project.id}
             </Text>
-          </VStack>
+
+            {isMatch && activeProtocol ? (
+              <Text
+                type="code"
+                size="xsm"
+                className="rounded-full border border-[var(--border-active)] bg-[var(--accent-copper-subtle)] px-2 py-0.5 font-mono text-[10px] font-medium text-copper"
+              >
+                {activeProtocol.name} Match
+              </Text>
+            ) : null}
+          </HStack>
+
+          <HStack gap={1.5} vAlign="center" className="shrink-0">
+            {project.isOngoing ? (
+              <StatusDot
+                variant="success"
+                isPulsing
+                label="Ongoing hardware prototype"
+              />
+            ) : null}
+            <Text
+              type="code"
+              size="xsm"
+              hasTabularNumbers
+              className={[
+                "font-mono text-[11px]",
+                project.isOngoing ? "font-medium text-signal" : "text-secondary/70",
+              ].join(" ")}
+            >
+              {project.dates}
+            </Text>
+          </HStack>
+        </HStack>
+      </HStack>
+
+      <VStack gap={4} className="h-full min-w-0 p-6 md:p-7">
+        <VStack gap={1} className="min-w-0 transition-transform duration-500 ease-out group-hover:-translate-y-1">
+          <Heading
+            level={3}
+            className="font-display text-lg font-semibold leading-snug text-primary transition-colors duration-300 group-hover:text-copper md:text-xl"
+          >
+            {project.title}
+          </Heading>
+          <Text
+            type="code"
+            size="xsm"
+            color="secondary"
+            className="font-mono text-xs leading-relaxed text-secondary"
+          >
+            {project.primaryFocus}
+          </Text>
         </VStack>
 
         <VStack

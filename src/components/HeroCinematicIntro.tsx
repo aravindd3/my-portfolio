@@ -15,38 +15,25 @@ import { VStack } from "@astryxdesign/core/VStack";
 import { HERO_EDITORIAL_DATA, PROFILE_DATA } from "@/data/portfolio";
 import { AppIcon } from "./AppIcon";
 import { HeroAsciiHands } from "./HeroAsciiHands";
-import { IBeamCursor } from "./IBeamCursor";
 
 /* ──────────────────────────────────────────────────────────────────────────
- * TIMING & SCROLL CONFIGURATION
+ * SCROLL RUNWAY & PINNING CONFIGURATION
  * ──────────────────────────────────────────────────────────────────────── */
 
-const GREETING_CHAR_SPEED_MS = 50; // Typing speed for "Hello! I'm"
-const NAME_CHAR_SPEED_MS = 75; // Constant typing speed for "Aravind V S"
-const LINE_PAUSE_MS = 180; // Breath between greeting line & name line
-const COMPLETION_PAUSE_MS = 550; // Cursor rest & blink at end
-const CURSOR_OUT_MS = 320; // Fade out duration for cursor
-
-// Scroll runway: 90vh of scroll distance for the smooth pan-out transition
-const SCROLL_RUNWAY_VH = 90;
-
-/* ──────────────────────────────────────────────────────────────────────── */
+// 180vh runway provides ample room:
+// p = 0.00 -> 0.35: Name pans out and dissolves away, background unblurs
+// p = 0.35 -> 0.80: STAGED LOCK / PAUSE (2nd page in complete, stationary view)
+// p = 0.80 -> 1.00: Smooth unpinning transition into Capabilities section
+const SCROLL_RUNWAY_VH = 180;
 
 const emptySubscribe = () => () => {};
 
-type TypingPhase =
-  | "init"
-  | "greeting-cursor"
-  | "typing-greeting"
-  | "greeting-pause"
-  | "name-cursor"
-  | "typing-name"
-  | "completed"
-  | "cursor-out"
-  | "done";
-
 function clamp01(v: number): number {
   return v < 0 ? 0 : v > 1 ? 1 : v;
+}
+
+function clamp(v: number, min: number, max: number): number {
+  return Math.min(Math.max(v, min), max);
 }
 
 function easeOutQuad(x: number): number {
@@ -57,12 +44,15 @@ function easeOutQuad(x: number): number {
  * Award-Winning Cinematic Hero Experience:
  * 1. Initial State (scroll = 0):
  *    - Centralized, dramatic vignette with subtle background depth blur (20px).
- *    - "Hello! I'm" types out in refined copper monospace script.
- *    - The custom I-beam cursor drops down and types "Aravind V S" large and centered at constant speed.
- *    - Cursor blinks with specular white/copper aura, then cleanly dissolves.
- * 2. Scroll Down (Pan-Out & Disappear):
- *    - Central name gently pans out and dissolves away completely (opacity -> 0) before reaching the background texts.
- *    - Background blur melts away from 20px to 0px, revealing the punchline, living ASCII hands, and pill links below.
+ *    - "Hello! I'm" emerges with a warm luminous flow from the left.
+ *    - "Aravind V S" reveals organically from left to right like liquid light from nothingness (no cursor).
+ *    - Interactive Cursor Laser-Cut: Hovering over the name slices the typography in real-time
+ *      with dual sheared halves and a glowing incision beam tracking the cursor Y coordinate.
+ * 2. Scroll Down (Pan-Out & Disappear with Staged Pause):
+ *    - Central name gently pans out and dissolves away completely (opacity -> 0) before hitting background texts.
+ *    - Background blur melts away from 20px to 0px, revealing the punchline, living ASCII hands, and pills.
+ *    - Blue & Yellow stars shine brightly through the transparent canvas.
+ *    - Second page locks completely in view (p = 0.35 to 0.80) so the visitor sees it fully before scrolling on.
  * 3. Scroll Up (Pan-In & Re-Blur):
  *    - Reverses seamlessly: background smoothly re-blurs while the name slowly pans back into the center.
  */
@@ -76,119 +66,37 @@ export function HeroCinematicIntro() {
     () => false,
   );
 
-  // ─── Typewriter State ───
-  const [greetingLen, setGreetingLen] = useState(0);
-  const [nameLen, setNameLen] = useState(0);
-  const [phase, setPhase] = useState<TypingPhase>("init");
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Key to re-trigger the flowy reveal animation on click
+  const [animKey, setAnimKey] = useState(0);
+
+  // ─── Interactive Cursor Laser-Cut / Slice State ───
+  const [isLaserCutting, setIsLaserCutting] = useState(false);
+  const [cutYPercent, setCutYPercent] = useState(50);
+  const [cursorXOffset, setCursorXOffset] = useState(0);
 
   // ─── Scroll Progress (0 at top, 1 when runway exhausted) ───
   const outerRef = useRef<HTMLDivElement | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const clearActiveTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  const runTypingChoreography = useCallback(() => {
-    clearActiveTimer();
-
-    // Reset counters
-    setGreetingLen(0);
-    setNameLen(0);
-    setPhase("init");
-
-    // Step 1: Cursor emerges on greeting line
-    timerRef.current = setTimeout(() => {
-      setPhase("greeting-cursor");
-
-      // Step 2: Type greeting ("Hello! I'm")
-      timerRef.current = setTimeout(() => {
-        setPhase("typing-greeting");
-
-        let gCount = 0;
-        const gTotal = greeting.length;
-
-        const typeGreetingChar = () => {
-          if (gCount < gTotal) {
-            gCount += 1;
-            setGreetingLen(gCount);
-
-            if (gCount < gTotal) {
-              timerRef.current = setTimeout(
-                typeGreetingChar,
-                GREETING_CHAR_SPEED_MS,
-              );
-            } else {
-              // Step 3: Brief breath, cursor drops to name line
-              setPhase("greeting-pause");
-              timerRef.current = setTimeout(() => {
-                setPhase("name-cursor");
-
-                // Step 4: Type full name ("Aravind V S") at constant speed
-                timerRef.current = setTimeout(() => {
-                  setPhase("typing-name");
-
-                  let nCount = 0;
-                  const nTotal = fullName.length;
-
-                  const typeNameChar = () => {
-                    if (nCount < nTotal) {
-                      nCount += 1;
-                      setNameLen(nCount);
-
-                      if (nCount < nTotal) {
-                        timerRef.current = setTimeout(
-                          typeNameChar,
-                          NAME_CHAR_SPEED_MS,
-                        );
-                      } else {
-                        // Step 5: Finished typing, cursor blinks
-                        setPhase("completed");
-                        timerRef.current = setTimeout(() => {
-                          // Step 6: Cursor dissolves away
-                          setPhase("cursor-out");
-                          timerRef.current = setTimeout(() => {
-                            setPhase("done");
-                          }, CURSOR_OUT_MS);
-                        }, COMPLETION_PAUSE_MS);
-                      }
-                    }
-                  };
-
-                  timerRef.current = setTimeout(
-                    typeNameChar,
-                    NAME_CHAR_SPEED_MS,
-                  );
-                }, 120);
-              }, LINE_PAUSE_MS);
-            }
-          }
-        };
-
-        timerRef.current = setTimeout(typeGreetingChar, GREETING_CHAR_SPEED_MS);
-      }, 160);
-    }, 220);
-  }, [clearActiveTimer, greeting, fullName]);
-
-  useEffect(() => {
-    const startTimer = setTimeout(() => {
-      runTypingChoreography();
-    }, 10);
-
-    return () => {
-      clearTimeout(startTimer);
-      clearActiveTimer();
-    };
-  }, [clearActiveTimer, runTypingChoreography]);
-
   // Click to replay animation anytime
   const handleReplay = useCallback(() => {
-    runTypingChoreography();
-  }, [runTypingChoreography]);
+    setAnimKey((prev) => prev + 1);
+  }, []);
+
+  // ─── Cursor Laser Slice Event Handlers ───
+  const handlePointerMove = (e: React.PointerEvent<HTMLHeadingElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.height <= 0) return;
+    const yPct = clamp(((e.clientY - rect.top) / rect.height) * 100, 8, 92);
+    const xPx = e.clientX - rect.left;
+    setCutYPercent(yPct);
+    setCursorXOffset(xPx);
+    if (!isLaserCutting) setIsLaserCutting(true);
+  };
+
+  const handlePointerLeave = () => {
+    setIsLaserCutting(false);
+  };
 
   // ─── Scroll Progress Listener ───
   useEffect(() => {
@@ -223,39 +131,27 @@ export function HeroCinematicIntro() {
 
   // ─── Derived Interpolations ───
   const p = scrollProgress;
-  const visualP = easeOutQuad(p);
 
-  // Background atmosphere interpolation (subtly blurred out at start, crystal clear on scroll)
+  // Background atmosphere interpolation:
+  // Starts blurred (20px) at p = 0; completely sharp (0px) by p = 0.32
+  const blurTransition = clamp01(p / 0.32);
+  const visualP = easeOutQuad(blurTransition);
   const bgBlur = (20 * (1 - visualP)).toFixed(2); // 20px -> 0px
-  const bgOpacity = (0.32 + 0.68 * visualP).toFixed(3); // 0.32 -> 1.0
-  const bgScale = (0.95 + 0.05 * visualP).toFixed(3); // 0.95 -> 1.0
+  const bgOpacity = (0.35 + 0.65 * visualP).toFixed(3); // 0.35 -> 1.0
+  const bgScale = (0.96 + 0.04 * visualP).toFixed(3); // 0.96 -> 1.0
 
   // Central title pan-out & disappear interpolation:
-  // Name gently scales down and pulls back in z-space (1.0 -> 0.88)
-  const titleScale = (1.0 - 0.12 * Math.min(1, p * 2.5)).toFixed(3);
-  // Slight upward float (-5vh) as it recedes
-  const titleTranslateY = (-5 * Math.min(1, p * 2.5)).toFixed(2);
-  // Opacity smoothly fades to 0 as user scrolls down (1.0 at p=0, 0.0 by p=0.38)
-  // And when user scrolls up, smoothly comes back from 0.0 -> 1.0!
-  const titleOpacity = clamp01(1 - p / 0.38).toFixed(3);
-  // Subtle soft-focus depth blur as title recedes (0px -> 4px)
-  const titleBlur = (4 * Math.min(1, p * 2.5)).toFixed(2);
-
-  const displayedGreeting = isMounted ? greeting.slice(0, greetingLen) : "";
-  const displayedName = isMounted ? fullName.slice(0, nameLen) : "";
-
-  const cursorOnGreeting =
-    phase === "greeting-cursor" || phase === "typing-greeting";
-  const cursorOnName =
-    phase === "name-cursor" ||
-    phase === "typing-name" ||
-    phase === "completed" ||
-    phase === "cursor-out";
+  // Title dissolves to 0 opacity by p = 0.28, staying completely gone during the staged lock
+  const titleExitProgress = clamp01(p / 0.28);
+  const titleOpacity = clamp01(1 - titleExitProgress).toFixed(3);
+  const titleScale = (1.0 - 0.1 * titleExitProgress).toFixed(3);
+  const titleTranslateY = (-4 * titleExitProgress).toFixed(2);
+  const titleBlur = (5 * titleExitProgress).toFixed(2);
 
   const isTitleInteractive = Number(titleOpacity) > 0.15;
 
   return (
-    <div
+    <VStack
       ref={outerRef}
       className="relative w-full"
       style={{
@@ -263,18 +159,18 @@ export function HeroCinematicIntro() {
         height: `calc(100svh + ${SCROLL_RUNWAY_VH}vh)`,
       }}
     >
-      {/* Pinned Sticky Viewport Canvas */}
-      <div className="sticky top-0 left-0 w-full h-svh overflow-hidden bg-canvas">
+      {/* Pinned Sticky Viewport Canvas (Transparent so Blue & Yellow Stars show through) */}
+      <VStack className="sticky top-0 left-0 w-full h-svh overflow-hidden bg-transparent">
         {/* ── BACKGROUND LAYER: Revealed ASCII Art, Punchline & Action Pills ── */}
         <VStack
           vAlign="between"
           hAlign="center"
-          className="absolute inset-0 z-0 w-full h-full transform-gpu will-change-[filter,opacity,transform] px-4 pt-16 pb-6 sm:px-6 sm:pt-20 sm:pb-8"
+          className="absolute inset-0 z-0 w-full h-full transform-gpu will-change-[filter,opacity,transform] px-4 pt-14 pb-6 sm:px-6 sm:pt-18 sm:pb-8"
           style={{
             filter: `blur(${bgBlur}px)`,
             opacity: bgOpacity,
             transform: `scale(${bgScale})`,
-            pointerEvents: p > 0.35 ? "auto" : "none",
+            pointerEvents: p > 0.28 ? "auto" : "none",
           }}
         >
           {/* Top Section: Engineering Punchline & Bio Focus */}
@@ -306,12 +202,13 @@ export function HeroCinematicIntro() {
             <HeroAsciiHands altText={HERO_EDITORIAL_DATA.asciiArtAlt} />
           </VStack>
 
-          {/* Bottom Section: Action Channels (Pill Links Below ASCII Hands) */}
+          {/* Bottom Section: Action Channels (Pill Links Below ASCII Hands) & Sleek Explore Prompt */}
           <VStack
             gap={3}
             hAlign="center"
             className="relative z-10 w-full shrink-0 justify-end pb-2 sm:pb-4 pointer-events-auto transform-gpu"
           >
+            {/* The 4 Action Pills with OG White LinkedIn & Immersive Resume */}
             <HStack
               wrap="wrap"
               gap={2}
@@ -319,6 +216,7 @@ export function HeroCinematicIntro() {
               vAlign="center"
               className="pt-1"
             >
+              {/* GitHub Pill */}
               <Link
                 href={PROFILE_DATA.githubUrl}
                 target="_blank"
@@ -326,9 +224,14 @@ export function HeroCinematicIntro() {
                 color="primary"
                 isStandalone
                 display="block"
-                className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                className="group relative overflow-hidden rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.3)]"
               >
-                <HStack as="span" gap={2} vAlign="center">
+                <HStack
+                  as="span"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+                />
+                <HStack as="span" gap={2} vAlign="center" className="relative z-10">
                   <AppIcon
                     name="folder-git"
                     size="sm"
@@ -344,6 +247,7 @@ export function HeroCinematicIntro() {
                 </HStack>
               </Link>
 
+              {/* LinkedIn Pill with Official White Logo */}
               <Link
                 href={PROFILE_DATA.linkedinUrl}
                 target="_blank"
@@ -351,11 +255,16 @@ export function HeroCinematicIntro() {
                 color="primary"
                 isStandalone
                 display="block"
-                className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                className="group relative overflow-hidden rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.3)]"
               >
-                <HStack as="span" gap={2} vAlign="center">
+                <HStack
+                  as="span"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+                />
+                <HStack as="span" gap={2} vAlign="center" className="relative z-10">
                   <AppIcon
-                    name="external-link"
+                    name="linkedin"
                     size="sm"
                     className="transition-colors duration-200 group-hover:text-black"
                   />
@@ -369,6 +278,7 @@ export function HeroCinematicIntro() {
                 </HStack>
               </Link>
 
+              {/* Instagram Pill */}
               {PROFILE_DATA.instagramUrl && (
                 <Link
                   href={PROFILE_DATA.instagramUrl}
@@ -377,9 +287,14 @@ export function HeroCinematicIntro() {
                   color="primary"
                   isStandalone
                   display="block"
-                  className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                  className="group relative overflow-hidden rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.3)]"
                 >
-                  <HStack as="span" gap={2} vAlign="center">
+                  <HStack
+                    as="span"
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+                  />
+                  <HStack as="span" gap={2} vAlign="center" className="relative z-10">
                     <AppIcon
                       name="instagram"
                       size="sm"
@@ -396,6 +311,7 @@ export function HeroCinematicIntro() {
                 </Link>
               )}
 
+              {/* Resume Pill: Unique & Immersive Styling */}
               <Link
                 href={PROFILE_DATA.resumePdfUrl}
                 target="_blank"
@@ -403,45 +319,62 @@ export function HeroCinematicIntro() {
                 color="primary"
                 isStandalone
                 display="block"
-                className="group rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 font-mono text-xs text-primary/90 no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                className="group relative overflow-hidden rounded-full border border-copper/50 bg-copper/[0.09] px-4 py-2 font-mono text-xs text-copper no-underline shadow-[0_0_14px_rgba(229,169,60,0.15),inset_0_1px_0_rgba(229,169,60,0.3)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:border-copper hover:bg-copper hover:text-canvas hover:shadow-[0_0_26px_rgba(229,169,60,0.55)]"
               >
-                <HStack as="span" gap={2} vAlign="center">
+                <HStack
+                  as="span"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-copper/30 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+                />
+                <HStack as="span" gap={2} vAlign="center" className="relative z-10">
                   <AppIcon
                     name="file-down"
                     size="sm"
-                    className="transition-colors duration-200 group-hover:text-black"
+                    className="text-copper transition-colors duration-200 group-hover:text-canvas"
                   />
                   <Text
                     type="inherit"
                     color="inherit"
-                    className="tracking-wide transition-colors duration-200 group-hover:text-black"
+                    className="tracking-wide font-medium text-copper transition-colors duration-200 group-hover:text-canvas"
                   >
                     Resume
                   </Text>
+                  <HStack
+                    as="span"
+                    className="rounded bg-copper/20 px-1 py-0.2 font-mono text-[9px] font-bold tracking-wider text-copper transition-colors duration-200 group-hover:bg-black/30 group-hover:text-canvas"
+                  >
+                    PDF
+                  </HStack>
                 </HStack>
               </Link>
+            </HStack>
 
+            {/* Redesigned "Explore Projects": Architectural & Sleek (Not a Pill) */}
+            <HStack hAlign="center" className="pt-2">
               <Link
                 href={HERO_EDITORIAL_DATA.primaryCtaHref}
                 isStandalone
                 aria-label="Explore Projects"
-                className="group flex items-center gap-2 rounded-full border border-copper/40 bg-copper/[0.08] px-4 py-2 font-mono text-xs text-primary/90 no-underline backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-copper hover:bg-copper hover:text-canvas hover:shadow-[0_0_20px_rgba(229,169,60,0.4)]"
+                className="group relative inline-flex items-center gap-3 no-underline transition-all duration-300 focus-visible:outline-offset-4"
               >
-                <Text type="inherit" color="inherit" className="tracking-wide">
-                  {HERO_EDITORIAL_DATA.primaryCtaLabel}
-                </Text>
-                <AppIcon
-                  name="arrow-right"
-                  size="xsm"
-                  color="inherit"
-                  className="transition-transform duration-200 group-hover:translate-x-1"
-                />
+                <HStack as="span" className="h-px w-6 sm:w-8 bg-gradient-to-r from-transparent to-white/25 group-hover:to-copper group-hover:w-10 transition-all duration-300" />
+                <HStack as="span" gap={2} vAlign="center" className="font-mono text-xs uppercase tracking-[0.22em] text-secondary/80 group-hover:text-copper transition-colors">
+                  <Text as="span" type="inherit" color="inherit">
+                    {HERO_EDITORIAL_DATA.primaryCtaLabel}
+                  </Text>
+                  <AppIcon
+                    name="arrow-right"
+                    size="xsm"
+                    className="text-copper transition-transform duration-300 group-hover:translate-x-1.5"
+                  />
+                </HStack>
+                <HStack as="span" className="h-px w-6 sm:w-8 bg-gradient-to-l from-transparent to-white/25 group-hover:from-copper group-hover:w-10 transition-all duration-300" />
               </Link>
             </HStack>
           </VStack>
         </VStack>
 
-        {/* ── FOREGROUND LAYER: Centered Typing Intro (Pans out & disappears smoothly) ── */}
+        {/* ── FOREGROUND LAYER: Centered Flowy Name Intro with Cursor Laser-Cut ── */}
         <VStack
           vAlign="center"
           hAlign="center"
@@ -455,6 +388,7 @@ export function HeroCinematicIntro() {
           }}
         >
           <VStack
+            key={animKey}
             gap={3}
             hAlign="center"
             role="button"
@@ -474,109 +408,113 @@ export function HeroCinematicIntro() {
               {greeting} {fullName}
             </Text>
 
-            {/* Line 1: "Hello! I'm" (Typed with I-beam cursor) */}
+            {/* Line 1: "Hello! I'm" (Reveals from nothing left-to-right, no cursor) */}
             <HStack
               as="span"
               vAlign="center"
               hAlign="center"
               aria-hidden="true"
-              className="relative inline-flex items-center justify-center font-mono text-xs sm:text-sm md:text-base font-semibold tracking-[0.32em] uppercase text-copper"
+              className={`relative inline-flex items-center justify-center font-mono text-xs sm:text-sm md:text-base font-semibold tracking-[0.32em] uppercase text-copper ${
+                isMounted ? "animate-flowy-greeting-ltr" : "opacity-0"
+              }`}
             >
-              {/* Ghost Line 1 */}
-              <Text
-                as="span"
-                type="inherit"
-                color="inherit"
-                className="invisible pointer-events-none select-none opacity-0 whitespace-pre"
-              >
+              <Text as="span" type="inherit" color="inherit">
                 {greeting}
               </Text>
-
-              {/* Animated Line 1 */}
-              <HStack
-                as="span"
-                vAlign="center"
-                className="absolute inset-y-0 left-0 flex items-center whitespace-pre text-left"
-              >
-                <Text as="span" type="inherit" color="inherit" className="whitespace-pre">
-                  {displayedGreeting}
-                </Text>
-
-                {cursorOnGreeting && (
-                  <HStack
-                    as="span"
-                    vAlign="center"
-                    className={`inline-flex shrink-0 items-center justify-center ${
-                      displayedGreeting.length > 0 ? "ml-1" : "ml-0"
-                    } ${phase === "greeting-cursor" ? "animate-cursor-come-up" : ""}`}
-                  >
-                    <IBeamCursor isBlinking={phase === "greeting-cursor"} />
-                  </HStack>
-                )}
-              </HStack>
             </HStack>
 
-            {/* Line 2: "Aravind V S" (Typed with I-beam cursor) */}
+            {/* Line 2: "Aravind V S" with Interactive Cursor Laser-Cut / Slice */}
             <Heading
               id="intro-heading"
               level={1}
               justify="center"
-              className="text-center font-brand text-[clamp(2.75rem,8.5vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.85)]"
+              onPointerMove={handlePointerMove}
+              onPointerLeave={handlePointerLeave}
+              className={`relative text-center font-brand text-[clamp(2.75rem,8.5vw,5.75rem)] font-extrabold tracking-[-0.04em] leading-[1.04] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.85)] ${
+                isMounted ? "animate-flowy-ltr" : "opacity-0"
+              }`}
             >
+              {/* Normal display when not actively cutting */}
               <HStack
                 as="span"
                 vAlign="center"
                 hAlign="center"
                 aria-hidden="true"
-                className="relative inline-flex select-none items-center justify-center"
+                className={`relative inline-flex select-none items-center justify-center transition-opacity duration-150 ${
+                  isLaserCutting ? "opacity-0" : "opacity-100"
+                }`}
               >
-                {/* Ghost Line 2 */}
-                <Text
-                  as="span"
-                  type="inherit"
-                  color="inherit"
-                  className="invisible pointer-events-none select-none opacity-0 whitespace-pre"
-                >
+                <Text as="span" type="inherit" color="inherit">
                   {fullName}
                 </Text>
+              </HStack>
 
-                {/* Animated Line 2 */}
+              {/* Sliced Dual-Layer Laser-Cut (Active when hovering with cursor) */}
+              {isLaserCutting && (
                 <HStack
                   as="span"
-                  vAlign="center"
-                  className="pointer-events-none absolute inset-y-0 left-0 flex items-center whitespace-pre text-left"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 inline-flex items-center justify-center select-none"
                 >
-                  <Text as="span" type="inherit" color="inherit" className="whitespace-pre">
-                    {displayedName}
-                  </Text>
+                  {/* Top Sliced Half: shifts slightly left */}
+                  <HStack
+                    as="span"
+                    className="absolute inset-0 flex items-center justify-center transition-transform duration-75 ease-out"
+                    style={{
+                      clipPath: `polygon(0 0, 100% 0, 100% ${cutYPercent}%, 0 ${cutYPercent}%)`,
+                      transform: "translateX(-4px)",
+                    }}
+                  >
+                    <Text as="span" type="inherit" color="inherit">
+                      {fullName}
+                    </Text>
+                  </HStack>
 
-                  {cursorOnName && (
+                  {/* Bottom Sliced Half: shifts slightly right */}
+                  <HStack
+                    as="span"
+                    className="absolute inset-0 flex items-center justify-center transition-transform duration-75 ease-out"
+                    style={{
+                      clipPath: `polygon(0 ${cutYPercent}%, 100% ${cutYPercent}%, 100% 100%, 0 100%)`,
+                      transform: "translateX(4px)",
+                    }}
+                  >
+                    <Text as="span" type="inherit" color="inherit">
+                      {fullName}
+                    </Text>
+                  </HStack>
+
+                  {/* Laser Incision Beam at cursor Y */}
+                  <HStack
+                    as="span"
+                    className="absolute inset-x-0 h-[1.5px] pointer-events-none"
+                    style={{
+                      top: `${cutYPercent}%`,
+                      transform: "translateY(-50%)",
+                      background:
+                        "linear-gradient(90deg, transparent 0%, rgba(229,169,60,0.5) 20%, #ffffff 50%, rgba(229,169,60,0.5) 80%, transparent 100%)",
+                      boxShadow:
+                        "0 0 10px 2px rgba(229,169,60,0.8), 0 0 4px #ffffff",
+                    }}
+                  >
+                    {/* Focal spark at cursor X */}
                     <HStack
                       as="span"
-                      vAlign="center"
-                      className={`inline-flex shrink-0 items-center justify-center ${
-                        displayedName.length > 0 ? "ml-1 sm:ml-1.5" : "ml-0"
-                      } ${
-                        phase === "name-cursor"
-                          ? "animate-cursor-come-up"
-                          : phase === "cursor-out"
-                          ? "animate-cursor-go-away"
-                          : ""
-                      }`}
-                    >
-                      <IBeamCursor
-                        isBlinking={phase === "name-cursor" || phase === "completed"}
-                      />
-                    </HStack>
-                  )}
+                      className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_12px_3px_#E5A93C]"
+                      style={{
+                        left: `${cursorXOffset}px`,
+                        top: "50%",
+                      }}
+                    />
+                  </HStack>
                 </HStack>
-              </HStack>
+              )}
             </Heading>
           </VStack>
         </VStack>
 
         {/* ── SCROLL CUE: Invites Visitor to Experience the Pan-Out ── */}
-        {phase === "done" && p < 0.12 && (
+        {p < 0.12 && (
           <VStack
             hAlign="center"
             className="absolute bottom-7 inset-x-0 z-30 pointer-events-none animate-[fadeInUp_0.8s_ease-out_both] transition-opacity duration-300"
@@ -600,7 +538,7 @@ export function HeroCinematicIntro() {
             </HStack>
           </VStack>
         )}
-      </div>
-    </div>
+      </VStack>
+    </VStack>
   );
 }

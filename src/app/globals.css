@@ -183,6 +183,63 @@ body {
   animation: cursorGoAway 0.35s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
+/* Mehmet Burak Erman Wavy Menu Line Effect */
+@keyframes wavyGlide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-wavy-glide {
+  animation: wavyGlide 1.6s linear infinite;
+  will-change: transform;
+}
+
+/* Flowy Liquid Typography Reveal (Left to Right from Nothingness) */
+@keyframes flowyRevealLtr {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    filter: blur(10px) brightness(1.8);
+    transform: translateX(-8px);
+  }
+  30% {
+    opacity: 1;
+    filter: blur(4px) brightness(1.4);
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 1;
+    filter: blur(0px) brightness(1);
+    transform: translateX(0);
+  }
+}
+
+.animate-flowy-ltr {
+  animation: flowyRevealLtr 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-flowy-greeting-ltr {
+  animation: flowyRevealLtr 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Specular Shimmer Sweep on Action Pills */
+@keyframes specularSweep {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
+.animate-specular-sweep {
+  animation: specularSweep 2.8s ease-in-out infinite;
+}
+
 @keyframes fadeInUp {
   0% {
     opacity: 0;
